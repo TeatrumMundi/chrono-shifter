@@ -59,8 +59,10 @@ Before setting up the project, ensure you have the following installed:
 The backend provides the following endpoints:
 
 - **account**:
-    - `GET /account/by-riot-id/?region={region}&gameName={gameName}&tag={tagLine}`: Retrieve `puuid` `gameName` `tagLine` by `gameName` + `tagLine`
-    - `GET /account/by-puuid/?region={region}&puuid={puuid}`: Retrieve `puuid` `gameName` `tagLine` by `puuid`
+    - `GET /account/by-riot-id/?region={region}&gameName={gameName}&tag={tagLine}`
+     └── Retrieve `puuid` `gameName` `tagLine` by `gameName` + `tagLine`
+    - `GET /account/by-puuid/?region={region}&puuid={puuid}`
+     └──Retrieve `puuid` `gameName` `tagLine` by `puuid`
 
 - **Annotations**:
     - `GET /annotations?session=:sessionId`: Fetch annotations associated with a specific session.
