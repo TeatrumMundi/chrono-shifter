@@ -7,7 +7,7 @@
 The `Chrono-Shifter` is a NEXT.js-based web application, built with Next.js, provides users with detailed information about League of Legends summoners based on their provided in-game nickname. It leverages the Riot Games API to fetch and display this data in a user-friendly format.
 
 ## FIGMA
-Figma prototype: `https://www.figma.com/proto/ym7Uvqh216ZOG2iV6toc3T?node-id=0-1&t=7L1R5Ta12My8RGyB-6`
+Figma prototype: [Demo](https://www.figma.com/proto/ym7Uvqh216ZOG2iV6toc3T?node-id=0-1&t=7L1R5Ta12My8RGyB-6)
 
 ## Features
 
@@ -31,8 +31,8 @@ Before setting up the project, ensure you have the following installed:
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/TeatrumMundi/lol-app-backend.git
-   cd lol-app-backend
+   gh repo clone TeatrumMundi/chrono-shifter
+   cd chrono-shifter
    ```
 
 2. **Install Dependencies**:
@@ -43,17 +43,10 @@ Before setting up the project, ensure you have the following installed:
 
 3. **Set Up Environment Variables**:
 
-   Create a `.env` file in the root directory based on the provided `.env-template`. Ensure all necessary configurations, such as your Riot Games API key and MongoDB connection string, are correctly set.
+   Create a `.env.local` file in the root directory based on the provided `.env-template`. Ensure all necessary configurations, such as your Riot Games API key and MongoDB connection string, are correctly set.
 
-4. **Start MongoDB**:
 
-   Ensure your MongoDB service is running. You can start it using:
-
-   ```bash
-   sudo service mongod start
-   ```
-
-5. **Launch the Server**:
+4. **Launch the Server**:
 
    ```bash
    npm start
@@ -65,9 +58,9 @@ Before setting up the project, ensure you have the following installed:
 
 The backend provides the following endpoints:
 
-- **Sessions**:
-    - `GET /sessions/:id`: Retrieve session details by ID.
-    - `POST /sessions`: Create a new session.
+- **account**:
+    - `GET /account/by-riot-id/?region={region}&gameName={gameName}&tag={tagLine}`: Retrieve `puuid` `gameName` `tagLine` by `gameName` + `tagLine`
+    - `GET /account/by-puuid/?region={region}&puuid={puuid}`: Retrieve `puuid` `gameName` `tagLine` by `puuid`
 
 - **Annotations**:
     - `GET /annotations?session=:sessionId`: Fetch annotations associated with a specific session.
