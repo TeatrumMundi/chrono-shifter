@@ -9,5 +9,5 @@ export async function GET(req: Request): Promise<Response> {
         return Response.json({ error: "Missing required parameters" }, { status: 400 });
     }
 
-    return fetchFromRiotAPI(`https://${server}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${puuid}`);
+    return fetchFromRiotAPI(`https://${server}.api.riotgames.com/lol/champion-mastery/v4/scores/by-puuid/${puuid}`);
 }

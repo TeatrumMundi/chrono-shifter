@@ -3,11 +3,11 @@
 export async function GET(req: Request): Promise<Response> {
     const { searchParams } = new URL(req.url);
     const server = searchParams.get("server");
-    const puuid = searchParams.get("puuid");
+    const summonerID = searchParams.get("summonerID");
 
-    if (!(server && puuid)) {
+    if (!(server && summonerID)) {
         return Response.json({ error: "Missing required parameters" }, { status: 400 });
     }
 
-    return fetchFromRiotAPI(`https://${server}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}`);
+    return fetchFromRiotAPI(`https://${server}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerID}`);
 }
