@@ -1,19 +1,19 @@
 # Chrono-Shifter
 
-## Work in progress (First week)
+## Work in progress (Second week)
 
 ## Overview
 
-The `Chrono-Shifter` is a Node.js-based backend service designed to interface with the Riot Games API, providing essential data for a League of Legends application. It offers endpoints to retrieve summoner information, match histories, and other related data.
+The `Chrono-Shifter` is a NEXT.js-based web application, built with Next.js, provides users with detailed information about League of Legends summoners based on their provided in-game nickname. It leverages the Riot Games API to fetch and display this data in a user-friendly format.
 
 ## FIGMA
 Figma prototype: `https://www.figma.com/proto/ym7Uvqh216ZOG2iV6toc3T?node-id=0-1&t=7L1R5Ta12My8RGyB-6`
 
 ## Features
 
-- **Summoner Information**: Fetch detailed data about summoners, including their profiles and statistics.
-- **Match History**: Retrieve recent matches played by a summoner, along with comprehensive match details.
-- **Champion Mastery**: Access information on a summoner's proficiency with various champions.
+- **Summoner Information**: Fetch detailed data about summoners, including their `gameName`, `tagLine`, `prfileIcon`, `Level`.
+- **Match History**: Retrieve recent matches played by a summoner, along with comprehensive match details such as `gameResult`, `everyPlayerScore`, `build` and more.
+- **Champion Mastery**: Access information on a summoner's proficiency with various champions. `everyChampionMastery`, `yourTopChampions`, `totalMasteryScore`.
 
 ## Prerequisites
 
@@ -21,7 +21,10 @@ Before setting up the project, ensure you have the following installed:
 
 - [Node.js](https://nodejs.org/) (version 12.18.3 or higher)
 - [npm](https://www.npmjs.com/) (Node package manager)
-- [MongoDB](https://www.mongodb.com/) (for data storage)
+- [axios](https://axios-http.com/) (1.7.9)
+- [express](https://expressjs.com/) (4.21.2)
+- [next](https://nextjs.org/) (15.1.7)
+- [react](https://react.dev/) (19.0.0)
 
 ## Installation
 
