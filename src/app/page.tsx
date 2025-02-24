@@ -20,6 +20,7 @@ type SummonerData = {
     flexWins: number,
     flexLosses: number,
     flexWR: number,
+    matches: string[];
 };
 
 export default function Home() {
@@ -32,7 +33,7 @@ export default function Home() {
         setError(null);
 
         try {
-            const fetchedData = await fetchAllData("eun1", "Teatrum Mundi", "GOD");
+            const fetchedData = await fetchAllData("EUNE", "Teatrum Mundi", "GOD");
             if (!fetchedData) throw new Error("Failed to fetch data");
             setData(fetchedData);
         } catch (err) {
@@ -48,21 +49,23 @@ export default function Home() {
 
     return (
         <div>
-            <h1>Hello World!</h1>
             {loading ? (
                 <h2>Loading...</h2>
             ) : error ? (
                 <h2>Error: {error}</h2>
             ) : data ? (
                 <>
-                    <h2>Your puuid: {data.puuid}</h2>
-                    <h2>Your game name: {data.gameName}</h2>
-                    <h2>Your tag: {data.tagLine}</h2>
+                    <h2>{data.gameName}#{data.tagLine} LVL:{data.summonerLevel}</h2>
                     <h2>Your profileIconID: {data.profileIconID}</h2>
-                    <h2>Your summonerLevel: {data.summonerLevel}</h2>
+                    <h2>Your puuid: {data.puuid}</h2>
                     <h2>Your summonerID: {data.id}</h2>
                     <h2>Your solo rank: {data.soloTier ?? "Unranked"} {data.soloRank ?? ""}  {data.soloWins}:{data.soloLosses} WR{data.soloWR}%</h2>
                     <h2>Your flex rank: {data.flexTier ?? "Unranked"} {data.flexRank ?? ""}  {data.flexWins}:{data.flexLosses} WR{data.flexWR}%</h2>
+                    <h3>{data.matches[0]}</h3>
+                    <h3>{data.matches[1]}</h3>
+                    <h3>{data.matches[2]}</h3>
+                    <h3>{data.matches[3]}</h3>
+                    <h3>{data.matches[4]}</h3>
                 </>
             ) : (
                 <h2>No data available</h2>

@@ -67,6 +67,18 @@ async function fetchLeagueData(server: string, summonerID: string) {
     );
 }
 
+
+// Match data fetching (return the list of matches)
+async function fetchMatchData(region: string, puuid: string, queueType?: string, number: number = 5) {
+    const url = `${DEFAULT_URL}/match/by-puuid/?region=${region}&puuid=${puuid}&number=${number}` +
+        (queueType ? `&queueType=${queueType}` : "");
+
+    return fetchData<string[]>(url);
+}
+export async function fetchMatchList(region: string, puuid: string, queueType?: string, number: number = 5): Promise<string[]> {
+    return await fetchMatchData(region, puuid, queueType, number);
+}
+
 export async function fetchAccountInfo(region: string, gameName: string, tagLine: string): Promise<[string, string, string]> {
     const { puuid, gameName: fetchedGameName, tagLine: fetchedTagLine } = await fetchAccountData(region, gameName, tagLine);
     return [puuid, fetchedGameName, fetchedTagLine];
