@@ -15,12 +15,10 @@ type RankData = {
     freshBlood: boolean;
     hotStreak: boolean;
 };
-
 type RankedMap = {
     solo?: RankData;
     flex?: RankData;
 };
-
 
 /**
  * Validates a fetch response and throws an error if the response is not OK.
@@ -37,7 +35,6 @@ function checkResponse(response: Response): void {
         throw new Error(`Request failed with status: ${response.status}`);
     }
 }
-
 async function fetchData<T>(url: string): Promise<T> {
     try {
         const response = await fetch(url);
@@ -47,50 +44,21 @@ async function fetchData<T>(url: string): Promise<T> {
         throw error; // Rethrow the original error
     }
 }
-
-
-async function fetchAccountData(region: string, gameName: string, tagLine: string) {
+export async function fetchAccountData(region: string, gameName: string, tagLine: string) {
     return fetchData<{ puuid: string; gameName: string; tagLine: string }>(
         `${DEFAULT_URL}/account/by-riot-id/?region=${region}&gameName=${gameName}&tag=${tagLine}`
     );
 }
-
-async function fetchSummonerData(server: string, puuid: string) {
+export async function fetchSummonerData(server: string, puuid: string) {
     return fetchData<{ id: string; profileIconId: string; summonerLevel: string }>(
         `${DEFAULT_URL}/summoner/by-puuid/?server=${server}&puuid=${puuid}`
     );
 }
-
-async function fetchLeagueData(server: string, summonerID: string) {
-    return fetchData<RankData[]>(
+export async function fetchLeagueData(server: string, summonerID: string): Promise<RankedMap> {
+    const data = await fetchData<RankData[]>(
         `${DEFAULT_URL}/league/by-summoner?server=${server}&summonerID=${summonerID}`
     );
-}
 
-
-// Match data fetching (return the list of matches)
-async function fetchMatchData(region: string, puuid: string, queueType?: string, number: number = 5) {
-    const url = `${DEFAULT_URL}/match/by-puuid/?region=${region}&puuid=${puuid}&number=${number}` +
-        (queueType ? `&queueType=${queueType}` : "");
-
-    return fetchData<string[]>(url);
-}
-export async function fetchMatchList(region: string, puuid: string, queueType?: string, number: number = 5): Promise<string[]> {
-    return await fetchMatchData(region, puuid, queueType, number);
-}
-
-export async function fetchAccountInfo(region: string, gameName: string, tagLine: string): Promise<[string, string, string]> {
-    const { puuid, gameName: fetchedGameName, tagLine: fetchedTagLine } = await fetchAccountData(region, gameName, tagLine);
-    return [puuid, fetchedGameName, fetchedTagLine];
-}
-
-export async function fetchSummonerInfo(server: string, puuid: string): Promise<[string, string, string]> {
-    const { id, profileIconId, summonerLevel } = await fetchSummonerData(server, puuid);
-    return [id, profileIconId, summonerLevel];
-}
-
-export async function fetchLeagueInfo(server: string, summonerID: string): Promise<RankedMap> {
-    const data = await fetchLeagueData(server, summonerID);
     return data.reduce<RankedMap>((acc, entry) => {
         if (entry.queueType === "RANKED_SOLO_5x5") {
             acc.solo = entry;
@@ -99,4 +67,10 @@ export async function fetchLeagueInfo(server: string, summonerID: string): Promi
         }
         return acc;
     }, {});
+}
+export async function fetchMatchData(region: string, puuid: string, queueType?: string, number: number = 5): Promise<string[]> {
+    const url = `${DEFAULT_URL}/match/by-puuid/?region=${region}&puuid=${puuid}&number=${number}` +
+        (queueType ? `&queueType=${queueType}` : "");
+
+    return fetchData<string[]>(url);
 }
