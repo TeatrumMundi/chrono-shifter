@@ -2,14 +2,13 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { fetchAllData } from "@/app/apiiHandler/fetchAllData";
+import {ProcessedParticipant} from "@/app/apiiHandler/apiDestructor";
 
 interface SummonerData {
-    puuid: string;
     gameName: string;
     tagLine: string;
-    profileIconID: string;
+    profileIconId: string;
     summonerLevel: string;
-    id: string;
     soloTier?: string;
     soloRank?: string;
     soloWins: number;
@@ -22,7 +21,7 @@ interface SummonerData {
     flexLosses: number;
     flexLP: number;
     flexWR: number;
-    matches: string[];
+    matchDetails: ProcessedParticipant[];
 }
 
 export default function Home() {
@@ -30,10 +29,12 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
 
     const loadData = useCallback(async () => {
-        try {
+        try
+        {
             const fetchedData = await fetchAllData("EUNE", "Monovaqovsky", "eune");
             setData(fetchedData ?? null);
-        } finally {
+        } finally
+        {
             setLoading(false);
         }
     }, []);
@@ -50,20 +51,18 @@ export default function Home() {
     return (
         <div>
             <h2>{data.gameName}#{data.tagLine} LVL: {data.summonerLevel}</h2>
-            <h2>Profile Icon ID: {data.profileIconID}</h2>
-            <h2>PUUID: {data.puuid}</h2>
-            <h2>Summoner ID: {data.id}</h2>
-            <h2>
-                Solo Rank: {data.soloTier ?? "Unranked"} {data.soloRank ?? ""}
-                {data.soloWins}:{data.soloLosses} WR {data.soloWR}% {data.soloLP}LP
-            </h2>
-            <h2>
-                Flex Rank: {data.flexTier ?? "Unranked"} {data.flexRank ?? ""}
-                {data.flexWins}:{data.flexLosses} WR {data.flexWR}% {data.flexLP}LP
-            </h2>
-            {data.matches.slice(0, 5).map((match, index) => (
-                <h3 key={index}>{match}</h3>
-            ))}
+            <h2>Profile Icon ID: {data.profileIconId}</h2>
+
+            <h2>Solo Rank: {data.soloTier ?? "Unranked"} {data.soloRank ?? ""}</h2>
+            <h3>{data.soloWins}:{data.soloLosses} WR {data.soloWR}% {data.soloLP}LP</h3>
+
+            <h2>Flex Rank: {data.flexTier ?? "Unranked"} {data.flexRank ?? ""}</h2>
+            <h3>{data.flexWins}:{data.flexLosses} WR {data.flexWR}% {data.flexLP}LP</h3>
+
+            <h4>Your last game KDA: {data.matchDetails[9].kills}/{data.matchDetails[9].deaths}/{data.matchDetails[9].assists}</h4>
+            <h4>Damage dealt: {data.matchDetails[9].damageDealt}</h4>
+            <h4>Gold earned: {data.matchDetails[9].goldEarned}</h4>
+            <h4>Ward placed: {data.matchDetails[9].wardsPlaced}</h4>
         </div>
     );
 }

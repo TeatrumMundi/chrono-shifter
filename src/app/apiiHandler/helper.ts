@@ -12,11 +12,26 @@ const serverMAP: Record<string, string> = {
     SEA: "SG2", TR: "TR1", TW: "TW2", VN: "VN2",
 };
 
+// apiDestructor functions
+export function checkResponse(response: Response): void {
+    if (!response.ok) {
+        throw new Error(`Request failed with status: ${response.status}`);
+    }
+}
+export async function fetchData<T>(url: string): Promise<T> {
+    try {
+        const response = await fetch(url);
+        checkResponse(response); // Validate the response
+        return await response.json();
+    } catch (error) {
+        throw error; // Rethrow the original error
+    }
+}
+// fetchAllData functions
 export function calculateWinRatio(wins: number, losses: number): number {
     if (losses === 0 && wins > 0) return 100;
     if (wins === 0) return 0;
     return parseFloat(((wins / (wins + losses)) * 100).toFixed(0));
 } // Calculate winRatio based on wins and loses
-
 export function getRegion(server: string): string {return regionMAP[server] || "UNKNOWN";} //Returns region suitable for API
 export function getServer(server: string): string {return serverMAP[server] || "UNKNOWN";} //Returns server suitable for API
