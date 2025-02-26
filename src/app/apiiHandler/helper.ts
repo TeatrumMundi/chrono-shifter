@@ -1,20 +1,18 @@
 ﻿import {MatchResponse, ProcessedParticipant} from "@/app/apiiHandler/Interfaces/interfaces";
 
 const regionMAP: Record<string, string> = {
-    NA: "AMERICAS", BR: "AMERICAS", LAN: "AMERICAS", LAS: "AMERICAS",
-    EUW: "EUROPE", EUNE: "EUROPE", RU: "EUROPE", TR: "EUROPE",
-    KR: "ASIA", JP: "ASIA", VN: "ASIA", ME: "ASIA",
-    OCE: "SEA", SEA: "SEA", TW: "SEA",
+    na: "AMERICAS", br: "AMERICAS", lan: "AMERICAS", las: "AMERICAS",
+    euw: "EUROPE", eune: "EUROPE", ru: "EUROPE", tr: "EUROPE",
+    kr: "ASIA", jp: "ASIA", vn: "ASIA", me: "ASIA",
+    oce: "SEA", sea: "SEA", tw: "SEA",
 };
 const serverMAP: Record<string, string> = {
-    EUNE: "EUN1", EUW: "EUN2",
-    JP: "JP1", KR: "KR",
-    LAN: "LA1", LAS: "LA2", ME: "ME1",
-    NA: "NA1", OCE: "OC1", RU: "RU",
-    SEA: "SG2", TR: "TR1", TW: "TW2", VN: "VN2",
+    eune: "EUN1", euw: "EUW1",
+    jp: "JP1", kr: "KR",
+    lan: "LA1", las: "LA2", me: "ME1",
+    na: "NA1", oce: "OC1", ru: "RU",
+    sea: "SG2", tr: "TR1", tw: "TW2", vn: "VN2",
 };
-
-// apiDestructor functions
 export function checkResponse(response: Response): void {
     if (!response.ok) {
         throw new Error(`Request failed with status: ${response.status}`);
@@ -29,14 +27,20 @@ export async function fetchData<T>(url: string): Promise<T> {
         throw error; // Rethrow the original error
     }
 }
-// fetchAllData functions
+
 export function calculateWinRatio(wins: number, losses: number): number {
     if (losses === 0 && wins > 0) return 100;
     if (wins === 0) return 0;
     return parseFloat(((wins / (wins + losses)) * 100).toFixed(0));
 } // Calculate winRatio based on wins and loses
-export function getRegion(server: string): string {return regionMAP[server] || "UNKNOWN";} //Returns region suitable for API
-export function getServer(server: string): string {return serverMAP[server] || "UNKNOWN";} //Returns server suitable for API
+export function getRegion(server: string): string {
+    server = server.toLowerCase();
+    return regionMAP[server] || "UNKNOWN";
+} //Returns region suitable for API
+export function getServer(server: string): string {
+    server = server.toLowerCase();
+    return serverMAP[server] || "UNKNOWN";
+} //Returns server suitable for API
 export function secToHHMMSS(seconds: number): string {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);

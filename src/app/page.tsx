@@ -1,63 +1,105 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { fetchAllData } from "@/app/apiiHandler/fetchAllData";
-import { secToHHMMSS, timeAgo, getParticipantByPuuid } from "@/app/apiiHandler/helper";
-import { SummonerData, ProcessedParticipant } from "@/app/apiiHandler/Interfaces/interfaces";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function Home() {
-    const [data, setData] = useState<SummonerData | null>(null);
-    const [loading, setLoading] = useState(true);
+export default function SearchForm() {
+    const [name, setName] = useState("");
+    const [server, setServer] = useState("");
+    const [tag, setTag] = useState("");
+    const router = useRouter();
 
-    const loadData = useCallback(async () => {
-        try {
-            const fetchedData = await fetchAllData("EUNE", "Monovaqovsky", "eune");
-            setData(fetchedData ?? null);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    const regions = [
+        { short: "na", long: "AMERICAS" },
+        { short: "br", long: "AMERICAS" },
+        { short: "lan", long: "AMERICAS" },
+        { short: "las", long: "AMERICAS" },
+        { short: "euw", long: "EUROPE" },
+        { short: "eune", long: "EUROPE" },
+        { short: "ru", long: "EUROPE" },
+        { short: "tr", long: "EUROPE" },
+        { short: "kr", long: "ASIA" },
+        { short: "jp", long: "ASIA" },
+        { short: "vn", long: "ASIA" },
+        { short: "me", long: "ASIA" },
+        { short: "oce", long: "SEA" },
+        { short: "sea", long: "SEA" },
+        { short: "tw", long: "SEA" },
+    ];
 
-    useEffect(() => {
-        (async () => {
-            await loadData();
-        })();
-    }, [loadData]);
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
 
-    if (loading) return <h2>Loading...</h2>;
-    if (!data) return <h2>No data available</h2>;
-
-    // ✅ Find the player in all matches
-    const mainPlayerMatches = data.match
-        .map(match => getParticipantByPuuid(match, data.puuid)) // Get the player's data from each match
-        .filter((participant): participant is ProcessedParticipant => participant !== null); // Remove null values
-
-    if (mainPlayerMatches.length === 0) return <h2>No match data found for this player.</h2>;
-
+        // Redirect to the dynamic URL
+        router.push(`/profile/?server=${server}&name=${name}&tag=${tag}`);
+    };
 
     return (
-        <div>
-            <h2>{data.gameName}#{data.tagLine} LVL: {data.summonerLevel}</h2>
-            <h2>Profile Icon ID: {data.profileIconId}</h2>
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+            {/* Name Input */}
+            <div className="mb-4 text-sm font-medium text-gray-700">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                    Name
+                </label>
+                <input
+                    type="text"
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Enter your name"
+                    required
+                />
+            </div>
 
-            <h2>Solo Rank: {data.soloTier ?? "Unranked"} {data.soloRank ?? ""}</h2>
-            <h3>{data.soloWins}:{data.soloLosses} WR {data.soloWR}% {data.soloLP}LP</h3>
+            {/* Tag Input */}
+            <div className="mb-4 text-sm font-medium text-gray-700">
+                <label htmlFor="tag" className="block text-sm font-medium text-gray-700">
+                    Tag
+                </label>
+                <input
+                    type="text"
+                    id="tag"
+                    value={tag}
+                    onChange={(e) => setTag(e.target.value)}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Enter your tag"
+                    required
+                />
+            </div>
 
-            <h2>Flex Rank: {data.flexTier ?? "Unranked"} {data.flexRank ?? ""} {data.flexWins}:{data.flexLosses} WR {data.flexWR}% {data.flexLP}LP</h2>
-            <h3>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</h3>
+            {/* Server Dropdown */}
+            <div className="mb-4 text-sm font-medium text-gray-700">
+                <label htmlFor="server" className="block text-sm font-medium text-gray-700">
+                    Server
+                </label>
+                <select
+                    id="server"
+                    value={server}
+                    onChange={(e) => setServer(e.target.value)}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                >
+                    <option value="" disabled>
+                        Select a server
+                    </option>
+                    {regions.map((region) => (
+                        <option key={region.short} value={region.short}>
+                            {region.short.toUpperCase()} - {region.long}
+                        </option>
+                    ))}
+                </select>
+            </div>
 
-            <h2>Recent Matches:</h2>
-            {mainPlayerMatches.map((participant, index) => (
-                <div key={index}>
-                    <h4>Match {index + 1}: {participant.riotIdGameName} ({participant.win ? "Win" : "Loss"})</h4>
-                    <h4>Champion: {participant.championName}</h4>
-                    <h4>Game Mode: {data.match[index].gameMode}</h4>
-                    <h4>Role: {participant.teamPosition}</h4>
-                    <h4>Time: {secToHHMMSS(data.match[index].gameDuration)}</h4>
-                    <h4>Match played: {timeAgo(data.match[index].gameEndTimestamp)}</h4>
-                    <hr />
-                </div>
-            ))}
-        </div>
+
+
+            {/* Submit Button */}
+            <button
+                type="submit"
+                className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+                Submit
+            </button>
+        </form>
     );
 }
