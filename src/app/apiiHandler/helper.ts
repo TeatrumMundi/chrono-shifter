@@ -112,3 +112,20 @@ export function timeAgo(timestamp: number): string {
 export function getParticipantByPuuid(matchData: MatchResponse, puuid: string): ProcessedParticipant | null {
     return matchData.participants.find(participant => participant.puuid === puuid) ?? null;
 }
+export function getKDA(kills: number,  deaths: number, assists: number,): string
+{
+    if(deaths === 0)
+    {
+        return "Perfect"
+    }
+    else
+    {
+        const kda = ((kills+assists)/deaths).toFixed(2);
+        return kda.toString();
+    }
+}
+export function getMinionsPerMinute(seconds: number, totalMinions: number): string
+{
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return (totalMinions / minutes).toFixed(2);
+}

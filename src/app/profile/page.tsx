@@ -61,12 +61,25 @@ export default function Home() {
             {mainPlayerMatches.map((participant, index) => (
                 <div key={index}>
                     <h4>Match {index + 1}: {participant.riotIdGameName} ({participant.win})</h4>
-                    <h4>Champion: {participant.championName} KDA: {participant.kills}/{participant.deaths}/{participant.assists}</h4>
+                    <h4>Champion: {participant.championName} KDA: {participant.kills}/{participant.deaths}/{participant.assists}  {participant.kda}</h4>
                     <h4>Game Mode: {data.match[index].gameMode}</h4>
                     <h4>Role: {participant.teamPosition}</h4>
                     <h4>Time: {secToHHMMSS(data.match[index].gameDuration)}</h4>
                     <h4>Match played: {timeAgo(data.match[index].gameEndTimestamp)}</h4>
-                    <hr />
+                    <h4>Damage: {participant.damageDealt}</h4>
+                    <h4>Gold: {participant.goldEarned}</h4>
+                    <h4>Runes: {participant.runes[0]}, {participant.runes[1]}, {participant.runes[2]},
+                         {participant.runes[3]}, {participant.runes[4]}, {participant.runes[5]}
+                    </h4>
+                    <h4>Runes: {participant.runes.length}</h4>
+                    <h4>Vision score: {participant.visionScore}</h4>
+                    <h4>Minions:  {participant.minionsKilled}, {participant.minionsPerMinute}</h4>
+                    <h4>{data.match[index].participants[0].riotIdGameName} vs {data.match[index].participants[5].riotIdGameName}</h4>
+                    <h4>{data.match[index].participants[1].riotIdGameName} vs {data.match[index].participants[6].riotIdGameName}</h4>
+                    <h4>{data.match[index].participants[2].riotIdGameName} vs {data.match[index].participants[7].riotIdGameName}</h4>
+                    <h4>{data.match[index].participants[3].riotIdGameName} vs {data.match[index].participants[8].riotIdGameName}</h4>
+                    <h4>{data.match[index].participants[4].riotIdGameName} vs {data.match[index].participants[9].riotIdGameName}</h4>
+                    <hr/>
                 </div>
             ))}
         </div>

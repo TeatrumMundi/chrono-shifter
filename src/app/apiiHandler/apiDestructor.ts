@@ -1,4 +1,4 @@
-﻿import {fetchData, getWinOrLose} from "@/app/apiiHandler/helper";
+﻿import {fetchData, getKDA, getMinionsPerMinute, getWinOrLose} from "@/app/apiiHandler/helper";
 import {
     MatchData,
     MatchResponse,
@@ -67,6 +67,8 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
             kills: participant.kills,
             deaths: participant.deaths,
             assists: participant.assists,
+            kda: getKDA(participant.kills, participant.deaths, participant.assists),
+            visionScore: participant.visionScore,
             items: [
                 participant.item0,
                 participant.item1,
@@ -79,6 +81,7 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
             goldEarned: participant.goldEarned,
             wardsPlaced: participant.wardsPlaced ?? 0,
             minionsKilled: participant.totalMinionsKilled,
+            minionsPerMinute: getMinionsPerMinute(data.info.gameDuration, participant.totalMinionsKilled),
             runes: participant.perks?.styles.flatMap((style) =>
                 style.selections.map((selection) => selection.perk)
             ) ?? [],

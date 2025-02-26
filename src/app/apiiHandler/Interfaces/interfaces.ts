@@ -7,6 +7,7 @@
     kills: number;
     deaths: number;
     assists: number;
+    visionScore: number;
     item0: number;
     item1: number;
     item2: number;
@@ -43,11 +44,14 @@ export interface ProcessedParticipant {
     kills: number;
     deaths: number;
     assists: number;
+    kda: string;
+    visionScore: number;
     items: number[];
     damageDealt: number;
     goldEarned: number;
     wardsPlaced: number;
     minionsKilled: number;
+    minionsPerMinute: string;
     runes: number[];
     win: string;
     teamId: number;
