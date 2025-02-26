@@ -1,4 +1,6 @@
-﻿const regionMAP: Record<string, string> = {
+﻿import {MatchResponse, ProcessedParticipant} from "@/app/apiiHandler/Interfaces/interfaces";
+
+const regionMAP: Record<string, string> = {
     NA: "AMERICAS", BR: "AMERICAS", LAN: "AMERICAS", LAS: "AMERICAS",
     EUW: "EUROPE", EUNE: "EUROPE", RU: "EUROPE", TR: "EUROPE",
     KR: "ASIA", JP: "ASIA", VN: "ASIA", ME: "ASIA",
@@ -102,4 +104,7 @@ export function timeAgo(timestamp: number): string {
         const years = Math.floor(difference / intervals.year);
         return `${years} year${years !== 1 ? 's' : ''} ago`;
     }
+}
+export function getParticipantByPuuid(matchData: MatchResponse, puuid: string): ProcessedParticipant | null {
+    return matchData.participants.find(participant => participant.puuid === puuid) ?? null;
 }

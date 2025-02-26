@@ -77,6 +77,7 @@ export interface Ranked {
     RankedEntry: RankedEntry[];
 }
 export interface SummonerData {
+    puuid: string;
     gameName: string;
     tagLine: string;
     profileIconId: string;

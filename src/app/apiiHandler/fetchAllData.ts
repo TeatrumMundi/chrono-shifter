@@ -1,5 +1,5 @@
 ﻿import {
-    fetchAccountData, fetchLeagueData, fetchMatchData, fetchSummonerData, getMatchDetailsData
+    fetchAccountData, fetchLeagueData, fetchMatchData, fetchSummonerData, fetchMatchDetailsData
 } from "./apiDestructor";
 import { calculateWinRatio, getRegion, getServer } from "@/app/apiiHandler/helper";
 import {MatchResponse, Ranked} from "@/app/apiiHandler/Interfaces/interfaces";
@@ -15,6 +15,7 @@ interface SummonerDetails {
     summonerLevel: string;
 }
 type FormattedResponse = AccountDetails & SummonerDetails & {
+    puuid: string;
     gameName: string;
     tagLine: string;
     profileIconId: string;
@@ -35,7 +36,7 @@ export async function fetchAllData(serverFetched: string, gameName: string, tagL
 
         // Fetch multiple matches
         const match: MatchResponse[] = await Promise.all(
-            matchIds.slice(0, 5).map(async (matchID) => await getMatchDetailsData(region, matchID))
+            matchIds.slice(0, 5).map(async (matchID) => await fetchMatchDetailsData(region, matchID))
         );
 
         return formatResponse({
@@ -54,9 +55,10 @@ export async function fetchAllData(serverFetched: string, gameName: string, tagL
 
 // Format Response
 function formatResponse({
-                            gameName, tagLine, profileIconId, summonerLevel, match, rankedDataMap
+                            puuid, gameName, tagLine, profileIconId, summonerLevel, match, rankedDataMap
                         }: FormattedResponse) {
     return {
+        puuid,
         gameName,
         tagLine,
         profileIconId,

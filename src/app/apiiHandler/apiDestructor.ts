@@ -8,7 +8,34 @@ import {
 } from "@/app/apiiHandler/Interfaces/interfaces";
 const DEFAULT_URL = "http://localhost:3000/api";
 
+export async function fetchLeagueData(server: string, summonerId: string): Promise<Ranked> {
+    const url = `${DEFAULT_URL}/league/by-summoner?server=${server}&summonerID=${summonerId}`;
 
+    try
+    {
+        const rankedData: RankedEntry[] = await fetchData<RankedEntry[]>(url);
+        const soloQueue = rankedData.find(entry => entry.queueType === "RANKED_SOLO_5x5");
+        const flexQueue = rankedData.find(entry => entry.queueType === "RANKED_FLEX_SR");
+
+        const allQueues: Ranked = {
+            RankedEntry: []
+        };
+
+        if (soloQueue) {
+            allQueues.RankedEntry.push(soloQueue);
+        }
+
+        if (flexQueue) {
+            allQueues.RankedEntry.push(flexQueue);
+        }
+
+        return allQueues;
+    }
+    catch (error)
+    {
+        throw new Error(`Failed to fetch league data: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+}
 export async function fetchAccountData(region: string, gameName: string, tagLine: string) {
     return fetchData<{ puuid: string; gameName: string; tagLine: string }>(
         `${DEFAULT_URL}/account/by-riot-id/?region=${region}&gameName=${gameName}&tag=${tagLine}`
@@ -25,7 +52,7 @@ export async function fetchMatchData(region: string, puuid: string, queueType?: 
 
     return fetchData<string[]>(url);
 }
-export async function getMatchDetailsData(region: string, matchID: string): Promise<MatchResponse> {
+export async function fetchMatchDetailsData(region: string, matchID: string): Promise<MatchResponse> {
     const url = `${DEFAULT_URL}/match/by-matchId/?region=${region}&matchID=${matchID}`;
 
     try {
@@ -69,33 +96,5 @@ export async function getMatchDetailsData(region: string, matchID: string): Prom
     catch (error)
     {
         throw new Error(`Failed to fetch match data: ${error instanceof Error ? error.message : "Unknown error"}`);
-    }
-}
-export async function fetchLeagueData(server: string, summonerId: string): Promise<Ranked> {
-    const url = `${DEFAULT_URL}/league/by-summoner?server=${server}&summonerID=${summonerId}`;
-
-    try
-    {
-        const rankedData: RankedEntry[] = await fetchData<RankedEntry[]>(url);
-        const soloQueue = rankedData.find(entry => entry.queueType === "RANKED_SOLO_5x5");
-        const flexQueue = rankedData.find(entry => entry.queueType === "RANKED_FLEX_SR");
-
-        const allQueues: Ranked = {
-            RankedEntry: []
-        };
-
-        if (soloQueue) {
-            allQueues.RankedEntry.push(soloQueue);
-        }
-
-        if (flexQueue) {
-            allQueues.RankedEntry.push(flexQueue);
-        }
-
-        return allQueues;
-    }
-    catch (error)
-    {
-        throw new Error(`Failed to fetch league data: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
 }
