@@ -1,9 +1,9 @@
 ﻿import {
-    fetchAccountData, fetchLeagueData, fetchMatchData, fetchSummonerData, getMatchDetailsData, MatchResponse, ProcessedParticipant
+    fetchAccountData, fetchLeagueData, fetchMatchData, fetchSummonerData, getMatchDetailsData
 } from "./apiDestructor";
 import { calculateWinRatio, getRegion, getServer } from "@/app/apiiHandler/helper";
+import {MatchResponse, Ranked} from "@/app/apiiHandler/Interfaces/interfaces";
 
-// Type Definitions
 interface AccountDetails {
     puuid: string;
     gameName: string;
@@ -14,22 +14,13 @@ interface SummonerDetails {
     profileIconId: string;
     summonerLevel: string;
 }
-interface RankedStats {
-    wins: number;
-    losses: number;
-    tier?: string;
-    rank?: string;
-    leaguePoints: number;
-}
-interface RankedData {
-    solo?: RankedStats;
-    flex?: RankedStats;
-}
-type MatchData = string[];
 type FormattedResponse = AccountDetails & SummonerDetails & {
-    rankedDataMap: RankedData;
-    matches: MatchData;
-    matchDetails: ProcessedParticipant[]; // Add match details
+    gameName: string;
+    tagLine: string;
+    profileIconId: string;
+    summonerLevel: string;
+    rankedDataMap: Ranked;
+    match: MatchResponse[];
 };
 
 export async function fetchAllData(serverFetched: string, gameName: string, tagLine: string) {
@@ -37,52 +28,53 @@ export async function fetchAllData(serverFetched: string, gameName: string, tagL
         const region = getRegion(serverFetched);
         const server = getServer(serverFetched);
 
-        const accountDetails: AccountDetails = await fetchAccountData(region, gameName, tagLine);
-        const summonerDetails: SummonerDetails = await fetchSummonerData(server, accountDetails.puuid);
-        const rankedDataMap: RankedData = await fetchLeagueData(server, summonerDetails.id);
-        const matches: MatchData = await fetchMatchData(region, accountDetails.puuid);
+        const accountDetails = await fetchAccountData(region, gameName, tagLine);
+        const summonerDetails = await fetchSummonerData(server, accountDetails.puuid);
+        const rankedDataMap : Ranked = await fetchLeagueData(server, summonerDetails.id);
+        const matchIds = await fetchMatchData(region, accountDetails.puuid, "", 100);
 
-        const matchDetails: MatchResponse = await getMatchDetailsData(region, matches[0]);
+        // Fetch multiple matches
+        const match: MatchResponse[] = await Promise.all(
+            matchIds.slice(0, 5).map(async (matchID) => await getMatchDetailsData(region, matchID))
+        );
 
         return formatResponse({
             ...accountDetails,
             ...summonerDetails,
             rankedDataMap,
-            matches,
-            matchDetails: matchDetails.participants
+            match,
         });
-    } catch (error) {
+    }
+    catch (error)
+    {
         console.error("Error fetching data:", error);
         return null;
     }
 }
 
 // Format Response
-function formatResponse(
-    {
-        gameName, tagLine, profileIconId, summonerLevel, rankedDataMap, matchDetails
-    }: FormattedResponse)
-{
-    const solo = rankedDataMap.solo ?? { wins: 0, losses: 0, leaguePoints: 0 };
-    const flex = rankedDataMap.flex ?? { wins: 0, losses: 0, leaguePoints: 0 };
-
+function formatResponse({
+                            gameName, tagLine, profileIconId, summonerLevel, match, rankedDataMap
+                        }: FormattedResponse) {
     return {
         gameName,
         tagLine,
         profileIconId,
         summonerLevel,
-        soloTier: solo.tier || "Unranked",
-        soloRank: solo.rank || "",
-        soloWins: solo.wins,
-        soloLosses: solo.losses,
-        soloLP: solo.leaguePoints,
-        soloWR: calculateWinRatio(solo.wins, solo.losses),
-        flexTier: flex.tier || "Unranked",
-        flexRank: flex.rank || "",
-        flexWins: flex.wins,
-        flexLosses: flex.losses,
-        flexLP: flex.leaguePoints,
-        flexWR: calculateWinRatio(flex.wins, flex.losses),
-        matchDetails,
+        // Solo/Duo Information
+        soloTier: rankedDataMap.RankedEntry[0].tier || "Unranked",
+        soloRank: rankedDataMap.RankedEntry[0].rank || "",
+        soloWins: rankedDataMap.RankedEntry[0].wins || 0,
+        soloLosses: rankedDataMap.RankedEntry[0].losses || 0,
+        soloLP: rankedDataMap.RankedEntry[0].leaguePoints,
+        soloWR: calculateWinRatio(rankedDataMap.RankedEntry[0].wins, rankedDataMap.RankedEntry[0].losses),
+        // Flex information
+        flexTier: rankedDataMap.RankedEntry[1].tier || "Unranked",
+        flexRank: rankedDataMap.RankedEntry[1].rank || "",
+        flexWins: rankedDataMap.RankedEntry[1].wins || 0,
+        flexLosses: rankedDataMap.RankedEntry[1].losses || 0,
+        flexLP: rankedDataMap.RankedEntry[1].leaguePoints,
+        flexWR: calculateWinRatio(rankedDataMap.RankedEntry[1].wins, rankedDataMap.RankedEntry[1].losses),
+        match,
     };
 }

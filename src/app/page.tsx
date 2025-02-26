@@ -2,27 +2,10 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { fetchAllData } from "@/app/apiiHandler/fetchAllData";
-import {ProcessedParticipant} from "@/app/apiiHandler/apiDestructor";
+import { secToHHMMSS, timeAgo } from "@/app/apiiHandler/helper";
+import { SummonerData} from "@/app/apiiHandler/Interfaces/interfaces";
 
-interface SummonerData {
-    gameName: string;
-    tagLine: string;
-    profileIconId: string;
-    summonerLevel: string;
-    soloTier?: string;
-    soloRank?: string;
-    soloWins: number;
-    soloLosses: number;
-    soloLP: number;
-    soloWR: number;
-    flexTier?: string;
-    flexRank?: string;
-    flexWins: number;
-    flexLosses: number;
-    flexLP: number;
-    flexWR: number;
-    matchDetails: ProcessedParticipant[];
-}
+
 
 export default function Home() {
     const [data, setData] = useState<SummonerData | null>(null);
@@ -56,13 +39,17 @@ export default function Home() {
             <h2>Solo Rank: {data.soloTier ?? "Unranked"} {data.soloRank ?? ""}</h2>
             <h3>{data.soloWins}:{data.soloLosses} WR {data.soloWR}% {data.soloLP}LP</h3>
 
-            <h2>Flex Rank: {data.flexTier ?? "Unranked"} {data.flexRank ?? ""}</h2>
-            <h3>{data.flexWins}:{data.flexLosses} WR {data.flexWR}% {data.flexLP}LP</h3>
-
-            <h4>Your last game KDA: {data.matchDetails[9].kills}/{data.matchDetails[9].deaths}/{data.matchDetails[9].assists}</h4>
-            <h4>Damage dealt: {data.matchDetails[9].damageDealt}</h4>
-            <h4>Gold earned: {data.matchDetails[9].goldEarned}</h4>
-            <h4>Ward placed: {data.matchDetails[9].wardsPlaced}</h4>
+            <h2>Flex Rank: {data.flexTier ?? "Unranked"} {data.flexRank ?? ""} {data.flexWins}:{data.flexLosses} WR {data.flexWR}% {data.flexLP}LP</h2>
+            <h3>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</h3>
+            <h4>LAST GAME of {data.match[0].participants[9].riotIdGameName} ({data.match[0].participants[9].win}):</h4>
+            <h4>You played: {data.match[0].participants[9].championName}</h4>
+            <h4>You played: {data.match[0].gameMode}</h4>
+            <h4>Your role: {data.match[0].participants[9].teamPosition}</h4>
+            <h4>Time: {secToHHMMSS(data.match[0].gameDuration)}</h4>
+            <h4>Match played: {timeAgo(data.match[0].gameEndTimestamp)}</h4>
+            <h4></h4>
+            <h4></h4>
+            <h4></h4>
         </div>
     );
 }

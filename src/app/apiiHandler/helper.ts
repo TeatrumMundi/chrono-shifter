@@ -35,3 +35,71 @@ export function calculateWinRatio(wins: number, losses: number): number {
 } // Calculate winRatio based on wins and loses
 export function getRegion(server: string): string {return regionMAP[server] || "UNKNOWN";} //Returns region suitable for API
 export function getServer(server: string): string {return serverMAP[server] || "UNKNOWN";} //Returns server suitable for API
+export function secToHHMMSS(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    const pad = (num: number): string => num < 10 ? `0${num}` : num.toString();
+
+    if (hours == 0)
+    {
+        return `${pad(minutes)}:${pad(remainingSeconds)}`;
+    }
+    else if (hours == 0 && minutes == 0)
+    {
+        return `${pad(remainingSeconds)}`;
+    }
+    else
+    {
+        return `${pad(hours)}:${pad(minutes)}:${pad(remainingSeconds)}`;
+    }
+} //Returns the formatted string in hh:mm:ss format.
+export function getWinOrLose(isNexusKilled: number) {
+    if (isNexusKilled === 0)
+    {
+        return "Win";
+    }
+    else
+    {
+        return "Lose";
+    }
+} // Returns Win or lose based on nexus status
+export function timeAgo(timestamp: number): string {
+    // Get the current time in milliseconds
+    const now = Date.now();
+
+    // Calculate the difference in milliseconds
+    const difference = now - timestamp;
+
+    // Define time intervals in milliseconds
+    const intervals = {
+        year: 31536000000,
+        month: 2592000000,
+        day: 86400000,
+        hour: 3600000,
+        minute: 60000,
+        second: 1000,
+    };
+
+    // Calculate the time ago
+    if (difference < intervals.minute) {
+        const seconds = Math.floor(difference / intervals.second);
+        return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
+    } else if (difference < intervals.hour) {
+        const minutes = Math.floor(difference / intervals.minute);
+        return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+    } else if (difference < intervals.day) {
+        const hours = Math.floor(difference / intervals.hour);
+        return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    } else if (difference < intervals.month) {
+        const days = Math.floor(difference / intervals.day);
+        return `${days} day${days !== 1 ? 's' : ''} ago`;
+    } else if (difference < intervals.year) {
+        const months = Math.floor(difference / intervals.month);
+        return `${months} month${months !== 1 ? 's' : ''} ago`;
+    } else {
+        const years = Math.floor(difference / intervals.year);
+        return `${years} year${years !== 1 ? 's' : ''} ago`;
+    }
+}
