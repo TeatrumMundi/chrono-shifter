@@ -1,10 +1,14 @@
 export default function Home() {
-    const randomNumber = Math.floor(Math.random() * 5) + 1;
+    const randomNumber = Math.floor(Math.random() * 11) + 1;
 
     return (
         <div
-            className="relative bg-cover bg-center bg-no-repeat min-h-screen text-white"
-            style={{ backgroundImage: `url('/main/${randomNumber}.jpg')` }}
+            className="relative bg-cover bg-center bg-no-repeat min-h-screen min-h-[450px] text-white overflow-hidden"
+            style={{
+                backgroundImage: `url('/main/${randomNumber}.jpg')`,
+                height: '100vh', // Ensure the container always takes the full viewport height
+                minHeight: '450px', // Add a minimum height constraint
+            }}
         >
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-violet-600/50 to-indigo-600/50"></div>
@@ -12,15 +16,15 @@ export default function Home() {
             {/* Text Content */}
             <div className="absolute top-10 left-1/2 transform -translate-x-1/2 text-center w-full px-10">
                 <h1
-                    className="text-[100px] font-bold uppercase leading-none tracking-[.25em] relative"
+                    className="text-[40px] sm:text-[60px] md:text-[80px] lg:text-[100px] font-bold uppercase leading-none tracking-[.25em] relative"
                     style={{
                         WebkitTextStroke: '2px white',
                     }}
                 >
                     <span className="block">CHRONO</span>
                     <span
-                        className="block mx-auto h-[8px] bg-white my-4"
-                        style={{ minWidth: '700px', width: '40%' }}
+                        className="block mx-auto h-[4px] sm:h-[6px] md:h-[8px] bg-white my-4"
+                        style={{ minWidth: '200px', width: '30%', maxWidth: '700px' }}
                     ></span>
                     <span className="block">SHIFTER</span>
                 </h1>
@@ -28,10 +32,10 @@ export default function Home() {
 
             {/* Search Box */}
             <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl px-4">
-            <div className="relative flex items-center">
+                <div className="relative flex items-center">
                     {/* Region Picker Dropdown */}
                     <select
-                        className="pl-3 pr-8 py-3 rounded-l-lg bg-white/20 backdrop-blur-sm border border-white/30 focus:outline-none focus:border-white/50 text-white appearance-none"
+                        className="pl-2 pr-6 py-2 text-xs xs:pl-3 xs:pr-8 xs:py-3 xs:text-sm sm:text-base md:text-lg lg:text-xl rounded-l-lg bg-white/20 backdrop-blur-sm border border-white/30 focus:outline-none focus:border-white/50 text-white appearance-none"
                     >
                         <option value="REGION" disabled className="bg-blue-800/50">REGION</option>
                         <option value="NA" className="bg-blue-900/50">NA</option>
@@ -54,11 +58,11 @@ export default function Home() {
                     <input
                         type="text"
                         placeholder="NICKNAME#TAG"
-                        className="flex-1 pl-4 pr-10 py-3 rounded-r-lg bg-white/20 backdrop-blur-sm border border-white/30 focus:outline-none focus:border-white/50 text-white placeholder-white/70 tracking-[.25em]"
+                        className="flex-1 pl-2 pr-8 py-2 text-xs xs:pl-4 xs:pr-10 xs:py-3 xs:text-sm sm:text-base md:text-lg lg:text-xl rounded-r-lg bg-white/20 backdrop-blur-sm border border-white/30 focus:outline-none focus:border-white/50 text-white placeholder-white/70 tracking-[.25em]"
                     />
                     {/* Search Icon */}
                     <svg
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/70"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-white/70"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
