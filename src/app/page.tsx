@@ -3,7 +3,7 @@ export default function Home() {
 
     return (
         <div
-            className="relative bg-cover bg-center bg-no-repeat min-h-screen min-h-[450px] text-white overflow-hidden"
+            className="relative bg-cover bg-center bg-no-repeat min-h-screen text-white overflow-hidden"
             style={{
                 backgroundImage: `url('/main/${randomNumber}.jpg')`,
                 height: '100vh', // Ensure the container always takes the full viewport height
