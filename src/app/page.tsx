@@ -92,7 +92,7 @@ export default function Home() {
                             <span className="sm:hidden overflow-hidden text-ellipsis">{item.shortText}</span>
                         </button>
                         {item.disabled && (
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-90 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap tracking-widest">
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black bg-opacity-90 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap tracking-[.25em]">
                                 Coming Soon
                             </div>
                         )}
