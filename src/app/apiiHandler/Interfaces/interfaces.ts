@@ -80,23 +80,26 @@ export interface RankedEntry {
 export interface Ranked {
     RankedEntry: RankedEntry[];
 }
-export interface SummonerData {
+export interface FormatResponseReturn {
     puuid: string;
     gameName: string;
     tagLine: string;
     profileIconId: string;
     summonerLevel: string;
-    soloTier?: string;
-    soloRank?: string;
+    soloTier: string;
+    soloRank: string;
     soloWins: number;
     soloLosses: number;
     soloLP: number;
     soloWR: number;
-    flexTier?: string;
-    flexRank?: string;
+    flexTier: string;
+    flexRank: string;
     flexWins: number;
     flexLosses: number;
     flexLP: number;
     flexWR: number;
     match: MatchResponse[];
+}
+export interface BannerProps {
+    data: FormatResponseReturn;
 }

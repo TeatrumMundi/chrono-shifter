@@ -33,11 +33,11 @@ export function calculateWinRatio(wins: number, losses: number): number {
     if (wins === 0) return 0;
     return parseFloat(((wins / (wins + losses)) * 100).toFixed(0));
 } // Calculate winRatio based on wins and loses
-export function getRegion(server: string): string {
+export function getRegion(server: string | string[]): string {
     server = server.toLowerCase();
     return regionMAP[server] || "UNKNOWN";
 } //Returns region suitable for API
-export function getServer(server: string): string {
+export function getServer(server: string | string[]): string {
     server = server.toLowerCase();
     return serverMAP[server] || "UNKNOWN";
 } //Returns server suitable for API

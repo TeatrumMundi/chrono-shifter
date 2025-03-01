@@ -36,7 +36,7 @@ export async function fetchLeagueData(server: string, summonerId: string): Promi
         throw new Error(`Failed to fetch league data: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
 }
-export async function fetchAccountData(region: string, gameName: string, tagLine: string) {
+export async function fetchAccountData(region: string, gameName: string | string[], tagLine: string | string[]) {
     return fetchData<{ puuid: string; gameName: string; tagLine: string }>(
         `${DEFAULT_URL}/account/by-riot-id/?region=${region}&gameName=${gameName}&tag=${tagLine}`
     );
