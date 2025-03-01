@@ -1,4 +1,4 @@
-﻿import {MatchResponse, ProcessedParticipant} from "@/app/apiiHandler/Interfaces/interfaces";
+﻿import { MatchResponse, ProcessedParticipant } from "@/app/apiiHandler/Interfaces/interfaces";
 
 const regionMAP: Record<string, string> = {
     na: "AMERICAS", br: "AMERICAS", lan: "AMERICAS", las: "AMERICAS",
@@ -27,17 +27,16 @@ export async function fetchData<T>(url: string): Promise<T> {
         throw error; // Rethrow the original error
     }
 }
-
 export function calculateWinRatio(wins: number, losses: number): number {
     if (losses === 0 && wins > 0) return 100;
     if (wins === 0) return 0;
     return parseFloat(((wins / (wins + losses)) * 100).toFixed(0));
-} // Calculate winRatio based on wins and loses
-export function getRegion(server: string | string[]): string {
+} // Calculate winRatio based on wins and losses
+export function getRegion(server: string): string {
     server = server.toLowerCase();
     return regionMAP[server] || "UNKNOWN";
 } //Returns region suitable for API
-export function getServer(server: string | string[]): string {
+export function getServer(server: string): string {
     server = server.toLowerCase();
     return serverMAP[server] || "UNKNOWN";
 } //Returns server suitable for API
@@ -48,37 +47,21 @@ export function secToHHMMSS(seconds: number): string {
 
     const pad = (num: number): string => num < 10 ? `0${num}` : num.toString();
 
-    if (hours == 0)
-    {
-        return `${pad(minutes)}:${pad(remainingSeconds)}`;
-    }
-    else if (hours == 0 && minutes == 0)
-    {
-        return `${pad(remainingSeconds)}`;
-    }
-    else
-    {
+    if (hours > 0) {
         return `${pad(hours)}:${pad(minutes)}:${pad(remainingSeconds)}`;
     }
-} //Returns the formatted string in hh:mm:ss format.
-export function getWinOrLose(isNexusKilled: number) {
-    if (isNexusKilled === 0)
-    {
-        return "Win";
+    if (minutes > 0) {
+        return `${pad(minutes)}:${pad(remainingSeconds)}`;
     }
-    else
-    {
-        return "Lose";
-    }
+    return `${pad(remainingSeconds)}`;
+} // Returns the formatted string in hh:mm:ss format.
+export function getWinOrLose(isNexusKilled: number): string {
+    return isNexusKilled === 0 ? "Win" : "Lose";
 } // Returns Win or lose based on nexus status
 export function timeAgo(timestamp: number): string {
-    // Get the current time in milliseconds
     const now = Date.now();
-
-    // Calculate the difference in milliseconds
     const difference = now - timestamp;
 
-    // Define time intervals in milliseconds
     const intervals = {
         year: 31536000000,
         month: 2592000000,
@@ -88,7 +71,6 @@ export function timeAgo(timestamp: number): string {
         second: 1000,
     };
 
-    // Calculate the time ago
     if (difference < intervals.minute) {
         const seconds = Math.floor(difference / intervals.second);
         return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
@@ -112,20 +94,15 @@ export function timeAgo(timestamp: number): string {
 export function getParticipantByPuuid(matchData: MatchResponse, puuid: string): ProcessedParticipant | null {
     return matchData.participants.find(participant => participant.puuid === puuid) ?? null;
 }
-export function getKDA(kills: number,  deaths: number, assists: number,): string
-{
-    if(deaths === 0)
-    {
-        return "Perfect"
+export function getKDA(kills: number, deaths: number, assists: number): string {
+    if (deaths === 0) {
+        return "Perfect";
     }
-    else
-    {
-        const kda = ((kills+assists)/deaths).toFixed(2);
-        return kda.toString();
-    }
+    const kda = ((kills + assists) / deaths).toFixed(2);
+    return kda.toString();
 }
-export function getMinionsPerMinute(seconds: number, totalMinions: number): string
-{
+export function getMinionsPerMinute(seconds: number, totalMinions: number): string {
     const minutes = Math.floor((seconds % 3600) / 60);
+    if (minutes === 0) return "0"; // Avoid division by zero
     return (totalMinions / minutes).toFixed(2);
 }

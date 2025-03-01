@@ -1,15 +1,13 @@
 ﻿import { fetchAllData } from "@/app/apiiHandler/fetchAllData";
 import { secToHHMMSS, timeAgo, getParticipantByPuuid } from "@/app/apiiHandler/helper";
 import { getRandomImage } from "@/utils/getRandomImage";
-import { SearchParams } from "next/dist/server/request/search-params";
-import { BannerProps } from "@/app/apiiHandler/Interfaces/interfaces";
+import {BannerProps, SearchArg} from "@/app/apiiHandler/Interfaces/interfaces";
 import Image from "next/image";
 
-async function fetchData(server: string | string[] | undefined, name: string | string[] | undefined, tag: string | string[] | undefined) {
+async function fetchData(server: string, name: string, tag: string) {
     if (!server || !name || !tag) return null;
-    return await fetchAllData(server, name, tag);
+    return fetchAllData(server, name, tag);
 }
-
 function Background() {
     return (
         <div
@@ -47,7 +45,7 @@ function Banner({ data }: BannerProps) {
                 </div>
             </div>
             {/* Banner Content Container */}
-            <div className="p-6 bg-gray-900/70 rounded-lg shadow-lg text-white">
+            <div className="p-6 bg-gray-900/70 rounded-lg shadow-lg text-white tracking-[.4em]">
                 {/* Nickname and Tagline */}
                 <div>
                     <h2 className="text-[48px] font-bold leading-tight"> {/* Nickname */}
@@ -63,7 +61,7 @@ function Banner({ data }: BannerProps) {
     );
 }
 
-export default async function Home({ searchParams }: { searchParams: SearchParams }) {
+export default async function Home({ searchParams }: { searchParams: SearchArg }) {
     const { server, name, tag } = searchParams;
     const data = await fetchData(server, name, tag);
 

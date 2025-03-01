@@ -24,7 +24,7 @@ type FormattedResponse = AccountDetails & SummonerDetails & {
     match: MatchResponse[];
 };
 
-export async function fetchAllData(serverFetched: string | string[], gameName: string | string[], tagLine: string | string[]) {
+export async function fetchAllData(serverFetched: string, gameName: string, tagLine: string) {
     try {
         const region = getRegion(serverFetched);
         const server = getServer(serverFetched);
