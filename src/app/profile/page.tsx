@@ -37,7 +37,6 @@ function Banner({ data }: BannerProps) {
                     width={80}
                     height={80}
                     className="rounded-lg border-gray-500 h-full w-auto"
-                    priority
                 />
                 {/* Level Box */}
                 <div className="absolute bottom-0 w-full bg-black/70 rounded-b-lg px-2 py-1 text-xs text-white text-center shadow-md tracking-[.25em]">
@@ -62,7 +61,10 @@ function Banner({ data }: BannerProps) {
 }
 
 export default async function Home({ searchParams }: { searchParams: SearchArg }) {
+    // Await the searchParams if necessary (though typically, searchParams is already resolved)
     const { server, name, tag } = searchParams;
+
+    // Fetch data using the resolved searchParams
     const data = await fetchData(server, name, tag);
 
     if (!data) return <h2>No data available</h2>;
