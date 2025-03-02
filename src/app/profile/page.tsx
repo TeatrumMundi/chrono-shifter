@@ -1,68 +1,16 @@
-﻿import { fetchAllData } from "@/app/apiiHandler/fetchAllData";
-import { secToHHMMSS, timeAgo, getParticipantByPuuid } from "@/app/apiiHandler/helper";
-import { getRandomImage } from "@/utils/getRandomImage";
-import {BannerProps, SearchArg} from "@/app/apiiHandler/Interfaces/interfaces";
-import Image from "next/image";
+﻿import {getSummonerProfile} from "@/app/apiiHandler/getSummonerProfile";
+import {getParticipantByPuuid, secToHHMMSS, timeAgo} from "@/app/apiiHandler/helper";
+import {SearchArg} from "@/app/apiiHandler/Interfaces/interfaces";
+import {Banner} from "@/app/profile/banner";
+import {Background} from "@/app/profile/background";
 
 async function fetchData(server: string, name: string, tag: string) {
     if (!server || !name || !tag) return null;
-    return fetchAllData(server, name, tag);
+    return getSummonerProfile(server, name, tag);
 }
-function Background() {
-    return (
-        <div
-            className="fixed inset-0 bg-cover bg-center bg-no-repeat min-h-screen text-white overflow-hidden -z-10"
-            style={{
-                backgroundImage: `url(${getRandomImage(12)})`,
-                height: "100vh",
-                minHeight: "450px",
-            }}
-        >
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-600/50 to-indigo-600/50"></div>
-        </div>
-    );
-}
-
-function Banner({ data }: BannerProps) {
-    const summonerIconUrl = `/profileIcons/${data.profileIconId}.png`;
-
-    return (
-        <div className="grid grid-cols-[auto_1fr] gap-4 items-stretch">
-            {/* Summoner Icon Container */}
-            <div className="relative flex justify-center items-center bg-gray-900/70 rounded-lg shadow-lg">
-                {/* Summoner Icon */}
-                <Image
-                    src={summonerIconUrl}
-                    alt="Summoner Icon"
-                    width={80}
-                    height={80}
-                    className="rounded-lg border-gray-500 h-full w-auto"
-                />
-                {/* Level Box */}
-                <div className="absolute bottom-0 w-full bg-black/70 rounded-b-lg px-2 py-1 text-xs text-white text-center shadow-md tracking-[.25em]">
-                    {data.summonerLevel}
-                </div>
-            </div>
-            {/* Banner Content Container */}
-            <div className="p-6 bg-gray-900/70 rounded-lg shadow-lg text-white tracking-[.4em]">
-                {/* Nickname and Tagline */}
-                <div>
-                    <h2 className="text-[48px] font-bold leading-tight"> {/* Nickname */}
-                        {data.gameName}
-                    </h2>
-                    <h3 className="text-[20px] opacity-50"> {/* Tagline */}
-                        #{data.tagLine}
-                    </h3>
-                </div>
-                {/* Removed Ranked Info */}
-            </div>
-        </div>
-    );
-}
-
 export default async function Home({ searchParams }: { searchParams: SearchArg }) {
     // Await the searchParams if necessary (though typically, searchParams is already resolved)
-    const { server, name, tag } = searchParams;
+    const { server, name, tag } = await searchParams;
 
     // Fetch data using the resolved searchParams
     const data = await fetchData(server, name, tag);

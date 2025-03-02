@@ -103,7 +103,6 @@ export interface FormatResponseReturn {
 export interface BannerProps {
     data: FormatResponseReturn;
 }
-
 export interface SearchArg {
     server: string;
     name: string;
