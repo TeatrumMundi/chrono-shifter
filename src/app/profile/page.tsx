@@ -4,7 +4,7 @@ import { getParticipantByPuuid, secToHHMMSS, timeAgo } from "@/utils/helper";
 import { Banner } from "@/app/profile/banner";
 import { Background } from "@/app/profile/background";
 import { notFound } from 'next/navigation';
-import { MatchResponse, ProcessedParticipant } from '@/types/interfaces';
+import { MatchResponse, ProcessedParticipant, FormatResponseReturn } from '@/types/interfaces';
 
 // Define strong types for the expected search parameters
 type ProfileSearchParams = {
@@ -55,7 +55,7 @@ async function fetchProfileData(params: ProfileSearchParams) {
 }
 
 // Component to render matches
-function MatchList({ data, puuid }: { data: any, puuid: string }) {
+function MatchList({ data, puuid }: { data: FormatResponseReturn, puuid: string }) {
     const mainPlayerMatches = data.match
         .map((match: MatchResponse) => getParticipantByPuuid(match, puuid))
         .filter((participant: ProcessedParticipant | null) => participant !== null) as ProcessedParticipant[];
@@ -99,14 +99,15 @@ function ProfileContent({ searchParams }: { searchParams: ProfileSearchParams })
 }
 
 // Async component that handles data fetching
-async function ProfileData({ searchParams }: { searchParams: ProfileSearchParams }) {
-    const { server, name, tag } = searchParams;
+async function ProfileData({ searchParams }: { searchParams: Promise<ProfileSearchParams> | ProfileSearchParams }) {
+    const resolvedParams = await searchParams; // Ensure we await searchParams
+    const { server, name, tag } = resolvedParams;
 
     if (!server || !name || !tag) {
         notFound();
     }
 
-    const data = await fetchProfileData(searchParams);
+    const data = await fetchProfileData(resolvedParams);
 
     if (!data) {
         return <ErrorState message="Could not retrieve summoner data. Please check if the summoner exists and try again." />;
@@ -124,6 +125,7 @@ async function ProfileData({ searchParams }: { searchParams: ProfileSearchParams
     );
 }
 
+
 // Page Component with metadata
 export default function ProfilePage({searchParams,}: { searchParams: ProfileSearchParams; }) {
     return (
@@ -134,9 +136,13 @@ export default function ProfilePage({searchParams,}: { searchParams: ProfileSear
     );
 }
 
-// Generate metadata for the page
-export async function generateMetadata({ searchParams }: { searchParams: ProfileSearchParams }) {
-    const { server, name, tag } = searchParams;
+// Generate metadata for the page - fixed to use async searchParams correctly
+export async function generateMetadata({ searchParams }: {
+    searchParams: Promise<ProfileSearchParams> | ProfileSearchParams
+}) {
+    // Ensure searchParams is awaited
+    const resolvedParams = await searchParams;
+    const { server, name, tag } = resolvedParams;
 
     if (!name || !tag) {
         return {
