@@ -1,4 +1,4 @@
-﻿import { BannerProps } from "@/app/apiiHandler/Interfaces/interfaces";
+﻿import { BannerProps } from "@/types/interfaces";
 import Image from "next/image";
 
 export function Banner({ data }: BannerProps) {

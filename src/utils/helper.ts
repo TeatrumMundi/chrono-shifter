@@ -1,4 +1,4 @@
-﻿import { MatchResponse, ProcessedParticipant } from "@/app/apiiHandler/Interfaces/interfaces";
+﻿import { MatchResponse, ProcessedParticipant } from "@/types/interfaces";
 
 const regionMAP: Record<string, string> = {
     na: "AMERICAS", br: "AMERICAS", lan: "AMERICAS", las: "AMERICAS",

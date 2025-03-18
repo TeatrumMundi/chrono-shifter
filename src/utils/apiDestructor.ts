@@ -1,19 +1,23 @@
-﻿import {fetchData, getKDA, getMinionsPerMinute, getWinOrLose} from "@/app/apiiHandler/helper";
+﻿import { fetchFromRiotAPI } from "@/utils/fetchFromRiotAPI";
 import {
     MatchData,
     MatchResponse,
     ProcessedParticipant,
     Ranked,
     RankedEntry
-} from "@/app/apiiHandler/Interfaces/interfaces";
-const DEFAULT_URL = "http://localhost:3000/api";
+} from "@/types/interfaces";
+import { getKDA, getMinionsPerMinute, getWinOrLose } from "@/utils/helper";
+
+export async function fetchAccountData(region: string, gameName: string | string[], tagLine: string | string[]) {
+    const response = await fetchFromRiotAPI(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`);
+    return response.json();
+}
 
 export async function fetchLeagueData(server: string, summonerId: string): Promise<Ranked> {
-    const url = `${DEFAULT_URL}/league/by-summoner?server=${server}&summonerID=${summonerId}`;
+    try {
+        const response = await fetchFromRiotAPI(`https://${server}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}`);
+        const rankedData: RankedEntry[] = await response.json();
 
-    try
-    {
-        const rankedData: RankedEntry[] = await fetchData<RankedEntry[]>(url);
         const soloQueue = rankedData.find(entry => entry.queueType === "RANKED_SOLO_5x5");
         const flexQueue = rankedData.find(entry => entry.queueType === "RANKED_FLEX_SR");
 
@@ -31,32 +35,28 @@ export async function fetchLeagueData(server: string, summonerId: string): Promi
 
         return allQueues;
     }
-    catch (error)
-    {
+    catch (error) {
         throw new Error(`Failed to fetch league data: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
 }
-export async function fetchAccountData(region: string, gameName: string | string[], tagLine: string | string[]) {
-    return fetchData<{ puuid: string; gameName: string; tagLine: string }>(
-        `${DEFAULT_URL}/account/by-riot-id/?region=${region}&gameName=${gameName}&tag=${tagLine}`
-    );
-}
 export async function fetchSummonerData(server: string, puuid: string) {
-    return fetchData<{ id: string; profileIconId: string; summonerLevel: string }>(
-        `${DEFAULT_URL}/summoner/by-puuid/?server=${server}&puuid=${puuid}`
-    );
+    const response = await fetchFromRiotAPI(`https://${server}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}`);
+    return response.json();
 }
 export async function fetchMatchData(region: string, puuid: string, queueType?: string, number: number = 5): Promise<string[]> {
-    const url = `${DEFAULT_URL}/match/by-puuid/?region=${region}&puuid=${puuid}&number=${number}` +
-        (queueType ? `&queueType=${queueType}` : "");
+    let url = `https://${region}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=${number}`;
 
-    return fetchData<string[]>(url);
+    if (queueType) {
+        url += `&queue=${queueType}`;
+    }
+
+    const response = await fetchFromRiotAPI(url);
+    return response.json();
 }
 export async function fetchMatchDetailsData(region: string, matchID: string): Promise<MatchResponse> {
-    const url = `${DEFAULT_URL}/match/by-matchId/?region=${region}&matchID=${matchID}`;
-
     try {
-        const data: MatchData = await fetchData<MatchData>(url);
+        const response = await fetchFromRiotAPI(`https://${region}.api.riotgames.com/lol/match/v5/matches/${matchID}`);
+        const data: MatchData = await response.json();
 
         const participants: ProcessedParticipant[] = data.info.participants.map((participant) => ({
             riotIdGameName: participant.riotIdGameName,
@@ -96,8 +96,7 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
             participants
         };
     }
-    catch (error)
-    {
+    catch (error) {
         throw new Error(`Failed to fetch match data: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
 }

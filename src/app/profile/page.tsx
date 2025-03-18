@@ -1,10 +1,10 @@
 ﻿import { Suspense } from 'react';
-import { getSummonerProfile } from "@/app/apiiHandler/getSummonerProfile";
-import { getParticipantByPuuid, secToHHMMSS, timeAgo } from "@/app/apiiHandler/helper";
+import { getSummonerProfile } from "@/utils/getSummonerProfile";
+import { getParticipantByPuuid, secToHHMMSS, timeAgo } from "@/utils/helper";
 import { Banner } from "@/app/profile/banner";
 import { Background } from "@/app/profile/background";
 import { notFound } from 'next/navigation';
-import { MatchResponse, ProcessedParticipant } from '@/app/apiiHandler/Interfaces/interfaces';
+import { MatchResponse, ProcessedParticipant } from '@/types/interfaces';
 
 // Define strong types for the expected search parameters
 type ProfileSearchParams = {

@@ -1,6 +1,6 @@
 ﻿import { fetchAccountData, fetchLeagueData, fetchMatchData, fetchSummonerData, fetchMatchDetailsData } from "./apiDestructor";
-import { calculateWinRatio, getRegion, getServer } from "@/app/apiiHandler/helper";
-import {FormatResponseReturn, MatchResponse, Ranked, RankedEntry} from "@/app/apiiHandler/Interfaces/interfaces";
+import { calculateWinRatio, getRegion, getServer } from "@/utils/helper";
+import {FormatResponseReturn, MatchResponse, Ranked, RankedEntry} from "@/types/interfaces";
 
 interface AccountDetails {
     puuid: string;
