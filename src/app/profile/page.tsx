@@ -1,6 +1,5 @@
 ﻿import {getSummonerProfile} from "@/app/apiiHandler/getSummonerProfile";
 import {getParticipantByPuuid, secToHHMMSS, timeAgo} from "@/app/apiiHandler/helper";
-import {SearchArg} from "@/app/apiiHandler/Interfaces/interfaces";
 import {Banner} from "@/app/profile/banner";
 import {Background} from "@/app/profile/background";
 
@@ -8,11 +7,16 @@ async function fetchData(server: string, name: string, tag: string) {
     if (!server || !name || !tag) return null;
     return getSummonerProfile(server, name, tag);
 }
-export default async function Home({ searchParams }: { searchParams: SearchArg }) {
-    // Await the searchParams if necessary (though typically, searchParams is already resolved)
-    const { server, name, tag } = await searchParams;
 
-    // Fetch data using the resolved searchParams
+// Change the type to use a Record<string, string | string[] | undefined>
+export default async function Home({searchParams}: { searchParams: Record<string, string | string[] | undefined> })
+{
+    // Extract the parameters from searchParams
+    const server = searchParams.server as string;
+    const name = searchParams.name as string;
+    const tag = searchParams.tag as string;
+
+    // Fetch data using the extracted parameters
     const data = await fetchData(server, name, tag);
 
     if (!data) return <h2>No data available</h2>;
