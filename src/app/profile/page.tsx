@@ -12,7 +12,6 @@ async function fetchData(server: string, name: string, tag: string) {
 export default async function Home({
                                        searchParams,
                                    }: {
-    params: { [key: string]: string };
     searchParams: { [key: string]: string | string[] | undefined };
 }) {
     // Extract the parameters from searchParams
