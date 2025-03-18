@@ -10,8 +10,9 @@ async function fetchData(server: string, name: string, tag: string) {
 
 // Use the correct type for Next.js page props with a more specific type for params
 export default async function Home({
-                                       searchParams
+                                       searchParams,
                                    }: {
+    params: { [key: string]: string };
     searchParams: { [key: string]: string | string[] | undefined };
 }) {
     // Extract the parameters from searchParams
