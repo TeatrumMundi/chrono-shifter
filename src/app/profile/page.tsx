@@ -8,9 +8,12 @@ async function fetchData(server: string, name: string, tag: string) {
     return getSummonerProfile(server, name, tag);
 }
 
-// Change the type to use a Record<string, string | string[] | undefined>
-export default async function Home({searchParams}: { searchParams: Record<string, string | string[] | undefined> })
-{
+// Use the correct type for Next.js page props with a more specific type for params
+export default async function Home({
+                                       searchParams
+                                   }: {
+    searchParams: { [key: string]: string | string[] | undefined };
+}) {
     // Extract the parameters from searchParams
     const server = searchParams.server as string;
     const name = searchParams.name as string;
