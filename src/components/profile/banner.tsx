@@ -3,7 +3,7 @@ import Image from "next/image";
 import {getSummonerIconUrl} from "@/utils/getSummonerIconUrl";
 
 export function Banner({ data }: BannerProps) {
-    const summonerIconUrl = getSummonerIconUrl("14.5.1", data.profileIconId);
+    const summonerIconUrl = getSummonerIconUrl(data.profileIconId);
     const rankedSoloIconUrl = `/rankedIcons/${data.soloTier}.png`;
     const rankedFlexIconUrl = `/rankedIcons/${data.flexTier}.png`;
 

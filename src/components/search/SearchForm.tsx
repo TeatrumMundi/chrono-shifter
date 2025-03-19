@@ -7,6 +7,7 @@ import RegionSelector from "./RegionSelector";
 export function SearchForm() {
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
+    const [inputError, setInputError] = useState<string | null>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -35,6 +36,15 @@ export function SearchForm() {
         router.push(`/${server}/${name}/${tag}`);
     };
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (!value) {
+            setInputError('Please fill out this field');
+        } else {
+            setInputError(null);
+        }
+    };
+
     return (
         <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl px-4">
             <form onSubmit={handleSubmit} className="relative flex items-center">
@@ -43,12 +53,12 @@ export function SearchForm() {
                 <input
                     type="text"
                     name="nickTag"
-                    required
                     placeholder="NICKNAME#TAG"
                     className="flex-1 pl-2 pr-[50px] xs:pr-[60px] py-2 text-xs xs:pl-4 xs:py-3 xs:text-sm sm:text-base md:text-lg lg:text-xl rounded-r-lg bg-white/20 backdrop-blur-sm border border-white/30 focus:outline-none focus:border-white/50 text-white placeholder-white/70 tracking-[.25em]"
                     autoComplete="off"
                     spellCheck="false"
                     maxLength={22}
+                    onChange={handleInputChange}
                 />
 
                 <button
@@ -71,6 +81,12 @@ export function SearchForm() {
                     </svg>
                 </button>
             </form>
+
+            {inputError && (
+                <div className="mt-2 p-2 bg-red-900/80 backdrop-blur-sm rounded text-white text-sm tracking-wide font-sans text-center">
+                    {inputError}
+                </div>
+            )}
 
             {error && (
                 <div className="mt-2 p-2 bg-red-900/80 backdrop-blur-sm rounded text-white text-sm tracking-wide font-sans text-center">

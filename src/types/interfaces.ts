@@ -80,31 +80,66 @@ export interface RankedEntry {
 export interface Ranked {
     RankedEntry: RankedEntry[];
 }
+
+
+/**
+ * Represents the formatted response data for a summoner profile.
+ * This interface combines account information, ranked stats, match history, and champion mastery data.
+ */
 export interface FormatResponseReturn {
+    /** Unique player identifier used across Riot systems */
     puuid: string;
+    /** Player's in-game name */
     gameName: string;
+    /** Player's tag line (e.g., #EUW) */
     tagLine: string;
+    /** ID of the profile icon used by the summoner */
     profileIconId: string;
+    /** Current level of the summoner account */
     summonerLevel: string;
+    /** Solo/Duo queue tier (e.g., GOLD, PLATINUM) */
     soloTier: string;
+    /** Solo/Duo queue rank within tier (e.g., I, II, III, IV) */
     soloRank: string;
+    /** Number of wins in Solo/Duo queue */
     soloWins: number;
+    /** Number of losses in Solo/Duo queue */
     soloLosses: number;
+    /** Current League Points in Solo/Duo queue */
     soloLP: number;
+    /** Win ratio percentage in Solo/Duo queue */
     soloWR: number;
+    /** Flex queue tier (e.g., GOLD, PLATINUM) */
     flexTier: string;
+    /** Flex queue rank within tier (e.g., I, II, III, IV) */
     flexRank: string;
+    /** Number of wins in Flex queue */
     flexWins: number;
+    /** Number of losses in Flex queue */
     flexLosses: number;
+    /** Current League Points in Flex queue */
     flexLP: number;
+    /** Win ratio percentage in Flex queue */
     flexWR: number;
+    /** Array of recent match data */
     match: MatchResponse[];
+    /** Array of champion mastery data representing the summoner's top mastery champions */
+    championMasteries: ChampionMastery[];
 }
+
+
 export interface BannerProps {
     data: FormatResponseReturn;
 }
-export interface SearchArg {
-    server: string;
-    name: string;
-    tag: string;
+export interface ChampionMastery {
+    championId: number;
+    championLevel: number;
+    championPoints: number;
+    lastPlayTime: number;
+    championPointsSinceLastLevel: number;
+    championPointsUntilNextLevel: number;
+    chestGranted: boolean;
+    tokensEarned: number;
+    summonerId: string;
+    puuid: string;
 }

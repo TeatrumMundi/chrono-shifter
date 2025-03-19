@@ -3,6 +3,7 @@ import { Background, MatchList, Banner } from "@/components/profile";
 import { SearchForm } from "@/components/search";
 import Link from "next/link";
 import { Metadata } from 'next';
+import {getChampionSplashUrl} from "@/utils/getSummonerIconUrl";
 
 function ProfileSkeleton() {
     return (
@@ -20,7 +21,6 @@ function ProfileSkeleton() {
 export default function ProfilePage({ params }: { params: Promise<{ server: string; name: string; tag: string }> }) {
     return (
         <div className="relative">
-            <Background />
             <Suspense fallback={<ProfileSkeleton />}>
                 <ProfileData params={params} />
             </Suspense>
@@ -42,14 +42,17 @@ async function ProfileData({ params }: { params: Promise<{ server: string; name:
         }
 
         return (
-            <div className="container mx-auto px-4 relative z-10">
-                <div className="grid grid-cols-12 gap-4 mt-16">
-                    <div className="col-span-12">
-                        <Banner data={data} />
-                        <MatchList data={data} puuid={data.puuid} />
+            <>
+                <Background customUrl={await getChampionSplashUrl(data.championMasteries[0].championId)} />
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="grid grid-cols-12 gap-4 mt-16">
+                        <div className="col-span-12">
+                            <Banner data={data} />
+                            <MatchList data={data} puuid={data.puuid} />
+                        </div>
                     </div>
                 </div>
-            </div>
+            </>
         );
     } catch (error) {
         console.error("Error fetching summoner data:", error);

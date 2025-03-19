@@ -1,12 +1,6 @@
-﻿import { fetchFromRiotAPI } from "@/utils/fetchFromRiotAPI";
-import {
-    MatchData,
-    MatchResponse,
-    ProcessedParticipant,
-    Ranked,
-    RankedEntry
-} from "@/types/interfaces";
-import { getKDA, getMinionsPerMinute, getWinOrLose } from "@/utils/helper";
+﻿import {fetchFromRiotAPI} from "@/utils/fetchFromRiotAPI";
+import {ChampionMastery, MatchData, MatchResponse, ProcessedParticipant, Ranked, RankedEntry} from "@/types/interfaces";
+import {getKDA, getMinionsPerMinute, getWinOrLose} from "@/utils/helper";
 
 export async function fetchAccountData(region: string, gameName: string | string[], tagLine: string | string[]) {
     const response = await fetchFromRiotAPI(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`);
@@ -100,3 +94,15 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
         throw new Error(`Failed to fetch match data: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
 }
+
+export async function fetchTopChampionMasteries(server: string, puuid: string, count: number = 10): Promise<ChampionMastery[]> {
+    try {
+        const response = await fetchFromRiotAPI(`https://${server}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${puuid}/top?count=${count}`);
+        // Return the complete ChampionMastery objects
+        return await response.json();
+    } catch (error) {
+        console.error("Failed to fetch top champion mastery data:", error);
+        throw new Error(`Failed to fetch top champion mastery data: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+}
+

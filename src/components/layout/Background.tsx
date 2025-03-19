@@ -1,11 +1,17 @@
-﻿import {getRandomImage} from "@/utils/getRandomImage";
+﻿import { getRandomImage } from "@/utils/getRandomImage";
 
-export function Background() {
+interface BackgroundProps {
+    customUrl?: string;
+}
+
+export function Background({ customUrl }: BackgroundProps = {}) {
+    const backgroundImage = customUrl || getRandomImage(12);
+
     return (
         <div
             className="relative bg-cover bg-center bg-no-repeat min-h-screen text-white overflow-hidden"
             style={{
-                backgroundImage: `url(${getRandomImage(12)})`,
+                backgroundImage: `url(${backgroundImage})`,
                 height: "100vh",
                 minHeight: "450px",
             }}
