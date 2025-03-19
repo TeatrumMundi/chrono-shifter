@@ -5,8 +5,8 @@ import * as Console from "node:console";
 
 export function Banner({ data }: BannerProps) {
     const summonerIconUrl = getSummonerIconUrl(data.profileIconId);
-    const rankedSoloIconUrl = `/rankedIcons/${data.soloTier}.png`;
-    const rankedFlexIconUrl = `/rankedIcons/${data.flexTier}.png`;
+    const rankedSoloIconUrl = `/rankedIcons/${data.soloTier.toLowerCase()}.png`;
+    const rankedFlexIconUrl = `/rankedIcons/${data.flexTier.toLowerCase()}.png`;
 
     Console.log(`Summoner Icon URL: ${summonerIconUrl}`);
     Console.log(`Solo Ranked Icon URL: ${rankedSoloIconUrl}`);
