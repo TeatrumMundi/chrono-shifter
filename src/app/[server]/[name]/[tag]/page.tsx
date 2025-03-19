@@ -1,7 +1,7 @@
 ﻿import { Suspense } from 'react';
 import { getSummonerProfile } from "@/utils/getSummonerProfile";
 import { Background, MatchList, Banner } from "@/components/profile";
-import {SearchForm} from "@/components/search";
+import { SearchForm } from "@/components/search";
 import Link from "next/link";
 
 type ProfileParams = {
@@ -38,7 +38,9 @@ export default function ProfilePage({ params }: ProfileParams) {
 
 // Async component that handles data fetching
 async function ProfileData({ params }: ProfileParams) {
-    const { server, name, tag } = params;
+    // Await the params object before destructuring
+    const [paramsData] = await Promise.all([Promise.resolve(params)]);
+    const { server, name, tag } = paramsData;
 
     try {
         const data = await getSummonerProfile(server, name, tag);
@@ -58,7 +60,8 @@ async function ProfileData({ params }: ProfileParams) {
             </div>
         );
     } catch (error) {
-        return <ErrorState message="An error occurred while retrieving summoner data." />;
+        console.error("Error fetching summoner data:", error);
+        return <ErrorState message="An error occurred while retrieving summoner data."/>;
     }
 }
 
@@ -96,7 +99,9 @@ function ErrorState({ message }: { message: string }) {
 
 // Generate metadata for the page
 export async function generateMetadata({ params }: ProfileParams) {
-    const { server, name, tag } = params;
+    // Await the params object before destructuring
+    const [paramsData] = await Promise.all([Promise.resolve(params)]);
+    const { server, name, tag } = paramsData;
 
     return {
         title: `${name}#${tag} - ${server} - ChronoShifter`,
