@@ -1,16 +1,8 @@
 ﻿import { Suspense } from 'react';
-import { getSummonerProfile } from "@/utils/getSummonerProfile";
 import { Background, MatchList, Banner } from "@/components/profile";
 import { SearchForm } from "@/components/search";
 import Link from "next/link";
-
-type ProfileParams = {
-    params: {
-        server: string;
-        name: string;
-        tag: string;
-    };
-};
+import { Metadata } from 'next';
 
 function ProfileSkeleton() {
     return (
@@ -25,7 +17,7 @@ function ProfileSkeleton() {
 }
 
 // Main Profile Component
-export default function ProfilePage({ params }: ProfileParams) {
+export default function ProfilePage({ params }: { params: Promise<{ server: string; name: string; tag: string }> }) {
     return (
         <div className="relative">
             <Background />
@@ -36,11 +28,11 @@ export default function ProfilePage({ params }: ProfileParams) {
     );
 }
 
-// Async component that handles data fetching
-async function ProfileData({ params }: ProfileParams) {
-    // Await the params object before destructuring
-    const [paramsData] = await Promise.all([Promise.resolve(params)]);
-    const { server, name, tag } = paramsData;
+// Async function for data fetching
+async function ProfileData({ params }: { params: Promise<{ server: string; name: string; tag: string }> }) {
+    const { getSummonerProfile } = await import("@/utils/getSummonerProfile"); // Dynamic import
+    const resolvedParams = await params; // Await the params promise
+    const { server, name, tag } = resolvedParams;
 
     try {
         const data = await getSummonerProfile(server, name, tag);
@@ -73,7 +65,6 @@ function ErrorState({ message }: { message: string }) {
                 <p className="text-red-100 tracking-[.10em] font-sans">{message}</p>
             </div>
 
-            {/* Use the existing Search component */}
             <div className="max-w-3xl mx-auto flex flex-col items-center justify-center">
                 <h3 className="text-lg md:text-xl font-semibold text-white mb-12 tracking-[.25em] bg-white/10 px-4 py-2 rounded-lg inline-block">
                     Try searching for another summoner:
@@ -83,7 +74,6 @@ function ErrorState({ message }: { message: string }) {
                     <SearchForm />
                 </div>
 
-                {/* Increased margin-top and styled link to look like a button */}
                 <div className="mt-16 inline-block">
                     <Link
                         href="/"
@@ -97,14 +87,13 @@ function ErrorState({ message }: { message: string }) {
     );
 }
 
-// Generate metadata for the page
-export async function generateMetadata({ params }: ProfileParams) {
-    // Await the params object before destructuring
-    const [paramsData] = await Promise.all([Promise.resolve(params)]);
-    const { server, name, tag } = paramsData;
+// Updated generateMetadata function
+export async function generateMetadata({ params }: { params: Promise<{ server: string; name: string; tag: string }> }): Promise<Metadata> {
+    const resolvedParams = await params; // Await the params promise
+    const { server, name, tag } = resolvedParams;
 
     return {
-        title: `${name}#${tag} - ${server} - ChronoShifter`,
+        title: `ChronoShifter - ${name}#${tag}`,
         description: `View ${name}#${tag}'s League of Legends profile stats and match history on the ${server} server`,
     };
 }

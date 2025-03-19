@@ -16,10 +16,9 @@ export const metadata: Metadata = {
     description: "Web application to check your progress in League of legends rankings.",
 };
 
-export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>)
-{
+export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
     return (
-        <html lang="en" className={roboto.className}> {/* Apply the Roboto font to the entire app */}
+        <html lang="en" className={roboto.className}>
         <body>
         {children}
         </body>
