@@ -1,11 +1,16 @@
 ﻿import { BannerProps } from "@/types/interfaces";
 import Image from "next/image";
 import {getSummonerIconUrl} from "@/utils/getSummonerIconUrl";
+import * as Console from "node:console";
 
 export function Banner({ data }: BannerProps) {
     const summonerIconUrl = getSummonerIconUrl(data.profileIconId);
     const rankedSoloIconUrl = `/rankedIcons/${data.soloTier}.png`;
     const rankedFlexIconUrl = `/rankedIcons/${data.flexTier}.png`;
+
+    Console.log(`Summoner Icon URL: ${summonerIconUrl}`);
+    Console.log(`Solo Ranked Icon URL: ${rankedSoloIconUrl}`);
+    Console.log(`Flex Ranked Icon URL: ${rankedFlexIconUrl}`);
 
     const getWinRateColor = (winRate: number) => {
         return winRate >= 50 ? "text-green-400" : "text-red-500";
