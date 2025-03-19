@@ -30,10 +30,18 @@
 export interface MatchData {
     info: {
         gameMode: string;
+        queueId: number;
         gameDuration: number;
         gameEndTimestamp: number;
         participants: Participant[];
     };
+}
+export interface MatchResponse {
+    gameMode: string;
+    queueId: number;
+    gameDuration: number;
+    gameEndTimestamp: number;
+    participants: ProcessedParticipant[];
 }
 export interface ProcessedParticipant {
     riotIdGameName : string;
@@ -56,12 +64,6 @@ export interface ProcessedParticipant {
     win: string;
     teamId: number;
 }
-export interface MatchResponse {
-    gameMode: string;
-    gameDuration: number;
-    gameEndTimestamp: number;
-    participants: ProcessedParticipant[];
-}
 export interface RankedEntry {
     leagueId: string;
     queueType: string;
@@ -80,7 +82,6 @@ export interface RankedEntry {
 export interface Ranked {
     RankedEntry: RankedEntry[];
 }
-
 
 /**
  * Represents the formatted response data for a summoner profile.

@@ -1,12 +1,27 @@
 ﻿import { getRandomImage } from "@/utils/getRandomImage";
+import * as Console from "node:console";
 
 interface BackgroundProps {
     customUrl?: string; // Optional custom URL prop
 }
 
 export function Background({ customUrl }: BackgroundProps) {
-    // Use the custom URL if provided, otherwise fall back to getRandomImage
-    const backgroundImageUrl = customUrl || getRandomImage(12);
+    // Function to check if the URL is valid
+    const isValidUrl = (url: string): boolean => {
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+
+    // Check if customUrl is valid, otherwise use getRandomImage
+    const backgroundImageUrl = customUrl && isValidUrl(customUrl)
+        ? customUrl
+        : getRandomImage(12);
+
+    Console.log(`Using background image: ${backgroundImageUrl}`);
 
     return (
         <div

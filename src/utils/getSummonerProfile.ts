@@ -42,23 +42,25 @@ export async function getSummonerProfile(serverFetched: string, gameName: string
 }
 
 function formatResponse(data: FormattedResponse): FormatResponseReturn {
-    const soloEntry : RankedEntry = data.RankedEntry[0];
-    const flexEntry : RankedEntry = data.RankedEntry[1];
+    // Safely access ranked entries with default empty objects
+    const soloEntry: RankedEntry = data.RankedEntry?.[0] || {};
+    const flexEntry: RankedEntry = data.RankedEntry?.[1] || {};
 
     return {
         ...data,
-        soloTier: soloEntry.tier || "Unranked",
-        soloRank: soloEntry.rank || "",
-        soloWins: soloEntry.wins || 0,
-        soloLosses: soloEntry.losses || 0,
-        soloLP: soloEntry.leaguePoints,
-        soloWR: calculateWinRatio(soloEntry.wins, soloEntry.losses),
-        flexTier: flexEntry.tier || "Unranked",
-        flexRank: flexEntry.rank || "",
-        flexWins: flexEntry.wins || 0,
-        flexLosses: flexEntry.losses || 0,
-        flexLP: flexEntry.leaguePoints,
-        flexWR: calculateWinRatio(flexEntry.wins, flexEntry.losses),
+        soloTier: soloEntry?.tier || "Unranked",
+        soloRank: soloEntry?.rank || "",
+        soloWins: soloEntry?.wins || 0,
+        soloLosses: soloEntry?.losses || 0,
+        soloLP: soloEntry?.leaguePoints || 0,
+        soloWR: calculateWinRatio(soloEntry?.wins || 0, soloEntry?.losses || 0),
+        flexTier: flexEntry?.tier || "Unranked",
+        flexRank: flexEntry?.rank || "",
+        flexWins: flexEntry?.wins || 0,
+        flexLosses: flexEntry?.losses || 0,
+        flexLP: flexEntry?.leaguePoints || 0,
+        flexWR: calculateWinRatio(flexEntry?.wins || 0, flexEntry?.losses || 0),
         championMasteries: data.championMasteries || [],
     };
 }
+
