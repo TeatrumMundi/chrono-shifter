@@ -1,9 +1,9 @@
 ﻿"use client";
 
-import { FormatResponseReturn, MatchResponse, ProcessedParticipant } from "@/types/interfaces";
-import {getParticipantByPuuid, queueIdToGameMode, secToHHMMSS, timeAgo} from "@/utils/helper";
-import { useMemo } from "react";
-import {getChampionIcon, getItemIcon} from "@/utils/leagueAssets";
+import {FormatResponseReturn, MatchResponse, ProcessedParticipant} from "@/types/interfaces";
+import {getParticipantByPuuid, queueIdToGameMode, secToHHMMSS, timeAgo } from "@/utils/helper";
+import {useEffect, useMemo, useState} from "react";
+import {getChampionIcon, getItemIcon, getRuneImageUrl} from "@/utils/leagueAssets";
 import Image from "next/image";
 
 export function MatchList({ data, puuid }: { data: FormatResponseReturn; puuid: string }) {
@@ -38,7 +38,14 @@ export function MatchList({ data, puuid }: { data: FormatResponseReturn; puuid: 
 }
 
 function MatchCard({ participant, match }: { participant: ProcessedParticipant; match: MatchResponse; index: number }) {
-    console.log("Using champion icon: " + getChampionIcon(participant.championName))
+    const [runeImageUrls, setRuneImageUrls] = useState<string[]>([]); // Use an array to store all rune URLs
+
+    useEffect(() => {
+        // Map through all runes and get their image URLs
+        Promise.all(participant.runes.map(rune => getRuneImageUrl(rune.icon)))
+            .then(setRuneImageUrls); // Update state with all rune URLs
+    }, [participant.runes]);
+
     return (
         <div className="p-5 bg-gray-800/80 rounded-xl shadow-lg transition-transform transform hover:scale-105 font-sans">
             <div className="flex">
@@ -69,7 +76,23 @@ function MatchCard({ participant, match }: { participant: ProcessedParticipant; 
                         <MatchDetail label="Gold Earned" value={participant.goldEarned.toString()} />
                         <MatchDetail label="Vision Score" value={participant.visionScore.toString()} />
                         <MatchDetail label="Minions" value={`${participant.minionsKilled} (${participant.minionsPerMinute})`} />
-                        <MatchDetail label="Runes" value={participant.runes.join(", ")} fullWidth />
+
+                        {/* Runes section */}
+                        <div className="col-span-2">
+                            <p className="font-semibold text-gray-300">Runes:</p>
+                            <div className="flex flex-row gap-2 mt-1">
+                                {runeImageUrls.map((runeUrl, index) => (
+                                    <Image
+                                        key={index}
+                                        src={runeUrl}
+                                        alt={`Rune ${index + 1}`}
+                                        width={32}
+                                        height={32}
+                                        className="rounded-full"
+                                    />
+                                ))}
+                            </div>
+                        </div>
 
                         {/* Add Items section */}
                         <div className="col-span-2 mt-2">

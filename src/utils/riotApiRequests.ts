@@ -1,6 +1,14 @@
 ﻿import {fetchFromRiotAPI} from "@/utils/fetchFromRiotAPI";
-import {ChampionMastery, MatchData, MatchResponse, ProcessedParticipant, Ranked, RankedEntry} from "@/types/interfaces";
+import {
+    ChampionMastery,
+    MatchData,
+    MatchResponse,
+    Ranked,
+    RankedEntry,
+    Rune
+} from "@/types/interfaces";
 import {getKDA, getMinionsPerMinute} from "@/utils/helper";
+import {getRuneById} from "@/utils/getRuneByID";
 
 export async function fetchAccountData(region: string, gameName: string | string[], tagLine: string | string[]) {
     const response : Response = await fetchFromRiotAPI(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`);
@@ -51,36 +59,51 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
         const response = await fetchFromRiotAPI(`https://${region}.api.riotgames.com/lol/match/v5/matches/${matchID}`);
         const data: MatchData = await response.json();
 
-        const participants: ProcessedParticipant[] = data.info.participants.map((participant) => ({
-            riotIdGameName: participant.riotIdGameName,
-            puuid: participant.puuid,
-            championId: participant.championId,
-            championName: participant.championName,
-            teamPosition: participant.teamPosition,
-            kills: participant.kills,
-            deaths: participant.deaths,
-            assists: participant.assists,
-            kda: getKDA(participant.kills, participant.deaths, participant.assists),
-            visionScore: participant.visionScore,
-            items: [
-                participant.item0,
-                participant.item1,
-                participant.item2,
-                participant.item3,
-                participant.item4,
-                participant.item5,
-            ],
-            damageDealt: participant.totalDamageDealtToChampions,
-            goldEarned: participant.goldEarned,
-            wardsPlaced: participant.wardsPlaced ?? 0,
-            minionsKilled: participant.totalMinionsKilled,
-            minionsPerMinute: getMinionsPerMinute(data.info.gameDuration, participant.totalMinionsKilled),
-            runes: participant.perks?.styles.flatMap((style) =>
+        // Process participants and fetch rune details for each participant
+        const participantsPromises = data.info.participants.map(async (participant) => {
+            // Get rune IDs from participant data
+            const runeIds = participant.perks?.styles.flatMap((style) =>
                 style.selections.map((selection) => selection.perk)
-            ) ?? [],
-            win: participant.win,
-            teamId: participant.teamId,
-        }));
+            ) ?? [];
+
+            // Fetch rune objects for each ID
+            const runePromises = runeIds.map(runeId => getRuneById(runeId));
+            const runeObjects = await Promise.all(runePromises);
+
+            // Filter out null values in case any rune wasn't found
+            const validRunes = runeObjects.filter((rune): rune is Rune => rune !== null);
+
+            return {
+                riotIdGameName: participant.riotIdGameName,
+                puuid: participant.puuid,
+                championId: participant.championId,
+                championName: participant.championName,
+                teamPosition: participant.teamPosition,
+                kills: participant.kills,
+                deaths: participant.deaths,
+                assists: participant.assists,
+                kda: getKDA(participant.kills, participant.deaths, participant.assists),
+                visionScore: participant.visionScore,
+                items: [
+                    participant.item0,
+                    participant.item1,
+                    participant.item2,
+                    participant.item3,
+                    participant.item4,
+                    participant.item5,
+                ],
+                damageDealt: participant.totalDamageDealtToChampions,
+                goldEarned: participant.goldEarned,
+                wardsPlaced: participant.wardsPlaced ?? 0,
+                minionsKilled: participant.totalMinionsKilled,
+                minionsPerMinute: getMinionsPerMinute(data.info.gameDuration, participant.totalMinionsKilled),
+                runes: validRunes, // Now runes contains the full Rune objects
+                win: participant.win,
+                teamId: participant.teamId,
+            };
+        });
+
+        const participants = await Promise.all(participantsPromises);
 
         return {
             gameMode: data.info.gameMode,

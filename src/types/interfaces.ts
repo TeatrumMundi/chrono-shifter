@@ -44,7 +44,7 @@ export interface ProcessedParticipant {
     wardsPlaced: number;
     minionsKilled: number;
     minionsPerMinute: string;
-    runes: number[];
+    runes: Rune[];
     win: string;
     teamId: number;
 }
@@ -64,7 +64,6 @@ export interface MatchResponse {
     gameEndTimestamp: number;
     participants: ProcessedParticipant[];
 }
-
 export interface RankedEntry {
     leagueId: string;
     queueType: string;
@@ -129,7 +128,6 @@ export interface FormatResponseReturn {
     championMasteries: ChampionMastery[];
 }
 
-
 export interface BannerProps {
     data: FormatResponseReturn;
 }
@@ -144,4 +142,22 @@ export interface ChampionMastery {
     tokensEarned: number;
     summonerId: string;
     puuid: string;
+}
+export interface RuneSlot {
+    runes: Rune[];
+}
+export interface Rune {
+    id: number;
+    key: string;
+    icon: string;
+    name: string;
+    shortDesc: string;
+    longDesc: string;
+}
+export interface RunePath {
+    id: number;
+    key: string;
+    icon: string;
+    name: string;
+    slots: RuneSlot[];
 }
