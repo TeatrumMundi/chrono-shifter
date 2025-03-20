@@ -27,22 +27,6 @@
         }[];
     };
 }
-export interface MatchData {
-    info: {
-        gameMode: string;
-        queueId: number;
-        gameDuration: number;
-        gameEndTimestamp: number;
-        participants: Participant[];
-    };
-}
-export interface MatchResponse {
-    gameMode: string;
-    queueId: number;
-    gameDuration: number;
-    gameEndTimestamp: number;
-    participants: ProcessedParticipant[];
-}
 export interface ProcessedParticipant {
     riotIdGameName : string;
     puuid: string;
@@ -64,6 +48,23 @@ export interface ProcessedParticipant {
     win: string;
     teamId: number;
 }
+export interface MatchData {
+    info: {
+        gameMode: string;
+        queueId: number;
+        gameDuration: number;
+        gameEndTimestamp: number;
+        participants: Participant[];
+    };
+}
+export interface MatchResponse {
+    gameMode: string;
+    queueId: number;
+    gameDuration: number;
+    gameEndTimestamp: number;
+    participants: ProcessedParticipant[];
+}
+
 export interface RankedEntry {
     leagueId: string;
     queueType: string;

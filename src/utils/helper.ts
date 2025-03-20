@@ -124,9 +124,7 @@ export function secToHHMMSS(seconds: number): string {
     }
     return `${pad(remainingSeconds)}`;
 } // Returns the formatted string in hh:mm:ss format.
-export function getWinOrLose(isNexusKilled: number): string {
-    return isNexusKilled === 0 ? "Win" : "Lose";
-} // Returns Win or lose based on nexus status
+
 export function timeAgo(timestamp: number): string {
     const now = Date.now();
     const difference = now - timestamp;

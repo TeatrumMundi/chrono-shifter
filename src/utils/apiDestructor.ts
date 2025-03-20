@@ -1,6 +1,6 @@
 ﻿import {fetchFromRiotAPI} from "@/utils/fetchFromRiotAPI";
 import {ChampionMastery, MatchData, MatchResponse, ProcessedParticipant, Ranked, RankedEntry} from "@/types/interfaces";
-import {getKDA, getMinionsPerMinute, getWinOrLose} from "@/utils/helper";
+import {getKDA, getMinionsPerMinute} from "@/utils/helper";
 
 export async function fetchAccountData(region: string, gameName: string | string[], tagLine: string | string[]) {
     const response : Response = await fetchFromRiotAPI(`https://${region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`);
@@ -78,7 +78,7 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
             runes: participant.perks?.styles.flatMap((style) =>
                 style.selections.map((selection) => selection.perk)
             ) ?? [],
-            win: getWinOrLose(participant.nexusLost),
+            win: participant.win,
             teamId: participant.teamId,
         }));
 
