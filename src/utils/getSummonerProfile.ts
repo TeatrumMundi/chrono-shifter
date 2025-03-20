@@ -1,4 +1,4 @@
-﻿import { fetchAccountData, fetchLeagueData, fetchMatchData, fetchSummonerData, fetchMatchDetailsData, fetchTopChampionMasteries } from "./apiDestructor";
+﻿import { fetchAccountData, fetchLeagueData, fetchMatchData, fetchSummonerData, fetchMatchDetailsData, fetchTopChampionMasteries } from "./riotApiRequests";
 import { calculateWinRatio, getRegion, getServer } from "@/utils/helper";
 import {ChampionMastery, FormatResponseReturn, MatchResponse, Ranked, RankedEntry} from "@/types/interfaces";
 

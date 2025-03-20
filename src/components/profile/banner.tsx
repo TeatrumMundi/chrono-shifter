@@ -1,6 +1,6 @@
 ﻿import { BannerProps } from "@/types/interfaces";
 import Image from "next/image";
-import {getSummonerIconUrl} from "@/utils/getSummonerIconUrl";
+import {getSummonerIconUrl} from "@/utils/leagueAssets";
 import * as Console from "node:console";
 
 export function Banner({ data }: BannerProps) {
