@@ -39,8 +39,6 @@ export async function getRuneImageUrl(runePath: string): Promise<string> {
     // Base URL for Data Dragon where rune data is stored
     const ddragonBaseUrl = "https://ddragon.leagueoflegends.com/cdn/img/";
 
-    console.log("Fetching rune image URL for path:", runePath);
-
     // Full URL to access the image
     const imageUrl = `${ddragonBaseUrl}${runePath}`;
 
@@ -57,3 +55,26 @@ export async function getRuneImageUrl(runePath: string): Promise<string> {
 
     return `Rune image not found: ${imageUrl}`;
 }
+
+export async function getRuneTreeImageUrl(runeIconUrl: string): Promise<string | null> {
+    const ddragonBaseUrl = "https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/";
+
+    const runeTreeMap = new Map<string, string>([
+        ["Inspiration", `${ddragonBaseUrl}7203_Whimsy.png`],
+        ["Resolve", `${ddragonBaseUrl}7204_Resolve.png`],
+        ["Sorcery", `${ddragonBaseUrl}7202_Sorcery.png`],
+        ["Precision", `${ddragonBaseUrl}7201_Precision.png`],
+        ["Domination", `${ddragonBaseUrl}7200_Domination.png`],
+    ]);
+
+    for (const [runeTree, imageUrl] of runeTreeMap.entries()) {
+        if (runeIconUrl.includes(runeTree)) {
+            return imageUrl;
+        }
+    }
+
+    // Return null if no matching rune tree is found
+    return null;
+}
+
+console.log(getRuneTreeImageUrl("https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Domination/Electrocute/Electrocute.png"));
