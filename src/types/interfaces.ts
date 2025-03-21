@@ -153,7 +153,14 @@ export interface Rune {
     name: string;
     shortDesc: string;
     longDesc: string;
+    runePath: {
+        id: number;
+        key: string;
+        icon: string;
+        name: string;
+    };
 }
+
 export interface RunePath {
     id: number;
     key: string;

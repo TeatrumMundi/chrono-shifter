@@ -71,7 +71,7 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
             const runeObjects = await Promise.all(runePromises);
 
             // Filter out null values in case any rune wasn't found
-            const validRunes = runeObjects.filter((rune): rune is Rune => rune !== null);
+            const validRunes : Rune[] = runeObjects.filter((rune): rune is Rune => rune !== null);
 
             return {
                 riotIdGameName: participant.riotIdGameName,
@@ -97,7 +97,7 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
                 wardsPlaced: participant.wardsPlaced ?? 0,
                 minionsKilled: participant.totalMinionsKilled,
                 minionsPerMinute: getMinionsPerMinute(data.info.gameDuration, participant.totalMinionsKilled),
-                runes: validRunes, // Now runes contains the full Rune objects
+                runes: validRunes,
                 win: participant.win,
                 teamId: participant.teamId,
             };

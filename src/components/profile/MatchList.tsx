@@ -38,13 +38,36 @@ export function MatchList({ data, puuid }: { data: FormatResponseReturn; puuid: 
 }
 
 function MatchCard({ participant, match }: { participant: ProcessedParticipant; match: MatchResponse; index: number }) {
-    const [runeImageUrls, setRuneImageUrls] = useState<string[]>([]); // Use an array to store all rune URLs
+    const [primaryRuneUrl, setPrimaryRuneUrl] = useState<string>('');
+    const [runePathUrl, setRunePathUrl] = useState<string>('');
+    const [hasRunes, setHasRunes] = useState<boolean>(false);
 
     useEffect(() => {
-        // Map through all runes and get their image URLs
-        Promise.all(participant.runes.map(rune => getRuneImageUrl(rune.icon)))
-            .then(setRuneImageUrls); // Update state with all rune URLs
+        // Check if runes exist and have valid data
+        if (participant.runes && participant.runes.length > 0) {
+            setHasRunes(true);
+
+            // Get the first rune for primary display
+            if (participant.runes[0] && participant.runes[0].icon) {
+                getRuneImageUrl(participant.runes[0].icon)
+                    .then(setPrimaryRuneUrl)
+                    .catch(() => setPrimaryRuneUrl(''));
+            }
+
+            // Get runePath image from the last rune if available
+            const lastRune = participant.runes[participant.runes.length - 1];
+            if (lastRune && lastRune.runePath && lastRune.runePath.icon) {
+                getRuneImageUrl(lastRune.runePath.icon)
+                    .then(setRunePathUrl)
+                    .catch(() => setRunePathUrl(''));
+            }
+        } else {
+            setHasRunes(false);
+            setPrimaryRuneUrl('');
+            setRunePathUrl('');
+        }
     }, [participant.runes]);
+
 
     return (
         <div className="p-5 bg-gray-800/80 rounded-xl shadow-lg transition-transform transform hover:scale-105 font-sans">
@@ -52,7 +75,7 @@ function MatchCard({ participant, match }: { participant: ProcessedParticipant; 
                 {/* Left side - Match summary */}
                 <div className="w-[15%] pr-2 border-r border-gray-700 flex flex-col justify-center items-center text-center">
                     <div className="text-lg font-semibold text-gray-200">
-                        {queueIdToGameMode[match.queueId]}
+                        {queueIdToGameMode[match.queueId] || "Unknown"}
                     </div>
                     <div className="text-gray-400 text-xs mt-1">
                         {timeAgo(match.gameEndTimestamp)}
@@ -71,28 +94,38 @@ function MatchCard({ participant, match }: { participant: ProcessedParticipant; 
                     <div className="grid grid-cols-2 gap-2 text-gray-400 text-sm flex-1">
                         <MatchDetail label="Champion" value={getChampionIcon(participant.championName)} isImage={true} />
                         <MatchDetail label="KDA" value={`${participant.kills}/${participant.deaths}/${participant.assists} (${participant.kda})`} />
-                        <MatchDetail label="Role" value={participant.teamPosition} />
+                        {participant.teamPosition && <MatchDetail label="Role" value={participant.teamPosition} />}
                         <MatchDetail label="Damage" value={participant.damageDealt.toString()} />
                         <MatchDetail label="Gold Earned" value={participant.goldEarned.toString()} />
                         <MatchDetail label="Vision Score" value={participant.visionScore.toString()} />
                         <MatchDetail label="Minions" value={`${participant.minionsKilled} (${participant.minionsPerMinute})`} />
 
-                        {/* Runes section */}
-                        <div className="col-span-2">
-                            <p className="font-semibold text-gray-300">Runes:</p>
-                            <div className="flex flex-row gap-2 mt-1">
-                                {runeImageUrls.map((runeUrl, index) => (
-                                    <Image
-                                        key={index}
-                                        src={runeUrl}
-                                        alt={`Rune ${index + 1}`}
-                                        width={32}
-                                        height={32}
-                                        className="rounded-full"
-                                    />
-                                ))}
+                        {/* Runes section - Only show if runes exist */}
+                        {hasRunes && (
+                            <div className="col-span-2">
+                                <p className="font-semibold text-gray-300">Runes:</p>
+                                <div className="flex flex-row gap-2 mt-1 items-center">
+                                    {primaryRuneUrl && (
+                                        <Image
+                                            src={primaryRuneUrl}
+                                            alt="Primary Rune"
+                                            width={32}
+                                            height={32}
+                                            className="rounded-full"
+                                        />
+                                    )}
+                                    {runePathUrl && (
+                                        <Image
+                                            src={runePathUrl}
+                                            alt="Rune Path"
+                                            width={32}
+                                            height={32}
+                                            className="rounded-full"
+                                        />
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Add Items section */}
                         <div className="col-span-2 mt-2">
@@ -146,7 +179,6 @@ function MatchDetail({ label, value, fullWidth = false, isImage = false }: { lab
         </p>
     );
 }
-
 
 function ParticipantList({ participants }: { participants: ProcessedParticipant[] }) {
     return (

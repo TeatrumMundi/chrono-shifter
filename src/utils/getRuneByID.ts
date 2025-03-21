@@ -1,6 +1,5 @@
 ﻿import {Rune, RunePath} from "@/types/interfaces";
 
-
 async function fetchRunesData(): Promise<RunePath[]> {
     try {
         const response = await fetch('https://ddragon.leagueoflegends.com/cdn/15.6.1/data/en_US/runesReforged.json');
@@ -21,14 +20,28 @@ function findRuneById(runesData: RunePath[], runeId: number): Rune | null {
                 icon: path.icon,
                 name: path.name,
                 shortDesc: '',
-                longDesc: ''
+                longDesc: '',
+                runePath: {
+                    id: path.id,
+                    key: path.key,
+                    icon: path.icon,
+                    name: path.name
+                }
             };
         }
 
         for (const slot of path.slots) {
             for (const rune of slot.runes) {
                 if (rune.id === runeId) {
-                    return rune;
+                    return {
+                        ...rune,
+                        runePath: {
+                            id: path.id,
+                            key: path.key,
+                            icon: path.icon,
+                            name: path.name
+                        }
+                    };
                 }
             }
         }
