@@ -39,6 +39,8 @@ export async function getRuneImageUrl(runePath: string): Promise<string> {
     // Base URL for Data Dragon where rune data is stored
     const ddragonBaseUrl = "https://ddragon.leagueoflegends.com/cdn/img/";
 
+    console.log("Fetching rune image URL for path:", runePath);
+
     // Full URL to access the image
     const imageUrl = `${ddragonBaseUrl}${runePath}`;
 

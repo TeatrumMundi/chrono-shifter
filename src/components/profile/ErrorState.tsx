@@ -1,6 +1,6 @@
 ﻿import Link from "next/link";
 import { SearchForm } from "@/components/search";
-import { Background } from "@/components/profile";
+import { Background } from "@/components/common";
 
 export function ErrorState({ message }: { message: string }) {
     return (

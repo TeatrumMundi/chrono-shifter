@@ -1,7 +1,8 @@
 ﻿import { Suspense } from 'react';
-import { Background, MatchList, Banner, ErrorState } from "@/components/profile";
+import { MatchList, Banner, ErrorState } from "@/components/profile";
 import { Metadata } from 'next';
 import { getChampionSplashUrl } from "@/utils/leagueAssets";
+import { Background } from "@/components/common";
 
 function ProfileSkeleton() {
     return (

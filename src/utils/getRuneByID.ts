@@ -13,23 +13,19 @@ async function fetchRunesData(): Promise<RunePath[]> {
 }
 
 function findRuneById(runesData: RunePath[], runeId: number): Rune | null {
-    // Szukamy we wszystkich ścieżkach run
     for (const path of runesData) {
-        // Sprawdzamy, czy sama ścieżka ma szukane ID
         if (path.id === runeId) {
             return {
                 id: path.id,
                 key: path.key,
                 icon: path.icon,
                 name: path.name,
-                shortDesc: '', // Ścieżki nie mają tych pól, więc zostawiamy puste
+                shortDesc: '',
                 longDesc: ''
             };
         }
 
-        // Przeszukujemy wszystkie sloty w danej ścieżce
         for (const slot of path.slots) {
-            // Przeszukujemy wszystkie runy w danym slocie
             for (const rune of slot.runes) {
                 if (rune.id === runeId) {
                     return rune;
@@ -37,12 +33,9 @@ function findRuneById(runesData: RunePath[], runeId: number): Rune | null {
             }
         }
     }
-
-    // Jeśli nie znaleziono runy o danym ID
     return null;
 }
 
-// Główna funkcja, która pobiera dane i zwraca runę po ID
 export async function getRuneById(runeId: number): Promise<Rune | null> {
     try {
         const runesData = await fetchRunesData();
