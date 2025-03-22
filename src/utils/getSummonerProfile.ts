@@ -40,8 +40,11 @@ export async function getSummonerProfile(serverFetched: string, gameName: string
 }
 
 function formatResponse(data: FormattedResponse): FormatResponseReturn {
-    const soloEntry: RankedEntry = data.RankedEntry?.[0] || {};
-    const flexEntry: RankedEntry = data.RankedEntry?.[1] || {};
+    // Find entries by their queueType rather than array position
+    const soloEntry: RankedEntry | null =
+        data.RankedEntry?.find(entry => entry.queueType === "RANKED_SOLO_5x5") || null;
+    const flexEntry: RankedEntry | null =
+        data.RankedEntry?.find(entry => entry.queueType === "RANKED_FLEX_SR") || null;
 
     return {
         ...data,
@@ -60,4 +63,3 @@ function formatResponse(data: FormattedResponse): FormatResponseReturn {
         championMasteries: data.championMasteries || [],
     };
 }
-
