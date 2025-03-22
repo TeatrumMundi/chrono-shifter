@@ -72,54 +72,61 @@ function ParticipantList({ participants, gameMode }: { participants: ProcessedPa
     'bg-orange-900/30'
   ];
 
-  if (gameMode === "Arena") {
+    if (gameMode === "Arena") {
+        const teams: { [key: number]: ProcessedParticipant[] } = {};
+
+        participants.forEach(participant => {
+            const teamId = participant.arenaData?.playerSubteamId ?? -1;
+            if (!teams[teamId]) {
+                teams[teamId] = [];
+            }
+            teams[teamId].push(participant);
+        });
+
+        const sortedTeamIds = Object.keys(teams).map(Number).sort();
+
+        return (
+            <div className="text-sm text-gray-400 tracking-normal">
+                <div className="grid grid-cols-2 gap-2">
+                    {sortedTeamIds.map((teamId, index) => (
+                        <div
+                            key={teamId}
+                            className={`flex p-1 rounded ${teamColors[index % teamColors.length]} transition-all duration-200 hover:opacity-80 overflow-hidden`}
+                        >
+                            {teams[teamId].map((player, playerIndex) => (
+                                <div key={playerIndex} className="flex items-center gap-1 mr-2 flex-shrink-0">
+                                    <ChampionIcon championName={player.championName} size={16} />
+                                    <span className="text-sm w-[80px] truncate" title={player.riotIdGameName}>
+                                    {player.riotIdGameName}
+                                </span>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="text-sm text-gray-400 tracking-normal">
-          <div className="grid grid-cols-2 gap-2">
-            {Array.from({ length: participants.length / 2 }, (_, i) => (
-                <div
-                    key={i}
-                    className={`flex p-2 rounded ${teamColors[i]} transition-all duration-200 hover:opacity-80`}
-                >
-                  <div className="flex items-center w-[45%] justify-end gap-1">
-                <span className="truncate text-sm">
-                  {participants[i * 2]?.riotIdGameName}
-                </span>
-                    <ChampionIcon championName={participants[i * 2]?.championName} size={20} />
-                  </div>
-                  <span className="inline-block w-[10%] text-center font-medium text-gray-400 text-sm">&</span>
-                  <div className="flex items-center w-[45%] gap-1">
-                    <ChampionIcon championName={participants[i * 2 + 1]?.championName} size={20} />
-                    <span className="truncate text-sm">
-                  {participants[i * 2 + 1]?.riotIdGameName}
-                </span>
-                  </div>
-                </div>
-            ))}
-          </div>
+            <div className="flex flex-col gap-1">
+                {participants.slice(0, 5).map((player, i) => (
+                    <div key={i} className="flex">
+                        <div className="flex items-center w-[45%] justify-end gap-1 bg-blue-900/30 p-2 rounded">
+                            <span className="truncate text-sm">{player.riotIdGameName}</span>
+                            <ChampionIcon championName={player.championName} size={20} />
+                        </div>
+                        <span className="inline-block w-[1%] text-center font-medium text-gray-500"></span>
+                        <div className="flex items-center w-[45%] gap-1 bg-red-900/30 p-2 rounded">
+                            <ChampionIcon championName={participants[i + 5]?.championName} size={20} />
+                            <span className="truncate text-sm">{participants[i + 5]?.riotIdGameName}</span>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
-  }
-
-  return (
-      <div className="text-sm text-gray-400 tracking-normal">
-        <div className="flex flex-col gap-2">
-          {participants.slice(0, 5).map((player, i) => (
-              <div key={i} className="flex">
-                <div className="flex items-center w-[45%] justify-end gap-1 bg-blue-900/30 p-2 rounded">
-                  <span className="truncate text-sm">{player.riotIdGameName}</span>
-                  <ChampionIcon championName={player.championName} size={20} />
-                </div>
-                <span className="inline-block w-[10%] text-center font-medium text-gray-500">vs</span>
-                <div className="flex items-center w-[45%] gap-1 bg-red-900/30 p-2 rounded">
-                  <ChampionIcon championName={participants[i + 5]?.championName} size={20} />
-                  <span className="truncate text-sm">{participants[i + 5]?.riotIdGameName}</span>
-                </div>
-              </div>
-          ))}
-        </div>
-      </div>
-  );
 }
 
 function ItemDisplay({ items }: { items: number[] }) {

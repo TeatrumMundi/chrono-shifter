@@ -5,7 +5,8 @@ import {
     MatchResponse,
     Ranked,
     RankedEntry,
-    Rune
+    Rune,
+    ArenaData
 } from "@/types/interfaces";
 import {getKDA, getMinionsPerMinute} from "@/utils/helper";
 import {getRuneById} from "@/utils/getRuneByID";
@@ -71,7 +72,33 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
             const runeObjects = await Promise.all(runePromises);
 
             // Filter out null values in case any rune wasn't found
-            const validRunes : Rune[] = runeObjects.filter((rune): rune is Rune => rune !== null);
+            const validRunes: Rune[] = runeObjects.filter((rune): rune is Rune => rune !== null);
+
+            // Extract arena data if available
+            let arenaData: ArenaData | undefined = undefined;
+
+            if (
+                'playerAugment1' in participant ||
+                'playerAugment2' in participant ||
+                'playerAugment3' in participant ||
+                'playerAugment4' in participant ||
+                'playerAugment5' in participant ||
+                'playerAugment6' in participant
+            ) {
+                const playerAugments = [
+                    participant.playerAugment1,
+                    participant.playerAugment2,
+                    participant.playerAugment3,
+                    participant.playerAugment4,
+                    participant.playerAugment5,
+                    participant.playerAugment6
+                ].filter(augment => augment !== undefined && augment !== 0);
+
+                arenaData = {
+                    playerAugments,
+                    playerSubteamId: participant.playerSubteamId || 0
+                };
+            }
 
             return {
                 riotIdGameName: participant.riotIdGameName,
@@ -100,6 +127,8 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
                 runes: validRunes,
                 win: participant.win,
                 teamId: participant.teamId,
+                // Add arena data if available
+                ...(arenaData && { arenaData })
             };
         });
 
@@ -117,6 +146,7 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
         throw new Error(`Failed to fetch match data: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
 }
+
 export async function fetchTopChampionMasteries(server: string, puuid: string, count: number = 10): Promise<ChampionMastery[]> {
     try {
         const response = await fetchFromRiotAPI(`https://${server}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${puuid}/top?count=${count}`);

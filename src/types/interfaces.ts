@@ -26,6 +26,13 @@
             selections: { perk: number }[];
         }[];
     };
+    playerAugment1?: number;
+    playerAugment2?: number;
+    playerAugment3?: number;
+    playerAugment4?: number;
+    playerAugment5?: number;
+    playerAugment6?: number;
+    playerSubteamId?: number;
 }
 export interface ProcessedParticipant {
     riotIdGameName : string;
@@ -47,6 +54,7 @@ export interface ProcessedParticipant {
     runes: Rune[];
     win: string;
     teamId: number;
+    arenaData?: ArenaData;
 }
 export interface MatchData {
     info: {
@@ -167,4 +175,9 @@ export interface RunePath {
     icon: string;
     name: string;
     slots: RuneSlot[];
+}
+
+export interface ArenaData {
+    playerAugments: (number | undefined)[];
+    playerSubteamId: number;
 }
