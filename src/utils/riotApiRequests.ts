@@ -8,7 +8,7 @@ import {
     Rune,
     ArenaData
 } from "@/types/interfaces";
-import {getKDA, getMinionsPerMinute} from "@/utils/helper";
+import {getKDA, getMinionsPerMinute, reversedServerMAP} from "@/utils/helper";
 import {getRuneById} from "@/utils/getRuneByID";
 
 export async function fetchAccountData(region: string, gameName: string | string[], tagLine: string | string[]) {
@@ -55,7 +55,7 @@ export async function fetchMatchData(region: string, puuid: string, queueType?: 
     const response = await fetchFromRiotAPI(url);
     return response.json();
 }
-export async function fetchMatchDetailsData(region: string, matchID: string): Promise<MatchResponse> {
+export async function fetchMatchDetailsData(region: string, server: string, matchID: string): Promise<MatchResponse> {
     try {
         const response = await fetchFromRiotAPI(`https://${region}.api.riotgames.com/lol/match/v5/matches/${matchID}`);
         const data: MatchData = await response.json();
@@ -102,6 +102,8 @@ export async function fetchMatchDetailsData(region: string, matchID: string): Pr
 
             return {
                 riotIdGameName: participant.riotIdGameName,
+                riotIdTagline: participant.riotIdTagline,
+                server: reversedServerMAP[server].toUpperCase(),
                 puuid: participant.puuid,
                 championId: participant.championId,
                 championName: participant.championName,

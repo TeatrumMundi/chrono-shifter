@@ -19,20 +19,18 @@ type FormattedResponse = AccountDetails & SummonerDetails & Ranked & {
 
 export async function getSummonerProfile(serverFetched: string, gameName: string, tagLine: string) {
     try {
-        const region = getRegion(serverFetched);
-        const server = getServer(serverFetched);
+        const region : string = getRegion(serverFetched);
+        const server : string = getServer(serverFetched);
 
         const accountDetails = await fetchAccountData(region, gameName, tagLine);
         const summonerDetails = await fetchSummonerData(server, accountDetails.puuid);
         const rankedDataMap: Ranked = await fetchLeagueData(server, summonerDetails.id);
+        const championMasteries: ChampionMastery[] = await fetchTopChampionMasteries(server, accountDetails.puuid);
         const match: MatchResponse[] = await Promise.all(
             (await fetchMatchData(region, accountDetails.puuid, "", 100)).slice(0, 5).map(matchID =>
-                fetchMatchDetailsData(region, matchID)
+                fetchMatchDetailsData(region, server, matchID)
             )
         );
-
-        // Fetch top champion masteries (default is 10)
-        const championMasteries = await fetchTopChampionMasteries(server, accountDetails.puuid);
 
         return formatResponse({ ...accountDetails, ...summonerDetails, ...rankedDataMap, match, championMasteries });
     } catch (error) {
@@ -42,7 +40,6 @@ export async function getSummonerProfile(serverFetched: string, gameName: string
 }
 
 function formatResponse(data: FormattedResponse): FormatResponseReturn {
-    // Safely access ranked entries with default empty objects
     const soloEntry: RankedEntry = data.RankedEntry?.[0] || {};
     const flexEntry: RankedEntry = data.RankedEntry?.[1] || {};
 

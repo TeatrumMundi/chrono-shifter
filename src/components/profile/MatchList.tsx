@@ -5,6 +5,7 @@ import { getParticipantByPuuid, queueIdToGameMode, secToHHMMSS, timeAgo } from "
 import { useEffect, useMemo, useState } from "react";
 import { getChampionIcon, getItemIcon, getRuneImageUrl } from "@/utils/leagueAssets";
 import Image from "next/image";
+import Link from "next/link";
 
 export function MatchList({ data, puuid }: { data: FormatResponseReturn; puuid: string }) {
   const mainPlayerMatches = useMemo(
@@ -30,7 +31,7 @@ export function MatchList({ data, puuid }: { data: FormatResponseReturn; puuid: 
         </h3>
         <div className="grid grid-cols-1 gap-4 tracking-[.25em]">
           {mainPlayerMatches.map((participant, index) => (
-              <MatchCard key={index} participant={participant} match={data.match[index]} />
+              <MatchCard key={index} participant={participant} match={data.match[index]} server={participant.server} />
           ))}
         </div>
       </>
@@ -60,7 +61,11 @@ function MatchDetail({ label, value, fullWidth = false, isImage = false }: {
   );
 }
 
-function ParticipantList({ participants, gameMode }: { participants: ProcessedParticipant[]; gameMode: string }) {
+function ParticipantList({ participants, gameMode, server }: { 
+    participants: ProcessedParticipant[]; 
+    gameMode: string;
+    server: string;
+}) {
   const teamColors = [
     'bg-blue-900/30',
     'bg-red-900/30',
@@ -96,9 +101,13 @@ function ParticipantList({ participants, gameMode }: { participants: ProcessedPa
                             {teams[teamId].map((player, playerIndex) => (
                                 <div key={playerIndex} className="flex items-center gap-1 mr-2 flex-shrink-0">
                                     <ChampionIcon championName={player.championName} size={16} />
-                                    <span className="text-sm w-[80px] truncate" title={player.riotIdGameName}>
-                                    {player.riotIdGameName}
-                                </span>
+                                    <Link 
+                                        href={`/${server}/${player.riotIdGameName}/${player.riotIdTagline}`}
+                                        className="text-sm w-[80px] truncate hover:text-blue-400 transition-colors" 
+                                        title={player.riotIdGameName}
+                                    >
+                                        {player.riotIdGameName}
+                                    </Link>
                                 </div>
                             ))}
                         </div>
@@ -109,18 +118,30 @@ function ParticipantList({ participants, gameMode }: { participants: ProcessedPa
     }
 
     return (
-        <div className="text-sm text-gray-400 tracking-normal">
-            <div className="flex flex-col gap-1">
+        <div className="text-sm text-gray-400 tracking-normal h-full">
+            <div className="flex flex-col gap-1 justify-between h-full">
                 {participants.slice(0, 5).map((player, i) => (
-                    <div key={i} className="flex">
-                        <div className="flex items-center w-[45%] justify-end gap-1 bg-blue-900/30 p-2 rounded">
-                            <span className="truncate text-sm">{player.riotIdGameName}</span>
+                    <div key={i} className="flex w-full">
+                        <div className="flex items-center w-[49%] justify-end gap-1 bg-blue-900/30 p-2 rounded">
+                            <Link 
+                                href={`/${server}/${player.riotIdGameName}/${player.riotIdTagline}`}
+                                className="truncate text-sm hover:text-blue-400 transition-colors"
+                            >
+                                {player.riotIdGameName}
+                            </Link>
                             <ChampionIcon championName={player.championName} size={20} />
                         </div>
-                        <span className="inline-block w-[1%] text-center font-medium text-gray-500"></span>
-                        <div className="flex items-center w-[45%] gap-1 bg-red-900/30 p-2 rounded">
+                        <span className="inline-block w-[2%]"></span>
+                        <div className="flex items-center w-[49%] gap-1 bg-red-900/30 p-2 rounded">
                             <ChampionIcon championName={participants[i + 5]?.championName} size={20} />
-                            <span className="truncate text-sm">{participants[i + 5]?.riotIdGameName}</span>
+                            {participants[i + 5] && (
+                                <Link 
+                                    href={`/${server}/${participants[i + 5].riotIdGameName}/${participants[i + 5].riotIdTagline}`}
+                                    className="truncate text-sm hover:text-blue-400 transition-colors"
+                                >
+                                    {participants[i + 5].riotIdGameName}
+                                </Link>
+                            )}
                         </div>
                     </div>
                 ))}
@@ -205,7 +226,11 @@ function ChampionIcon({ championName, size }: { championName: string; size: numb
   );
 }
 
-function MatchCard({ participant, match }: { participant: ProcessedParticipant; match: MatchResponse }) {
+function MatchCard({ participant, match, server }: { 
+    participant: ProcessedParticipant; 
+    match: MatchResponse;
+    server: string;
+}) {
   const [primaryRuneUrl, setPrimaryRuneUrl] = useState('');
   const [runePathUrl, setRunePathUrl] = useState('');
   const [hasRunes, setHasRunes] = useState(false);
@@ -277,7 +302,7 @@ function MatchCard({ participant, match }: { participant: ProcessedParticipant; 
 
                   {/* Participants List */}
                   <div className="ml-6 border-l border-gray-700 pl-4 w-1/2">
-                      <ParticipantList participants={match.participants} gameMode={gameMode} />
+                      <ParticipantList participants={match.participants} gameMode={gameMode} server={server} />
                   </div>
               </div>
           </div>

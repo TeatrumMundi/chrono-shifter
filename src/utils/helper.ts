@@ -96,6 +96,11 @@ const serverMAP: Record<string, string> = {
     na: "NA1", oce: "OC1", ru: "RU",
     sea: "SG2", tr: "TR1", tw: "TW2", vn: "VN2",
 };
+
+export const reversedServerMAP: Record<string, string> = Object.fromEntries(
+    Object.entries(serverMAP).map(([key, value]) => [value, key])
+);
+
 export function calculateWinRatio(wins: number, losses: number): number {
     if (losses === 0 && wins > 0) return 100;
     if (wins === 0) return 0;

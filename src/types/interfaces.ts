@@ -1,5 +1,7 @@
 ﻿export interface Participant {
     riotIdGameName : string;
+    riotIdTagline: string;
+    server: string;
     puuid: string;
     championId: number;
     championName: string;
@@ -36,6 +38,8 @@
 }
 export interface ProcessedParticipant {
     riotIdGameName : string;
+    riotIdTagline: string;
+    server: string;
     puuid: string;
     championId: number;
     championName: string;
