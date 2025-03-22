@@ -20,14 +20,13 @@ export default function ProfilePage({ params }: { params: Promise<{ server: stri
     return (
         <div className="relative">
             <Suspense fallback={<ProfileSkeleton />}>
-                <ProfileData params={params} />
+                <ProfileContent params={params} />
             </Suspense>
         </div>
     );
 }
 
-// Async function for data fetching
-async function ProfileData({ params }: { params: Promise<{ server: string; name: string; tag: string }> }) {
+async function ProfileContent({ params }: { params: Promise<{ server: string; name: string; tag: string }> }) {
     const { getSummonerProfile } = await import("@/utils/getSummonerProfile"); // Dynamic import
     const resolvedParams = await params; // Await the params promise
     const { server, name, tag } = resolvedParams;
@@ -54,7 +53,7 @@ async function ProfileData({ params }: { params: Promise<{ server: string; name:
         );
     } catch (error) {
         console.error("Error fetching summoner data:", error);
-        return <ErrorState message="An error occurred while retrieving summoner data."/>;
+        return <ErrorState message="An error occurred while retrieving summoner data." />;
     }
 }
 
@@ -63,7 +62,7 @@ export async function generateMetadata({ params }: { params: Promise<{ server: s
     const { server, name, tag } = resolvedParams;
 
     return {
-        title: `ChronoShifter - ${name}#${tag}`,
-        description: `View ${name}#${tag}'s League of Legends profile stats and match history on the ${server} server`,
+        title: `ChronoShifter - ${name.toUpperCase()}#${tag.toUpperCase()}`,
+        description: `View ${name.toUpperCase()}#${tag.toUpperCase()}'s League of Legends profile stats and match history on the ${server} server`,
     };
 }

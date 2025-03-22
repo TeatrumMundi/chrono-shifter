@@ -172,8 +172,6 @@ function RuneDisplay({ primaryRuneUrl, runePathUrl }: { primaryRuneUrl: string; 
   );
 }
 
-// Add this new component just before MatchCard component
-
 function ChampionIcon({ championName, size }: { championName: string; size: number }) {
   const [error, setError] = useState(false);
 
@@ -217,7 +215,7 @@ function MatchCard({ participant, match }: { participant: ProcessedParticipant; 
     const [firstRune] = participant.runes;
     const lastRune = participant.runes.at(-1);
 
-    if (firstRune?.icon) {
+        if (firstRune?.icon) {
       getRuneImageUrl(firstRune.icon)
           .then(setPrimaryRuneUrl)
           .catch(() => setPrimaryRuneUrl(''));
@@ -236,46 +234,46 @@ function MatchCard({ participant, match }: { participant: ProcessedParticipant; 
 
   return (
       <div className="p-5 bg-gray-800/80 rounded-xl shadow-lg transition-transform transform hover:scale-105 font-sans">
-        <div className="flex">
-          {/* Left: Match Summary */}
-          <div className="w-[15%] pr-2 border-r border-gray-700 flex flex-col items-center text-center">
-            <div className="text-lg font-semibold text-gray-200">{gameMode}</div>
-            <div className="text-gray-400 text-xs mt-1">{timeAgo(match.gameEndTimestamp)}</div>
-            <div className={`mt-1 text-base font-medium ${winTextColor}`}>{winText}</div>
-            <div className="text-gray-400 text-xs mt-1">{secToHHMMSS(match.gameDuration)}</div>
-          </div>
-
-          {/* Right: Match Details */}
-          <div className="flex flex-row ml-4 flex-1">
-            <div className="grid grid-cols-2 gap-3 text-gray-400 text-sm w-full">
-              {/* Champion & Items */}
-              <div className="col-span-1 flex items-center gap-3">
-                <ChampionIcon championName={participant.championName} size={64} />
-                {hasRunes && <RuneDisplay primaryRuneUrl={primaryRuneUrl} runePathUrl={runePathUrl} />}
-                <ItemDisplay items={participant.items} />
+          <div className="flex items-center">
+              {/* Left: Match Summary */}
+              <div className="w-[15%] pr-2 border-r border-gray-700 flex flex-col items-center text-center">
+                  <div className="text-lg font-semibold text-gray-200">{gameMode}</div>
+                  <div className="text-gray-400 text-xs mt-1">{timeAgo(match.gameEndTimestamp)}</div>
+                  <div className={`mt-1 text-base font-medium ${winTextColor}`}>{winText}</div>
+                  <div className="text-gray-400 text-xs mt-1">{secToHHMMSS(match.gameDuration)}</div>
               </div>
 
-              {/* Match Stats */}
-              <div className="col-span-1 flex flex-col justify-center gap-2">
-                <MatchDetail label="KDA" value={`${participant.kills}/${participant.deaths}/${participant.assists} (${participant.kda})`} />
-                {participant.teamPosition && <MatchDetail label="Role" value={participant.teamPosition} />}
-                <MatchDetail label="Damage" value={participant.damageDealt.toString()} />
-                <MatchDetail label="Gold Earned" value={participant.goldEarned.toString()} />
-                {gameMode !== "Arena" && (
-                    <>
-                      <MatchDetail label="Vision Score" value={participant.visionScore.toString()} />
-                      <MatchDetail label="Minions" value={`${participant.minionsKilled} (${participant.minionsPerMinute})`} />
-                    </>
-                )}
-              </div>
-            </div>
+              {/* Right: Match Details */}
+              <div className="flex flex-row ml-4 flex-1">
+                  <div className="grid grid-cols-2 gap-2 text-gray-400 text-sm w-full"> {/* Changed gap-3 to gap-2 */}
+                      {/* Champion & Items */}
+                      <div className="col-span-1 flex items-center gap-2">
+                          <ChampionIcon championName={participant.championName} size={64} />
+                          {hasRunes && <RuneDisplay primaryRuneUrl={primaryRuneUrl} runePathUrl={runePathUrl} />}
+                          <ItemDisplay items={participant.items} />
+                      </div>
 
-            {/* Participants List */}
-            <div className="ml-6 border-l border-gray-700 pl-4 w-1/2">
-              <ParticipantList participants={match.participants} gameMode={gameMode} />
-            </div>
+                      {/* Match Stats */}
+                      <div className="col-span-1 flex flex-col justify-center gap-2">
+                          <MatchDetail label="KDA" value={`${participant.kills}/${participant.deaths}/${participant.assists} (${participant.kda})`} />
+                          {participant.teamPosition && <MatchDetail label="Role" value={participant.teamPosition} />}
+                          <MatchDetail label="Damage" value={participant.damageDealt.toString()} />
+                          <MatchDetail label="Gold Earned" value={participant.goldEarned.toString()} />
+                          {gameMode !== "Arena" && (
+                              <>
+                                  <MatchDetail label="Vision Score" value={participant.visionScore.toString()} />
+                                  <MatchDetail label="Minions" value={`${participant.minionsKilled} (${participant.minionsPerMinute})`} />
+                              </>
+                          )}
+                      </div>
+                  </div>
+
+                  {/* Participants List */}
+                  <div className="ml-6 border-l border-gray-700 pl-4 w-1/2">
+                      <ParticipantList participants={match.participants} gameMode={gameMode} />
+                  </div>
+              </div>
           </div>
-        </div>
       </div>
   );
 }
