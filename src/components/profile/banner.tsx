@@ -1,6 +1,6 @@
 ﻿import { BannerProps } from "@/types/interfaces";
 import Image from "next/image";
-import {getSummonerIconUrl} from "@/utils/leagueAssets";
+import { getSummonerIconUrl } from "@/utils/leagueAssets";
 
 export function Banner({ data }: BannerProps) {
     const summonerIconUrl = getSummonerIconUrl(data.profileIconId);
@@ -60,11 +60,13 @@ export function Banner({ data }: BannerProps) {
                                     {data.soloTier} {data.soloRank}
                                 </span>
                             </div>
-                            <span className="text-lg tracking-[.1em] text-center">
-                                {data.soloLP} LP <span className="text-green-400">{data.soloWins}W</span> : <span
-                                className="text-red-500">{data.soloLosses}L</span> (<span
-                                className={getWinRateColor(data.soloWR)}>{data.soloWR}%</span>)
-                            </span>
+                            <div className="flex gap-1 text-lg tracking-[.1em] text-center">
+                                <span className="text-green-400">{data.soloWins}W</span>
+                                <span>:</span>
+                                <span className="text-red-500">{data.soloLosses}L</span>
+                                <span>(<span className={getWinRateColor(data.soloWR)}>{data.soloWR}%</span>)</span>
+                            </div>
+                            <span>{data.soloLP} LP</span>
                         </div>
                         <Image
                             src={rankedSoloIconUrl}
@@ -87,11 +89,15 @@ export function Banner({ data }: BannerProps) {
                                     {data.flexTier} {data.flexRank}
                                 </span>
                             </div>
-                            <span className="text-lg tracking-[.1em] text-center">
-                                {data.flexLP} LP <span className="text-green-400">{data.flexWins}W</span> : <span
-                                className="text-red-500">{data.flexLosses}L</span> (<span
-                                className={getWinRateColor(data.flexWR)}>{data.flexWR}%</span>)
-                            </span>
+                            <div className="flex gap-1 text-lg tracking-[.1em] text-center">
+
+                                <span className="text-green-400">{data.flexWins}W</span>
+                                <span>:</span>
+                                <span className="text-red-500">{data.flexLosses}L</span>
+                                <span>(<span className={getWinRateColor(data.flexWR)}>{data.flexWR}%</span>)</span>
+
+                            </div>
+                            <span>{data.flexLP} LP</span>
                         </div>
                         <Image
                             src={rankedFlexIconUrl}

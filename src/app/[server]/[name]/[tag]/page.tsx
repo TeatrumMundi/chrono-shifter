@@ -27,25 +27,25 @@ export default function ProfilePage({ params }: { params: Promise<{ server: stri
 }
 
 async function ProfileContent({ params }: { params: Promise<{ server: string; name: string; tag: string }> }) {
-    const { getSummonerProfile } = await import("@/utils/getSummonerProfile"); // Dynamic import
-    const resolvedParams = await params; // Await the params promise
+    const { getSummonerProfile } = await import("@/utils/getSummonerProfile");
+    const resolvedParams = await params;
     const { server, name, tag } = resolvedParams;
 
     try {
-        const data = await getSummonerProfile(server, name, tag);
+        const profileData = await getSummonerProfile(server, name, tag);
 
-        if (!data) {
+        if (!profileData) {
             return <ErrorState message="Could not retrieve summoner data. Please check if the summoner exists and try again." />;
         }
 
         return (
             <>
-                <Background customUrl={await getChampionSplashUrl(data.championMasteries[0].championId)} />
+                <Background customUrl={await getChampionSplashUrl(profileData.championMasteries[0].championId)} />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="grid grid-cols-12 gap-4 mt-16">
                         <div className="col-span-12">
-                            <Banner data={data} />
-                            <MatchList data={data} puuid={data.puuid} />
+                            <Banner data={profileData} />
+                            <MatchList data={profileData} puuid={profileData.puuid} />
                         </div>
                     </div>
                 </div>
