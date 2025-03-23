@@ -25,8 +25,15 @@ export async function getChampionSplashUrl(championId: number): Promise<string> 
 
 // Champion Icon
 export const getChampionIcon = (championName: string): string => {
-    const formattedName = championName.replace(/[^a-zA-Z]/g, ""); // Remove special characters
-    return `https://ddragon.leagueoflegends.com/cdn/${GAME_VERSION}/img/champion/${formattedName}.png`;
+    const formattedName: string = championName.replace(/[^a-zA-Z]/g, ""); // Remove special characters
+
+    const fixString = (input: string): string => {
+        return input === "FiddleSticks" ? "Fiddlesticks" : input;
+    };
+
+    const fixedName : string = fixString(formattedName); // Apply fixString function
+
+    return `https://ddragon.leagueoflegends.com/cdn/${GAME_VERSION}/img/champion/${fixedName}.png`;
 };
 
 // Item Icon
@@ -54,4 +61,9 @@ export async function getRuneImageUrl(runePath: string): Promise<string> {
     }
 
     return `Rune image not found: ${imageUrl}`;
+}
+
+// Augment Icon
+export async function getAugmentImageUrl(augmentPath : string): Promise<string> {
+    return "https://raw.communitydragon.org/latest/game/" + augmentPath;
 }

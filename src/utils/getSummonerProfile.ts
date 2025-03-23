@@ -1,6 +1,7 @@
 ﻿import { fetchAccountData, fetchLeagueData, fetchMatchData, fetchSummonerData, fetchMatchDetailsData, fetchTopChampionMasteries } from "./riotApiRequests";
 import { calculateWinRatio, getRegion, getServer } from "@/utils/helper";
-import {ChampionMastery, FormatResponseReturn, MatchResponse, Ranked, RankedEntry} from "@/types/interfaces";
+import { ChampionMastery, FormatResponseReturn, MatchResponse, Ranked, RankedEntry } from "@/types/interfaces";
+import { fetchAugmentById } from "@/utils/getAugment"; // Add import for fetchAugmentById
 
 interface AccountDetails {
     puuid: string;
@@ -21,6 +22,8 @@ export async function getSummonerProfile(serverFetched: string, gameName: string
     try {
         const region : string = getRegion(serverFetched);
         const server : string = getServer(serverFetched);
+
+        await fetchAugmentById(1); // Fetch any augment to warm up the cache
 
         const accountDetails = await fetchAccountData(region, gameName, tagLine);
         const summonerDetails = await fetchSummonerData(server, accountDetails.puuid);

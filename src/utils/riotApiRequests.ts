@@ -1,4 +1,5 @@
 ﻿import {fetchFromRiotAPI} from "@/utils/fetchFromRiotAPI";
+import { fetchAugmentById } from "@/utils/getAugment";
 import {
     ChampionMastery,
     MatchData,
@@ -6,7 +7,7 @@ import {
     Ranked,
     RankedEntry,
     Rune,
-    ArenaData
+    ArenaData, Augment
 } from "@/types/interfaces";
 import {getKDA, getMinionsPerMinute, reversedServerMAP} from "@/utils/helper";
 import {getRuneById} from "@/utils/getRuneByID";
@@ -88,17 +89,25 @@ export async function fetchMatchDetailsData(region: string, server: string, matc
                 'playerAugment5' in participant ||
                 'playerAugment6' in participant
             ) {
-                const playerAugments = [
+                // Get augment IDs from participant data
+                const augmentIds = [
                     participant.playerAugment1,
                     participant.playerAugment2,
                     participant.playerAugment3,
                     participant.playerAugment4,
                     participant.playerAugment5,
                     participant.playerAugment6
-                ].filter(augment => augment !== undefined && augment !== 0);
+                ].filter(augmentId => augmentId !== undefined && augmentId !== 0) as number[];
+
+                // Fetch augment details for each ID
+                const augmentPromises = augmentIds.map(augmentId => fetchAugmentById(augmentId));
+                const augmentObjects = await Promise.all(augmentPromises);
+
+                // Filter out undefined values in case any augment wasn't found
+                const validAugments: Augment[] = augmentObjects.filter((augment): augment is Augment => augment !== undefined);
 
                 arenaData = {
-                    playerAugments,
+                    playerAugments: validAugments,
                     playerSubteamId: participant.playerSubteamId || 0
                 };
             }

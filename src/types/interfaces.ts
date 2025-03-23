@@ -43,7 +43,7 @@ export interface ItemSet {
  * Arena-specific data
  */
 export interface ArenaData {
-    playerAugments: (number | undefined)[];
+    playerAugments: Augment[];
     playerSubteamId: number;
 }
 
@@ -243,3 +243,20 @@ export interface FormatResponseReturn {
 export interface BannerProps {
     data: FormatResponseReturn;
 }
+
+export type Augment = {
+    apiName: string;
+    calculations: object;
+    dataValues: object;
+    desc: string;
+    iconLarge: string;
+    iconSmall: string;
+    id: number;
+    name: string;
+    rarity: number;
+    tooltip: string;
+};
+
+export type AugmentData = {
+    augments: Augment[];
+};
