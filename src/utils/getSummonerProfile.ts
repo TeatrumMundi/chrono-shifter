@@ -1,7 +1,12 @@
-﻿import { fetchAccountData, fetchLeagueData, fetchMatchData, fetchSummonerData, fetchMatchDetailsData, fetchTopChampionMasteries } from "./riotApiRequests";
-import { calculateWinRatio, getRegion, getServer } from "@/utils/helper";
+﻿import { calculateWinRatio, getRegion, getServer } from "@/utils/helper";
 import { ChampionMastery, FormatResponseReturn, MatchResponse, Ranked, RankedEntry } from "@/types/interfaces";
-import { fetchAugmentById } from "@/utils/getAugment"; // Add import for fetchAugmentById
+import { fetchAugmentById } from "@/utils/getAugment";
+import {fetchMatchDetailsData} from "@/utils/riotApiRequest/fetchMatchDetailsData";
+import {fetchAccountData} from "@/utils/riotApiRequest/fetchAccountData";
+import {fetchSummonerData} from "@/utils/riotApiRequest/fetchSummonerData";
+import {fetchLeagueData} from "@/utils/riotApiRequest/fetchLeagueData";
+import {fetchTopChampionMasteries} from "@/utils/riotApiRequest/fetchTopChampionMasteries";
+import {fetchMatchData} from "@/utils/riotApiRequest/fetchMatchData";
 
 interface AccountDetails {
     puuid: string;

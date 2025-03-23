@@ -1,15 +1,37 @@
-﻿import { BannerProps } from "@/types/interfaces";
+﻿"use client"
+
+import { useEffect, useState } from "react";
+import { BannerProps } from "@/types/interfaces";
 import Image from "next/image";
 import { getSummonerIconUrl } from "@/utils/leagueAssets";
 
 export function Banner({ data }: BannerProps) {
-    const summonerIconUrl = getSummonerIconUrl(data.profileIconId);
+    const [summonerIconUrl, setSummonerIconUrl] = useState<string | null>(null);
+
+    // Fetch the summoner icon URL asynchronously
+    useEffect(() => {
+        // Immediately Invoked Function Expression (IIFE) to handle the async operation
+        (async () => {
+            try {
+                const url = await getSummonerIconUrl(data.profileIconId);
+                setSummonerIconUrl(url);
+            } catch (error) {
+                console.error("Failed to fetch summoner icon URL:", error);
+            }
+        })();
+    }, [data.profileIconId]);
+
     const rankedSoloIconUrl = `/rankedIcons/${data.soloTier.toLowerCase()}.png`;
     const rankedFlexIconUrl = `/rankedIcons/${data.flexTier.toLowerCase()}.png`;
 
     const getWinRateColor = (winRate: number) => {
         return winRate >= 50 ? "text-green-400" : "text-red-500";
     };
+
+    // If the summoner icon URL is not yet available, show a loading state
+    if (!summonerIconUrl) {
+        return <div>Loading summoner icon...</div>;
+    }
 
     return (
         <div className="flex flex-col md:grid md:grid-cols-[auto_1fr] gap-4 items-center bg-gray-900/70 rounded-lg shadow-lg p-6">
@@ -22,6 +44,8 @@ export function Banner({ data }: BannerProps) {
                         fill
                         sizes="(max-width: 768px) 80px, (max-width: 1024px) 96px, 128px"
                         className="rounded-lg border-gray-500 object-cover aspect-square"
+                        priority={true}
+                        quality={40}
                     />
                 </div>
                 <div className="absolute bottom-0 w-full bg-black/70 rounded-b-lg px-2 py-1 text-xs text-white text-center shadow-md tracking-[.25em]">
@@ -74,6 +98,7 @@ export function Banner({ data }: BannerProps) {
                             width={110}
                             height={110}
                             className="hidden xl:block"
+                            priority={true}
                         />
                     </div>
 
@@ -90,12 +115,10 @@ export function Banner({ data }: BannerProps) {
                                 </span>
                             </div>
                             <div className="flex gap-1 text-lg tracking-[.1em] text-center">
-
                                 <span className="text-green-400">{data.flexWins}W</span>
                                 <span>:</span>
                                 <span className="text-red-500">{data.flexLosses}L</span>
                                 <span>(<span className={getWinRateColor(data.flexWR)}>{data.flexWR}%</span>)</span>
-
                             </div>
                             <span>{data.flexLP} LP</span>
                         </div>
@@ -105,6 +128,7 @@ export function Banner({ data }: BannerProps) {
                             width={110}
                             height={110}
                             className="hidden xl:block"
+                            priority={true}
                         />
                     </div>
                 </div>

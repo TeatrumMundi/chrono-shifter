@@ -4,7 +4,7 @@
 const GAME_VERSION = process.env.NEXT_PUBLIC_GAME_VERSION || "15.6.1";
 
 // Summoner Icon
-export function getSummonerIconUrl(profileIconId: string): string {
+export async function getSummonerIconUrl(profileIconId: string): Promise<string> {
     return `https://ddragon.leagueoflegends.com/cdn/${GAME_VERSION}/img/profileicon/${profileIconId}.png`;
 }
 

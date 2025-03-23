@@ -1,38 +1,31 @@
-﻿import Image from 'next/image';
+﻿import { useMemo } from "react";
+import Image from "next/image";
 
 interface BackgroundProps {
     customUrl?: string;
 }
 
-function getRandomImage(max_number: number): string {
-    const randomNumber = Math.floor(Math.random() * (max_number-1)) + 1;
+function getRandomImage(maxNumber: number): string {
+    const randomNumber = Math.floor(Math.random() * maxNumber) + 1;
     return `/main/${randomNumber}.jpg`;
 }
 
 export function Background({ customUrl }: BackgroundProps) {
+    const backgroundImageUrl = useMemo(() => {
+        return customUrl && isValidUrl(customUrl) ? customUrl : getRandomImage(12);
+    }, [customUrl]);
 
-    const isValidUrl = (url: string): boolean => {
-        try {
-            new URL(url);
-            return true;
-        } catch {
-            return false;
-        }
-    };
-
-    // Determine the background image URL
-    const backgroundImageUrl = customUrl && isValidUrl(customUrl)
-        ? customUrl
-        : getRandomImage(12);
+    const isValid: boolean = isValidUrl(backgroundImageUrl);
 
     return (
         <div className="fixed inset-0 min-h-screen -z-10">
-            {isValidUrl(backgroundImageUrl) ? (
+            {isValid ? (
                 <Image
                     src={backgroundImageUrl}
                     alt="Background"
                     fill
-                    priority={true}
+                    priority
+                    quality={75}
                     className="object-cover"
                 />
             ) : (
@@ -44,4 +37,13 @@ export function Background({ customUrl }: BackgroundProps) {
             <div className="absolute inset-0 bg-gradient-to-r from-violet-600/50 to-indigo-600/50"></div>
         </div>
     );
+}
+
+function isValidUrl(url: string): boolean {
+    try {
+        new URL(url);
+        return true;
+    } catch {
+        return false;
+    }
 }

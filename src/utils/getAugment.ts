@@ -14,6 +14,3 @@ export async function fetchAugmentById(id: number): Promise<Augment | undefined>
         return undefined;
     }
 }
-
-// Example usage
-fetchAugmentById(93).then(augment => console.log(augment));

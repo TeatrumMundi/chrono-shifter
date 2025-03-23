@@ -1,8 +1,13 @@
-﻿import { Suspense } from 'react';
+﻿import { Suspense, cache } from "react";
 import { MatchList, Banner, ErrorState } from "@/components/profile";
-import { Metadata } from 'next';
+import { Metadata } from "next";
 import { getChampionSplashUrl } from "@/utils/leagueAssets";
 import { Background } from "@/components/common";
+
+// Cache function for Background URL
+const getCachedBackground = cache(async (championId: number) => {
+    return await getChampionSplashUrl(championId);
+});
 
 function ProfileSkeleton() {
     return (
@@ -38,9 +43,11 @@ async function ProfileContent({ params }: { params: Promise<{ server: string; na
             return <ErrorState message="Could not retrieve summoner data. Please check if the summoner exists and try again." />;
         }
 
+        const backgroundUrl = await getCachedBackground(profileData.championMasteries[0].championId);
+
         return (
             <>
-                <Background customUrl={await getChampionSplashUrl(profileData.championMasteries[0].championId)} />
+                <Background customUrl={backgroundUrl} />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="grid grid-cols-12 gap-4 mt-16">
                         <div className="col-span-12">
