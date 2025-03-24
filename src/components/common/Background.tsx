@@ -11,29 +11,29 @@ function getRandomImage(maxNumber: number): string {
 }
 
 export function Background({ customUrl }: BackgroundProps) {
-    const backgroundImageUrl = useMemo(() => {
-        return customUrl && isValidUrl(customUrl) ? customUrl : getRandomImage(12);
+    const backgroundImageUrl = useMemo<string | undefined>(() => {
+        if (customUrl && isValidUrl(customUrl)) {
+            return customUrl;
+        }
+        const randomImage = getRandomImage(12);
+        return isValidUrl(randomImage) ? randomImage : undefined;
     }, [customUrl]);
 
-    const isValid: boolean = isValidUrl(backgroundImageUrl);
+    if (!backgroundImageUrl) {
+        console.error("No valid background image URL available.");
+        return <div className="fixed inset-0 min-h-screen -z-10 bg-gray-800" />;
+    }
 
     return (
         <div className="fixed inset-0 min-h-screen -z-10">
-            {isValid ? (
-                <Image
-                    src={backgroundImageUrl}
-                    alt="Background"
-                    fill
-                    priority
-                    quality={75}
-                    className="object-cover"
-                />
-            ) : (
-                <div
-                    className="bg-cover bg-center bg-no-repeat min-h-screen"
-                    style={{ backgroundImage: `url(${backgroundImageUrl})` }}
-                />
-            )}
+            <Image
+                src={backgroundImageUrl}
+                alt="Background"
+                fill
+                priority
+                quality={75}
+                className="object-cover"
+            />
             <div className="absolute inset-0 bg-gradient-to-r from-violet-600/50 to-indigo-600/50"></div>
         </div>
     );

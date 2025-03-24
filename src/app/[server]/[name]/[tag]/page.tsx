@@ -1,8 +1,8 @@
 ﻿import { Suspense, cache } from "react";
 import { MatchList, Banner, ErrorState } from "@/components/profile";
 import { Metadata } from "next";
-import { getChampionSplashUrl } from "@/utils/leagueAssets";
 import { Background } from "@/components/common";
+import {getChampionSplashUrl} from "@/utils/getLOLAssets/getChampionSplash";
 
 // Cache function for Background URL
 const getCachedBackground = cache(async (championId: number) => {
@@ -43,7 +43,7 @@ async function ProfileContent({ params }: { params: Promise<{ server: string; na
             return <ErrorState message="Could not retrieve summoner data. Please check if the summoner exists and try again." />;
         }
 
-        const backgroundUrl = await getCachedBackground(profileData.championMasteries[0].championId);
+        const backgroundUrl = (await getCachedBackground(profileData.championMasteries[0].championId)) || undefined;
 
         return (
             <>
