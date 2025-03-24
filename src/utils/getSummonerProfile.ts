@@ -1,73 +1,171 @@
-﻿import { calculateWinRatio, getRegion, getServer } from "@/utils/helper";
+﻿/**
+ * Functions for fetching and formatting League of Legends summoner profiles using Riot API
+ * @module summonerProfile
+ */
+
+import { calculateWinRatio, getRegion, getServer } from "@/utils/helper";
 import { ChampionMastery, FormatResponseReturn, MatchResponse, Ranked, RankedEntry } from "@/types/interfaces";
 import { fetchAugmentById } from "@/utils/getAugment";
-import {fetchMatchDetailsData} from "@/utils/riotApiRequest/fetchMatchDetailsData";
-import {fetchAccountData} from "@/utils/riotApiRequest/fetchAccountData";
-import {fetchSummonerData} from "@/utils/riotApiRequest/fetchSummonerData";
-import {fetchLeagueData} from "@/utils/riotApiRequest/fetchLeagueData";
-import {fetchTopChampionMasteries} from "@/utils/riotApiRequest/fetchTopChampionMasteries";
-import {fetchMatchData} from "@/utils/riotApiRequest/fetchMatchData";
+import {
+    fetchMatchDetailsData,
+    fetchAccountData,
+    fetchSummonerData,
+    fetchLeagueData,
+    fetchTopChampionMasteries,
+    fetchMatchData
+} from "@/utils/riotApiRequest";
+import { AccountDetails } from "@/utils/riotApiRequest/fetchAccountData";
+import { SummonerDetails } from "./riotApiRequest/fetchSummonerData";
 
-interface AccountDetails {
-    puuid: string;
-    gameName: string;
-    tagLine: string;
+/**
+ * Enum for standardizing queue types
+ */
+enum QueueType {
+    SOLO = "RANKED_SOLO_5x5",
+    FLEX = "RANKED_FLEX_SR"
 }
-interface SummonerDetails {
-    id: string;
-    profileIconId: string;
-    summonerLevel: string;
+
+/**
+ * Number of recent matches to retrieve
+ */
+const RECENT_MATCHES_COUNT = 5;
+
+/**
+ * Custom error class for handling Riot API related errors
+ */
+class RiotAPIError extends Error {
+    constructor(message: string, public originalError?: Error) {
+        super(message);
+        this.name = "RiotAPIError";
+    }
 }
+
+/**
+ * Combines account details, summoner details, ranked data, match history,
+ * and champion masteries into a single type
+ */
 type FormattedResponse = AccountDetails & SummonerDetails & Ranked & {
     match: MatchResponse[];
     championMasteries: ChampionMastery[];
 };
 
-export async function getSummonerProfile(serverFetched: string, gameName: string, tagLine: string) {
+/**
+ * Fetches and compiles complete summoner profile data from Riot API
+ *
+ * @param serverFetched - The server identifier (e.g., 'na1', 'euw1')
+ * @param gameName - The summoner's in-game name
+ * @param tagLine - The summoner's tag line (e.g., '#NA1')
+ * @returns Formatted summoner profile data or null if an error occurs
+ */
+export async function getSummonerProfile(serverFetched: string, gameName: string, tagLine: string): Promise<FormatResponseReturn | null> {
     try {
-        const region : string = getRegion(serverFetched);
-        const server : string = getServer(serverFetched);
+        // Convert server code to region and server identifiers
+        const region: string = getRegion(serverFetched);
+        const server: string = getServer(serverFetched);
 
-        await fetchAugmentById(1); // Fetch any augment to warm up the cache
+        // Fetch account details first as they're required for subsequent calls
+        const accountDetails: AccountDetails = await fetchAccountData(region, gameName, tagLine);
 
-        const accountDetails = await fetchAccountData(region, gameName, tagLine);
-        const summonerDetails = await fetchSummonerData(server, accountDetails.puuid);
-        const rankedDataMap: Ranked = await fetchLeagueData(server, summonerDetails.id);
-        const championMasteries: ChampionMastery[] = await fetchTopChampionMasteries(server, accountDetails.puuid);
+        if (!accountDetails || !accountDetails.puuid) {
+            console.error("Failed to retrieve account details");
+            return null;
+        }
+
+        // Fetch summoner details as they're required for league data
+        const summonerDetails: SummonerDetails = await fetchSummonerData(server, accountDetails.puuid);
+
+        if (!summonerDetails || !summonerDetails.id) {
+            console.error("Failed to retrieve summoner details");
+            return null;
+        }
+
+        // Fetch remaining data in parallel since they're independent
+        const [rankedDataMap, championMasteries, matchIds] = await Promise.all([
+            fetchLeagueData(server, summonerDetails.id),
+            fetchTopChampionMasteries(server, accountDetails.puuid),
+            fetchMatchData(region, accountDetails.puuid, "", RECENT_MATCHES_COUNT),
+            // Cache warming happens in parallel and doesn't block other requests
+            fetchAugmentById(1).catch(error => {
+                console.warn("Cache warming failed, but continuing:", error);
+                return null;
+            })
+        ]);
+
+        // Fetch match details in parallel
         const match: MatchResponse[] = await Promise.all(
-            (await fetchMatchData(region, accountDetails.puuid, "", 100)).slice(0, 5).map(matchID =>
+            matchIds.map(matchID =>
                 fetchMatchDetailsData(region, server, matchID)
+                    .catch(error => {
+                        console.warn(`Failed to fetch match ${matchID}:`, error);
+                        return null;
+                    })
             )
-        );
+        ).then(results => results.filter(Boolean) as MatchResponse[]);
 
-        return formatResponse({ ...accountDetails, ...summonerDetails, ...rankedDataMap, match, championMasteries });
+        // Format all collected data into a standardized response
+        return formatResponse({
+            ...accountDetails,
+            ...summonerDetails,
+            ...rankedDataMap,
+            match,
+            championMasteries: championMasteries || []
+        });
     } catch (error) {
-        console.error("Error fetching data:", error);
-        return null;
+        const errorMessage: string = error instanceof Error ? error.message : "Unknown error";
+        console.error(`Error fetching summoner profile for ${gameName}#${tagLine} on ${serverFetched}:`, error);
+
+        // If it's already our custom error type, just re-throw it
+        if (error instanceof RiotAPIError) {throw error;}
+
+        // Otherwise, wrap it in our custom error
+        throw new RiotAPIError(`Failed to get summoner profile: ${errorMessage}`, error instanceof Error ? error : undefined);
     }
 }
 
-function formatResponse(data: FormattedResponse): FormatResponseReturn {
-    // Find entries by their queueType rather than array position
-    const soloEntry: RankedEntry | null =
-        data.RankedEntry?.find(entry => entry.queueType === "RANKED_SOLO_5x5") || null;
-    const flexEntry: RankedEntry | null =
-        data.RankedEntry?.find(entry => entry.queueType === "RANKED_FLEX_SR") || null;
+/**
+ * Extracts ranked data for a specific queue type
+ *
+ * @param entries - Collection of ranked entries
+ * @param queueType - The queue type to extract
+ * @returns The ranked entry or null if not found
+ */
+function extractRankedEntry(entries: RankedEntry[] | undefined, queueType: QueueType): RankedEntry | null {
+    return entries?.find(entry => entry.queueType === queueType) || null;
+}
 
+/**
+ * Formats the raw response data into a standardized structure
+ * Extracts solo and flex queue ranked data and calculates win ratios
+ *
+ * @param data - Combined raw data from various API calls
+ * @returns Formatted and enhanced summoner profile data
+ */
+function formatResponse(data: FormattedResponse): FormatResponseReturn {
+    // Extract queue specific data using helper function
+    const soloEntry = extractRankedEntry(data.entries, QueueType.SOLO);
+    const flexEntry = extractRankedEntry(data.entries, QueueType.FLEX);
+
+    // Return formatted data with calculated fields and safe defaults
     return {
         ...data,
+        // Solo queue data
         soloTier: soloEntry?.tier || "Unranked",
         soloRank: soloEntry?.rank || "",
         soloWins: soloEntry?.wins || 0,
         soloLosses: soloEntry?.losses || 0,
         soloLP: soloEntry?.leaguePoints || 0,
         soloWR: calculateWinRatio(soloEntry?.wins || 0, soloEntry?.losses || 0),
+
+        // Flex queue data
         flexTier: flexEntry?.tier || "Unranked",
         flexRank: flexEntry?.rank || "",
         flexWins: flexEntry?.wins || 0,
         flexLosses: flexEntry?.losses || 0,
         flexLP: flexEntry?.leaguePoints || 0,
         flexWR: calculateWinRatio(flexEntry?.wins || 0, flexEntry?.losses || 0),
+
+        // Other data
         championMasteries: data.championMasteries || [],
+        match: data.match || [],
     };
 }

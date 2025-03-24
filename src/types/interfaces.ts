@@ -137,7 +137,7 @@ export interface RankedEntry {
  * Collection of ranked entries
  */
 export interface Ranked {
-    RankedEntry: RankedEntry[];
+    entries: RankedEntry[];
 }
 
 /**
