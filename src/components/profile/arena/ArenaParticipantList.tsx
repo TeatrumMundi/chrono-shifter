@@ -1,17 +1,17 @@
 ﻿import React, { useMemo } from 'react';
 import Link from 'next/link';
 import {ProcessedParticipant} from "@/types/interfaces";
-import {ChampionIcon} from "@/components/profile/MatchList";
+import {ChampionIcon} from "@/components/profile/match";
 
-const TEAM_COLORS : string[] = [
-    'bg-blue-900/30',
-    'bg-red-900/30',
-    'bg-green-900/30',
-    'bg-purple-900/30',
-    'bg-yellow-900/30',
-    'bg-cyan-900/30',
-    'bg-pink-900/30',
-    'bg-orange-900/30'
+const TEAM_COLORS: string[] = [
+    'bg-yellow-800/60',
+    'bg-cyan-800/60',
+    'bg-blue-800/60',
+    'bg-purple-800/60',
+    'bg-orange-800/60',
+    'bg-pink-800/60',
+    'bg-teal-800/60',
+    'bg-indigo-800/60'
 ];
 
 export function ArenaParticipantList({participants, server}: {

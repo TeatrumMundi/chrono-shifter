@@ -1,8 +1,9 @@
 ﻿import { Suspense, cache } from "react";
-import { MatchList, Banner, ErrorState } from "@/components/profile";
+import { Banner, ErrorState } from "@/components/profile";
 import { Metadata } from "next";
 import { Background } from "@/components/common";
-import {getChampionSplashUrl} from "@/utils/getLOLAssets/getChampionSplash";
+import {getChampionSplashUrl} from "@/utils/getLeagueOfLegendsAssets/getChampionSplash";
+import {MatchList} from "@/components/profile/match";
 
 // Cache function for Background URL
 const getCachedBackground = cache(async (championId: number) => {

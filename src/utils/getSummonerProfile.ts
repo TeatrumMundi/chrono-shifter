@@ -26,11 +26,6 @@ enum QueueType {
 }
 
 /**
- * Number of recent matches to retrieve
- */
-const RECENT_MATCHES_COUNT = 5;
-
-/**
  * Custom error class for handling Riot API related errors
  */
 class RiotAPIError extends Error {
@@ -55,9 +50,15 @@ type FormattedResponse = AccountDetails & SummonerDetails & Ranked & {
  * @param serverFetched - The server identifier (e.g., 'na1', 'euw1')
  * @param gameName - The summoner's in-game name
  * @param tagLine - The summoner's tag line (e.g., '#NA1')
+ * @param matchCount - How many match details must be fetched, default = 5
  * @returns Formatted summoner profile data or null if an error occurs
  */
-export async function getSummonerProfile(serverFetched: string, gameName: string, tagLine: string): Promise<FormatResponseReturn | null> {
+export async function getSummonerProfile(
+    serverFetched: string,
+    gameName: string,
+    tagLine: string,
+    matchCount = 5
+): Promise<FormatResponseReturn | null> {
     try {
         // Convert server code to region and server identifiers
         const region: string = getRegion(serverFetched);
@@ -83,7 +84,7 @@ export async function getSummonerProfile(serverFetched: string, gameName: string
         const [rankedDataMap, championMasteries, matchIds] = await Promise.all([
             fetchLeagueData(server, summonerDetails.id),
             fetchTopChampionMasteries(server, accountDetails.puuid),
-            fetchMatchData(region, accountDetails.puuid, "", RECENT_MATCHES_COUNT),
+            fetchMatchData(region, accountDetails.puuid, "", matchCount),
             // Cache warming happens in parallel and doesn't block other requests
             fetchAugmentById(1).catch(error => {
                 console.warn("Cache warming failed, but continuing:", error);

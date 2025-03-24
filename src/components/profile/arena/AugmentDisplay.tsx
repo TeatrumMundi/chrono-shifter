@@ -1,4 +1,6 @@
-﻿import React, { useState, useEffect } from "react";
+﻿"use client"
+
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { getAugmentImageUrl } from "@/utils/leagueAssets";
 import { BoxPlaceHolder } from "@/components/common";
@@ -8,9 +10,9 @@ import { motion } from "framer-motion";
 // Rarity colors mapping for text and background
 const rarityColors = ["text-slate-400", "text-yellow-400", "text-fuchsia-500"]; // Text colors
 const rarityBgColors = [
-    "bg-slate-400/20", // Silver with 20% opacity
-    "bg-yellow-400/20", // Gold with 20% opacity
-    "bg-fuchsia-500/20", // Prismatic with 20% opacity
+    "bg-slate-400/30", // Silver with 20% opacity
+    "bg-yellow-400/30", // Gold with 20% opacity
+    "bg-fuchsia-500/30", // Prismatic with 20% opacity
 ];
 const rarityNames = ["Silver", "Gold", "Prismatic"];
 
@@ -87,31 +89,34 @@ export function AugmentDisplay({ augments }: { augments: Augment[] }) {
                                     <motion.div
                                         initial={{
                                             opacity: 0,
-                                            scale: 0.5,  // Decrease scale to make it smaller
+                                            scale: 0.5,
                                             y: -20,
                                             transformOrigin: "bottom center"
                                         }}
                                         animate={{
                                             opacity: 1,
-                                            scale: 0.8,  // Smaller scale when hovered
+                                            scale: 1,  // Full scale so the content displays fully
                                             y: 0
                                         }}
                                         exit={{
                                             opacity: 0,
-                                            scale: 0.5,  // Decrease scale for exit as well
+                                            scale: 0.5,
                                             y: -10
                                         }}
                                         transition={{
                                             duration: 0.2,
-                                            ease: [0.175, 0.885, 0.32, 1.275] // Custom "spring" ease
+                                            ease: [0.175, 0.885, 0.32, 1.275]
                                         }}
-                                        className="absolute left-1/2 -translate-x-1/2 bottom-12 w-44 p-2 bg-gray-900 text-white rounded-lg shadow-lg z-10 text-sm tracking-normal"  // Adjust width (w-44) and padding (p-2)
+                                        // Fixed width (w-60 sets a width of 15rem) to encourage text wrapping and reduce overall height.
+                                        className="absolute left-1/2 -translate-x-1/2 bottom-12 w-60 p-2 bg-gray-900 text-white rounded-lg shadow-lg z-10 text-sm tracking-normal"
                                     >
                                         <div className="flex justify-between items-center mb-1">
                                             <span className="font-bold">{augment.name}</span>
                                             <span className={`font-bold ${rarityColors[augment.rarity]}`}>{rarityNames[augment.rarity]}</span>
                                         </div>
-                                        <p className="text-gray-200 text-xs">{cleanText(augment.desc)}</p>
+                                        <p className="text-gray-200 text-xs whitespace-normal break-words">
+                                            {cleanText(augment.desc)}
+                                        </p>
 
                                         {/* Arrow pointing to the hovered element */}
                                         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-gray-900 transform rotate-45"></div>
