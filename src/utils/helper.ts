@@ -177,3 +177,11 @@ export function getMinionsPerMinute(seconds: number, totalMinions: number): stri
     if (minutes === 0) return "0"; // Avoid division by zero
     return (totalMinions / minutes).toFixed(2);
 }
+export function formatRole(position?: string): string {
+    const roleMap: Record<string, string> = {
+        BOTTOM: "ADC",
+        UTILITY: "Support",
+        MIDDLE: "Mid",
+    };
+    return roleMap[position?.toUpperCase() ?? ""] || position || "";
+}
