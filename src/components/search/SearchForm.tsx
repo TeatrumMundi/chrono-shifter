@@ -1,72 +1,42 @@
 ﻿"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useActionState } from "react";
 import RegionSelector from "./RegionSelector";
+import {handleSearch} from "@/components/search/handleSearch";
 
-export function SearchForm() {
-    const router = useRouter();
-    const [error, setError] = useState<string | null>(null);
-    const [inputError, setInputError] = useState<string | null>(null);
+const initialState = {
+    error: null as string | null,
+};
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        const formData = new FormData(e.currentTarget);
-        const server = formData.get("server") as string;
-        const nickTag = formData.get("nickTag") as string;
-
-        // Validate input
-        if (!nickTag || !server) {
-            setError("Please enter a summoner name and server");
-            return;
-        }
-
-        // Parse summoner name and tag
-        const parts = nickTag.split('#');
-        const name = parts[0];
-        const tag = parts[1] || '';
-
-        if (!name || !tag) {
-            setError("Please enter a valid RIOT ID gameName#TAG");
-            return;
-        }
-
-        // Navigate to profile page
-        router.push(`/${server}/${name}/${tag}`);
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        if (!value) {
-            setInputError('Please fill out this field');
-        } else {
-            setInputError(null);
-        }
-    };
+export default function SearchForm() {
+    const [state, formAction, isPending] = useActionState(handleSearch, initialState);
 
     return (
         <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl px-4">
-            <form onSubmit={handleSubmit} className="relative flex items-center">
-                <RegionSelector />
+            <form action={formAction} className="relative flex items-center">
+                <div className="flex w-full">
+                    <RegionSelector />
 
-                <input
-                    type="text"
-                    name="nickTag"
-                    placeholder="NICKNAME#TAG"
-                    className="flex-1 pl-2 pr-[50px] xs:pr-[60px] py-2 text-xs xs:pl-4 xs:py-3 xs:text-sm sm:text-base md:text-lg lg:text-xl rounded-r-lg bg-white/20 backdrop-blur-sm border border-white/30 focus:outline-none focus:border-white/50 text-white placeholder-white/70 tracking-[.25em]"
-                    autoComplete="off"
-                    spellCheck="false"
-                    maxLength={22}
-                    onChange={handleInputChange}
-                />
+                    <input
+                        type="text"
+                        name="nickTag"
+                        placeholder="NICKNAME#TAG"
+                        className="flex-1 px-3 py-2 text-sm xs:text-base sm:text-lg md:text-xl bg-white/20 backdrop-blur-sm border-t border-b border-r border-white/30 rounded-r-lg focus:outline-none focus:border-white/50 text-white placeholder-white/70 tracking-widest"
+                        autoComplete="off"
+                        spellCheck="false"
+                        maxLength={22}
+                        required
+                    />
+                </div>
 
                 <button
                     type="submit"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 rounded p-2 aspect-square transition-all duration-200 ease-in-out hover:scale-105"
+                    disabled={isPending}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 rounded p-1.5 aspect-square transition duration-200 ease-in-out hover:scale-105 disabled:opacity-50"
+                    aria-label="Search"
                 >
                     <svg
-                        className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 text-white"
+                        className="w-4 h-4 sm:w-5 sm:h-5 text-white"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -82,17 +52,13 @@ export function SearchForm() {
                 </button>
             </form>
 
-            {inputError && (
-                <div className="mt-2 p-2 bg-red-900/80 backdrop-blur-sm rounded text-white text-sm tracking-wide font-sans text-center">
-                    {inputError}
-                </div>
-            )}
-
-            {error && (
-                <div className="mt-2 p-2 bg-red-900/80 backdrop-blur-sm rounded text-white text-sm tracking-wide font-sans text-center">
-                    {error}
-                </div>
-            )}
+            <div className="mt-2 min-h-[2.5rem]">
+                {state.error && (
+                    <div className="p-2 bg-red-900/80 backdrop-blur-sm rounded text-white text-sm text-center tracking-widest">
+                        {state.error}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
