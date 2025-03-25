@@ -38,8 +38,8 @@ export function ArenaParticipantList({participants, server}: {
     );
 
     return (
-        <div className="text-sm text-gray-400 tracking-normal">
-            <div className="grid grid-cols-2 gap-2">
+        <div className="h-full text-sm text-gray-400 tracking-normal">
+            <div className="grid grid-cols-2 gap-2 h-full">
                 {sortedTeamIds.map((teamId, index) => (
                     <div
                         key={teamId}
@@ -61,5 +61,6 @@ export function ArenaParticipantList({participants, server}: {
                 ))}
             </div>
         </div>
+
     );
 }

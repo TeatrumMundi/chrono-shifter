@@ -24,7 +24,7 @@ export function ChampionIcon({championName, size}: { championName: string; size:
             alt={championName}
             width={size}
             height={size}
-            className="rounded-full border border-gray-600"
+            className="rounded-2xl border border-gray-600"
             onError={() => setError(true)}
         />
     );

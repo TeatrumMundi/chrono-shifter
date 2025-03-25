@@ -61,8 +61,8 @@ function StandardParticipantList({
     }, [participants]);
 
     return (
-        <div className="text-xs text-gray-400 tracking-normal w-full">
-            <div className="flex flex-col gap-1 w-full">
+        <div className="h-full w-full text-xs text-gray-400 tracking-normal">
+            <div className="grid grid-rows-5 gap-1 h-full">
                 {Array.from({ length: 5 }).map((_, i) => {
                     const leftPlayer = teams.leftTeam[i];
                     const rightPlayer = teams.rightTeam[i];
@@ -70,11 +70,11 @@ function StandardParticipantList({
                     return (
                         <div
                             key={i}
-                            className="flex flex-col sm:flex-row items-stretch sm:items-center w-full gap-1 sm:gap-2"
+                            className="flex flex-row items-stretch w-full gap-2 h-full"
                         >
                             {/* Left Player */}
-                            <div className="flex items-center justify-between bg-blue-900/80 p-1 rounded w-full sm:w-[49%] hover:bg-blue-900/60 transition-colors">
-                                {leftPlayer && (
+                            <div className="flex items-center justify-between bg-blue-900/80 p-1 rounded flex-1 hover:bg-blue-900/40 transition-colors h-full">
+                            {leftPlayer && (
                                     <>
                                         <Link
                                             href={`/${server}/${leftPlayer.riotIdGameName}/${leftPlayer.riotIdTagline}`}
@@ -93,8 +93,8 @@ function StandardParticipantList({
                             </div>
 
                             {/* Right Player */}
-                            <div className="flex items-center justify-between gap-1 bg-violet-900/80 p-1 rounded w-full sm:w-[49%] hover:bg-violet-900/60 transition-colors">
-                                {rightPlayer && (
+                            <div className="flex items-center justify-between gap-1 bg-violet-900/80 p-1 rounded flex-1 hover:bg-violet-900/40 transition-colors h-full">
+                            {rightPlayer && (
                                     <>
                                         <ChampionIcon
                                             championName={rightPlayer.championName}

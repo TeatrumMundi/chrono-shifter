@@ -107,7 +107,6 @@ export function AugmentDisplay({ augments }: { augments: Augment[] }) {
                                             duration: 0.2,
                                             ease: [0.175, 0.885, 0.32, 1.275]
                                         }}
-                                        // Fixed width (w-60 sets a width of 15rem) to encourage text wrapping and reduce overall height.
                                         className="absolute left-1/2 -translate-x-1/2 bottom-12 w-60 p-2 bg-gray-900 text-white rounded-lg shadow-lg z-10 text-sm tracking-normal"
                                     >
                                         <div className="flex justify-between items-center mb-1">
