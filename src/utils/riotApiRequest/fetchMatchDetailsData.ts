@@ -49,7 +49,7 @@ export async function fetchMatchDetailsData(region: string, server: string, matc
  */
 async function processParticipant(participant: Participant, server: string, gameDuration: number): Promise<ProcessedParticipant> {
     // Fetch runes and arena data for the participant
-    const runes = await fetchParticipantRunes(participant);
+    const runes : Rune[] = await fetchParticipantRunes(participant);
     const arenaData = await fetchArenaDataIfExists(participant);
 
     return {

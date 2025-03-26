@@ -110,7 +110,6 @@ export interface ProcessedParticipant extends PlayerIdentity {
     kda: string;
     visionScore: number;
     visionPerMinute: string;
-    items: Item[];
     damageDealt: number;
     goldEarned: number;
     wardsPlaced: number;
@@ -118,10 +117,11 @@ export interface ProcessedParticipant extends PlayerIdentity {
     totalDamageShieldedOnTeammates : number;
     minionsKilled: number;
     minionsPerMinute: string;
-    runes: Rune[];
     win: string;
     teamId: number;
     arenaData?: ArenaData;
+    runes: Rune[];
+    items: Item[];
 }
 
 /**

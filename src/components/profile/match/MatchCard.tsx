@@ -30,7 +30,6 @@ const getOrdinalPlacement = (placement: number) => {
     return placement + (ordinals[(v - 20) % 10] || ordinals[v] || ordinals[0]);
 };
 
-
 export function MatchCard({ participant, match, server }: MatchCardProps) {
     const [runeInfo, setRuneInfo] = useState({
         primaryRuneUrl: "",
