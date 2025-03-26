@@ -18,7 +18,12 @@ function StandardItemDisplay({ items }: { items: number[] }) {
                                 className="rounded-md border border-gray-600"
                             />
                         ) : (
-                            <BoxPlaceHolder key={`placeholder-${startIdx}-${index}`} />
+                            <div
+                                key={`placeholder-${startIdx}-${index}`}
+                                className="w-[32px] h-[32px] aspect-square"
+                            >
+                                <BoxPlaceHolder />
+                            </div>
                         )
                     )}
                 </div>

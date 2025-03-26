@@ -78,7 +78,7 @@ function StandardParticipantList({
                                     <>
                                         <Link
                                             href={`/${server}/${leftPlayer.riotIdGameName}/${leftPlayer.riotIdTagline}`}
-                                            className="text-xs hover:text-blue-400 transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
+                                            className="text-xs text-white hover:text-blue-400 transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
                                             title={`${leftPlayer.riotIdGameName}#${leftPlayer.riotIdTagline}`}
                                             aria-label={`View profile for ${leftPlayer.riotIdGameName}`}
                                         >
@@ -102,7 +102,7 @@ function StandardParticipantList({
                                         />
                                         <Link
                                             href={`/${server}/${rightPlayer.riotIdGameName}/${rightPlayer.riotIdTagline}`}
-                                            className="text-xs hover:text-blue-400 transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
+                                            className="text-xs text-white hover:text-blue-400 transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
                                             title={`${rightPlayer.riotIdGameName}#${rightPlayer.riotIdTagline}`}
                                             aria-label={`View profile for ${rightPlayer.riotIdGameName}`}
                                         >

@@ -14,7 +14,7 @@ const TEAM_COLORS: string[] = [
     'bg-indigo-800/60'
 ];
 
-export function ArenaParticipantList({participants, server}: {
+export function ArenaParticipantList({ participants, server }: {
     participants: ProcessedParticipant[];
     server: string;
 }) {
@@ -39,7 +39,7 @@ export function ArenaParticipantList({participants, server}: {
 
     return (
         <div className="h-full text-sm text-gray-400 tracking-normal">
-            <div className="grid grid-cols-2 gap-2 h-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 h-full">
                 {sortedTeamIds.map((teamId, index) => (
                     <div
                         key={teamId}
@@ -50,7 +50,7 @@ export function ArenaParticipantList({participants, server}: {
                                 <ChampionIcon championName={player.championName} size={16} />
                                 <Link
                                     href={`/${server}/${player.riotIdGameName}/${player.riotIdTagline}`}
-                                    className="text-sm w-[80px] truncate hover:text-blue-400 transition-colors"
+                                    className="text-sm w-[80px] truncate text-white hover:text-blue-400 transition-colors"
                                     title={player.riotIdGameName}
                                 >
                                     {player.riotIdGameName}
@@ -61,6 +61,5 @@ export function ArenaParticipantList({participants, server}: {
                 ))}
             </div>
         </div>
-
     );
 }

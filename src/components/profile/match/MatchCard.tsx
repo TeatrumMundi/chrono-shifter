@@ -59,8 +59,8 @@ export function MatchCard({ participant, match, server }: MatchCardProps) {
     }, [participant.runes]);
 
     const gameMode = queueIdToGameMode[match.queueId] || "Unknown";
-    const winText = participant.win ? "Win" : "Loss";
-    const winTextColor = participant.win ? "text-green-500" : "text-red-500";
+    const winText = participant.win ? "WIN" : "LOSS";
+    const winTextColor = participant.win ? "neon-green" : "neon-red";
     const bgColor = participant.win ? "bg-green-900/90" : "bg-red-900/90";
 
     return (
@@ -77,40 +77,42 @@ export function MatchCard({ participant, match, server }: MatchCardProps) {
                 className={`p-5 rounded-xl shadow-lg font-sans ${bgColor} ml-[4px] flex-1 overflow-visible`}
             >
                 <div className="flex flex-col sm:flex-row gap-4 w-full">
-                    {/* Summary Column */}
                     <div
-                        className="flex flex-row flex-nowrap sm:flex-col items-center justify-center text-left sm:text-center tracking-wider
-             border-b sm:border-b-0 sm:border-r border-gray-500/50
-             pb-2 sm:pb-0 sm:pr-2
-             w-full sm:w-auto sm:flex-none sm:basis-[120px] sm:min-w-[100px] sm:max-w-[140px]
-             space-x-2 sm:space-x-0 sm:space-y-1"
+                        className="flex flex-col items-center justify-center text-center tracking-wider
+                        border-b sm:border-b-0 sm:border-r border-gray-500/50
+                        pb-2 sm:pb-0 sm:pr-2
+                        w-full sm:w-auto sm:flex-none sm:basis-[120px] sm:min-w-[100px] sm:max-w-[140px]
+                        space-y-1"
                     >
-                        <div className="whitespace-nowrap sm:whitespace-normal text-base sm:text-lg font-semibold text-gray-200">
+                        {/* Game Mode */}
+                        <div className="whitespace-normal text-sm sm:text-lg font-semibold text-gray-100">
                             {gameMode}
                         </div>
-                        <div className="whitespace-nowrap sm:whitespace-normal text-xs sm:text-sm font-semibold text-gray-300">
+
+                        {/* Role */}
+                        <div className="whitespace-normal text-xs sm:text-sm font-semibold text-gray-100">
                             {formatRole(participant.teamPosition)}
                         </div>
-                        <div className="whitespace-nowrap sm:whitespace-normal text-[10px] sm:text-xs text-gray-400">
+
+                        {/* Time Ago */}
+                        <div className="whitespace-normal text-[9px] sm:text-xs text-gray-100">
                             {timeAgo(match.gameEndTimestamp)}
                         </div>
-                        <div className={`whitespace-nowrap sm:whitespace-normal text-sm sm:text-base font-medium ${winTextColor}`}>
-                            {winText}
-                        </div>
-                        <div className="whitespace-nowrap sm:whitespace-normal text-[10px] sm:text-xs text-gray-400">
-                            {secToHHMMSS(match.gameDuration)}
+
+                        {/* Duration & Win/Lose */}
+                        <div className="whitespace-normal text-xs sm:text-sm font-medium">
+                            <span className={winTextColor}>{winText}</span> {secToHHMMSS(match.gameDuration)}
                         </div>
                     </div>
-
 
                     {/* Main Content + Participant List */}
                     <div className="flex flex-col lg:flex-row flex-1 min-w-0 gap-4">
                         {/* Left: Champion + Items + Runes + Augments + Stats */}
                         <div className="flex flex-col gap-4 flex-1 sm:flex-row">
                             {/* Champion + Items + Runes + Augments */}
-                            <div className="flex flex-row sm:flex-col xl:flex-row items-center gap-1 min-w-[200px] max-w-[300px] w-full">
+                            <div className="flex flex-col sm:flex-col xl:flex-row justify-center items-center gap-1 w-full sm:min-w-[200px] sm:max-w-[300px]">
                                 {/* Champion Icon + Runes */}
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center justify-center gap-1">
                                     <ChampionIcon championName={participant.championName} size={72} />
                                     {runeInfo.hasRunes && (
                                         <div className="flex-shrink-0 w-[40px] min-w-[40px]">
@@ -123,7 +125,7 @@ export function MatchCard({ participant, match, server }: MatchCardProps) {
                                 </div>
 
                                 {/* Items and Augments */}
-                                <div className="flex flex-row sm:flex-col 2xl:flex-row items-center gap-3 justify-center">
+                                <div className="flex flex-row sm:flex-col 2xl:flex-row justify-center items-center gap-3">
                                     <ItemDisplay itemsIDs={participant.items} />
                                     {gameMode === "Arena" &&
                                         participant.arenaData &&

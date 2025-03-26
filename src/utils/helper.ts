@@ -2,10 +2,10 @@
 
 export const queueIdToGameMode: { [key: number]: string } = {
     0: "Custom games",
-    2: "Normal 5v5 Blind Pick",
-    4: "Ranked Solo 5v5",
-    6: "Ranked Premade 5v5",
-    7: "Co-op vs AI 5v5",
+    2: "Blind Pick",
+    4: "Ranked Solo",
+    6: "Ranked Premade",
+    7: "Co-op vs AI",
     8: "Normal 3v3",
     9: "Ranked 3v3",
     14: "Normal 5v5 Draft Pick",
@@ -42,7 +42,7 @@ export const queueIdToGameMode: { [key: number]: string } = {
     410: "Ranked Dynamic Queue",
     420: "Ranked Solo/Duo",
     430: "Normal 5v5 Blind Pick",
-    440: "Ranked Flex 5v5",
+    440: "Ranked Flex",
     450: "ARAM",
     460: "Normal 3v3 Blind Pick",
     470: "Ranked Flex 3v3",

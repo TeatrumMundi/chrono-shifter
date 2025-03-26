@@ -6,10 +6,9 @@ import {getChampionSplashUrl} from "@/utils/getLeagueOfLegendsAssets/getChampion
 import {MatchList} from "@/components/profile/match";
 
 // Cache function for Background URL
-const getCachedBackground = cache(async (championId: number) => {
+cache(async (championId: number) => {
     return await getChampionSplashUrl(championId);
 });
-
 function ProfileSkeleton() {
     return (
         <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
@@ -44,11 +43,11 @@ async function ProfileContent({ params }: { params: Promise<{ server: string; na
             return <ErrorState message="Could not retrieve summoner data. Please check if the summoner exists and try again." />;
         }
 
-        const backgroundUrl = (await getCachedBackground(profileData.championMasteries[0].championId)) || undefined;
+        const championId : number = profileData.championMasteries[0]?.championId;
 
         return (
             <>
-                <Background customUrl={backgroundUrl} />
+                <Background championId={championId} />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="grid grid-cols-12 gap-4 mt-16">
                         <div className="col-span-12">
