@@ -113,7 +113,7 @@ export function MatchCard({ participant, match, server }: MatchCardProps) {
                             <div className="flex flex-col sm:flex-col xl:flex-row justify-center items-center gap-1 w-full sm:min-w-[200px] sm:max-w-[300px]">
                                 {/* Champion Icon + Runes */}
                                 <div className="flex items-center justify-center gap-1">
-                                    <ChampionIcon championName={participant.championName} size={72} />
+                                    <ChampionIcon championID={participant.championId} size={72} />
                                     {runeInfo.hasRunes && (
                                         <div className="flex-shrink-0 w-[40px] min-w-[40px]">
                                             <RuneDisplay
@@ -126,7 +126,7 @@ export function MatchCard({ participant, match, server }: MatchCardProps) {
 
                                 {/* Items and Augments */}
                                 <div className="flex flex-row sm:flex-col 2xl:flex-row justify-center items-center gap-3">
-                                    <ItemDisplay itemsIDs={participant.items} />
+                                    <ItemDisplay items={participant.items} />
                                     {gameMode === "Arena" &&
                                         participant.arenaData &&
                                         participant.arenaData.playerAugments.length > 0 && (

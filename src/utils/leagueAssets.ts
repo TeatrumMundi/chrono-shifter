@@ -1,22 +1,8 @@
-﻿// Declare game version once at the module level
-const GAME_VERSION = process.env.NEXT_PUBLIC_GAME_VERSION || "15.6.1";
-
-// Summoner Icon
-export async function getSummonerIconUrl(profileIconId: string): Promise<string> {
-    return `https://ddragon.leagueoflegends.com/cdn/${GAME_VERSION}/img/profileicon/${profileIconId}.png`;
-}
+﻿const GAME_VERSION = process.env.NEXT_PUBLIC_GAME_VERSION || "15.6.1";
 
 // Champion Icon
-export const getChampionIcon = (championName: string): string => {
-    const formattedName: string = championName.replace(/[^a-zA-Z]/g, ""); // Remove special characters
-
-    const fixString = (input: string): string => {
-        return input === "FiddleSticks" ? "Fiddlesticks" : input;
-    };
-
-    const fixedName : string = fixString(formattedName); // Apply fixString function
-
-    return `https://ddragon.leagueoflegends.com/cdn/${GAME_VERSION}/img/champion/${fixedName}.png`;
+export const getChampionIcon = (championID: number): string => {
+    return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${championID}.png`;
 };
 
 // Item Icon

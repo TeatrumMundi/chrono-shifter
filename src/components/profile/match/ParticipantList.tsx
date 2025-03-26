@@ -85,7 +85,7 @@ function StandardParticipantList({
                                             {leftPlayer.riotIdGameName}
                                         </Link>
                                         <ChampionIcon
-                                            championName={leftPlayer.championName}
+                                            championID={leftPlayer.championId}
                                             size={16}
                                         />
                                     </>
@@ -97,7 +97,7 @@ function StandardParticipantList({
                             {rightPlayer && (
                                     <>
                                         <ChampionIcon
-                                            championName={rightPlayer.championName}
+                                            championID={rightPlayer.championId}
                                             size={16}
                                         />
                                         <Link

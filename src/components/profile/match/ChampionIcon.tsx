@@ -4,7 +4,7 @@ import {useState} from "react";
 import Image from "next/image";
 import {getChampionIcon} from "@/utils/leagueAssets";
 
-export function ChampionIcon({championName, size}: { championName: string; size: number }) {
+export function ChampionIcon({championID, size}: { championID: number; size: number }) {
     const [error, setError] = useState(false);
 
     if (error) {
@@ -20,12 +20,14 @@ export function ChampionIcon({championName, size}: { championName: string; size:
 
     return (
         <Image
-            src={getChampionIcon(championName)}
-            alt={championName}
+            src={getChampionIcon(championID)}
+            alt={championID.toString()}
             width={size}
             height={size}
             className="rounded-2xl border border-gray-600"
             onError={() => setError(true)}
+            quality={70}
+            priority={true}
         />
     );
 }

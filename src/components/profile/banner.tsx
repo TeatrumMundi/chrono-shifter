@@ -1,23 +1,10 @@
 ﻿"use client";
-
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { BannerProps } from "@/types/interfaces";
-import { getSummonerIconUrl } from "@/utils/leagueAssets";
 
 export function Banner({ data }: BannerProps) {
-    const [summonerIconUrl, setSummonerIconUrl] = useState<string | null>(null);
-
-    useEffect(() => {
-        (async () => {
-            try {
-                const url = await getSummonerIconUrl(data.profileIconId);
-                setSummonerIconUrl(url);
-            } catch (error) {
-                console.error("Failed to fetch summoner icon URL:", error);
-            }
-        })();
-    }, [data.profileIconId]);
+    const GAME_VERSION = process.env.NEXT_PUBLIC_GAME_VERSION || "15.6.1";
+    const summonerIconUrl = `https://ddragon.leagueoflegends.com/cdn/${GAME_VERSION}/img/profileicon/${data.profileIconId}.png`;
 
     const rankedSoloIconUrl = `/rankedIcons/${data.soloTier.toLowerCase()}.png`;
     const rankedFlexIconUrl = `/rankedIcons/${data.flexTier.toLowerCase()}.png`;

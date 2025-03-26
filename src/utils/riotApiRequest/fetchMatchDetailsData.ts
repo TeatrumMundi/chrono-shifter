@@ -1,8 +1,9 @@
-﻿import { ArenaData, Augment, MatchData, MatchResponse, Participant, ProcessedParticipant, Rune } from "@/types/interfaces";
+﻿import { ArenaData, Augment, MatchData, MatchResponse, Participant, ProcessedParticipant, Rune, Item } from "@/types/interfaces";
 import { fetchFromRiotAPI } from "@/utils/riotApiRequest/fetchFromRiotAPI";
 import { getRuneById } from "@/utils/getRuneByID";
 import { fetchAugmentById } from "@/utils/getAugment";
 import { getKDA, getMinionsPerMinute, reversedServerMAP } from "@/utils/helper";
+import {getItemObject} from "@/utils/getLeagueOfLegendsAssets/getItemObject";
 
 /**
  * Fetches match details data for a given match from the Riot Games API.
@@ -51,7 +52,6 @@ async function processParticipant(participant: Participant, server: string, game
     const runes = await fetchParticipantRunes(participant);
     const arenaData = await fetchArenaDataIfExists(participant);
 
-    // Return structured participant data
     return {
         riotIdGameName: participant.riotIdGameName,
         riotIdTagline: participant.riotIdTagline,
@@ -65,7 +65,7 @@ async function processParticipant(participant: Participant, server: string, game
         assists: participant.assists,
         kda: getKDA(participant.kills, participant.deaths, participant.assists),
         visionScore: participant.visionScore,
-        items: extractItems(participant),
+        items: extractItems(participant),  // Now returns full Item objects
         damageDealt: participant.totalDamageDealtToChampions,
         goldEarned: participant.goldEarned,
         wardsPlaced: participant.wardsPlaced ?? 0,
@@ -74,7 +74,7 @@ async function processParticipant(participant: Participant, server: string, game
         runes,
         win: participant.win,
         teamId: participant.teamId,
-        ...(arenaData && { arenaData })  // Include arena data if it exists
+        ...(arenaData && { arenaData })
     };
 }
 
@@ -82,10 +82,10 @@ async function processParticipant(participant: Participant, server: string, game
  * Extracts items used by the participant in the match.
  *
  * @param {Participant} participant - The participant whose items are to be extracted.
- * @returns {number[]} An array of item IDs used by the participant.
+ * @returns {Item[]} An array of item objects used by the participant.
  */
-function extractItems(participant: Participant): number[] {
-    return [
+function extractItems(participant: Participant): Item[] {
+    const itemIds : number[] = [
         participant.item0,
         participant.item1,
         participant.item2,
@@ -93,6 +93,17 @@ function extractItems(participant: Participant): number[] {
         participant.item4,
         participant.item5,
     ];
+
+    // Filter out any empty slots (assuming 0 means no item), and map each ID to its full item object.
+    return itemIds
+        .filter(id => id && id > 0)
+        .map(id => {
+            const item = getItemObject(id);
+            if (!item) {
+                throw new Error(`Item with ID ${id} not found in items.json`);
+            }
+            return item;
+        });
 }
 
 /**
@@ -102,16 +113,12 @@ function extractItems(participant: Participant): number[] {
  * @returns {Promise<Rune[]>} A promise that resolves to an array of rune details.
  */
 async function fetchParticipantRunes(participant: Participant): Promise<Rune[]> {
-    // Get rune IDs from participant data
-    const runeIds = participant.perks?.styles.flatMap((style) =>
-        style.selections.map((selection) => selection.perk)
+    const runeIds = participant.perks?.styles.flatMap(style =>
+        style.selections.map(selection => selection.perk)
     ) ?? [];
 
-    // Fetch rune objects for each ID
     const runePromises = runeIds.map(runeId => getRuneById(runeId));
     const runeObjects = await Promise.all(runePromises);
-
-    // Filter out null values in case any rune wasn't found
     return runeObjects.filter((rune): rune is Rune => rune !== null);
 }
 
@@ -122,7 +129,6 @@ async function fetchParticipantRunes(participant: Participant): Promise<Rune[]> 
  * @returns {Promise<ArenaData | undefined>} A promise that resolves to the arena data if available, or `undefined` if not.
  */
 async function fetchArenaDataIfExists(participant: Participant): Promise<ArenaData | undefined> {
-    // Check if arena data is available by inspecting augment fields
     const hasArenaData = [
         'playerAugment1',
         'playerAugment2',
@@ -134,7 +140,6 @@ async function fetchArenaDataIfExists(participant: Participant): Promise<ArenaDa
 
     if (!hasArenaData) return undefined;
 
-    // Get augment IDs from participant data
     const augmentIds = [
         participant.playerAugment1,
         participant.playerAugment2,
@@ -144,11 +149,8 @@ async function fetchArenaDataIfExists(participant: Participant): Promise<ArenaDa
         participant.playerAugment6
     ].filter(augmentId => augmentId !== undefined && augmentId !== 0) as number[];
 
-    // Fetch augment details for each augment ID
     const augmentPromises = augmentIds.map(augmentId => fetchAugmentById(augmentId));
     const augmentObjects = await Promise.all(augmentPromises);
-
-    // Filter out undefined values in case any augment wasn't found
     const validAugments: Augment[] = augmentObjects.filter((augment): augment is Augment => augment !== undefined);
 
     return {
