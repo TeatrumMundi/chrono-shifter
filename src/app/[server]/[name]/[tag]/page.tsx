@@ -4,21 +4,12 @@ import { Metadata } from "next";
 import { Background } from "@/components/common";
 import {getChampionSplashUrl} from "@/utils/getLeagueOfLegendsAssets/getChampionSplash";
 import {MatchList} from "@/components/profile/match";
+import ProfileSkeleton from "@/components/profile/ProfileSkeleton";
 
 // Cache function for Background URL
 cache(async (championId: number) => {
     return await getChampionSplashUrl(championId);
 });
-function ProfileSkeleton() {
-    return (
-        <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
-            {/* Progress Bar Animation */}
-            <div className="w-200 h-4 bg-gray-700/50 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500 rounded-full animate-progress"></div>
-            </div>
-        </div>
-    );
-}
 
 // Main Profile Component
 export default function ProfilePage({ params }: { params: Promise<{ server: string; name: string; tag: string }> }) {
