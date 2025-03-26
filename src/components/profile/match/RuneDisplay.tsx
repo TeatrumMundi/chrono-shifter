@@ -4,7 +4,7 @@ export function RuneDisplay({ primaryRuneUrl, runePathUrl }: { primaryRuneUrl: s
     if (!primaryRuneUrl && !runePathUrl) return null;
 
     return (
-        <div className="flex flex-col items-center bg-gray-800 rounded-2xl p-1 border border-gray-600">
+        <div className="flex flex-col items-center bg-gray-800 rounded-sm p-1 border border-gray-600">
             {primaryRuneUrl && (
                 <Image
                     src={primaryRuneUrl}

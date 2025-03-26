@@ -27,7 +27,6 @@ export function ChampionIcon({championID, size}: { championID: number; size: num
             className="rounded-sm border border-gray-600"
             onError={() => setError(true)}
             quality={50}
-            priority={true}
         />
     );
 }

@@ -109,6 +109,7 @@ export interface ProcessedParticipant extends PlayerIdentity {
     assists: number;
     kda: string;
     visionScore: number;
+    visionPerMinute: string;
     items: Item[];
     damageDealt: number;
     goldEarned: number;

@@ -64,7 +64,7 @@ export async function getSummonerProfile(
         const region: string = getRegion(serverFetched);
         const server: string = getServer(serverFetched);
 
-        // Fetch account details first as they're required for subsequent calls
+        // Fetch account details first as they're required for later calls
         const accountDetails: AccountDetails = await fetchAccountData(region, gameName, tagLine);
 
         if (!accountDetails || !accountDetails.puuid) {
@@ -115,7 +115,7 @@ export async function getSummonerProfile(
         const errorMessage: string = error instanceof Error ? error.message : "Unknown error";
         console.error(`Error fetching summoner profile for ${gameName}#${tagLine} on ${serverFetched}:`, error);
 
-        // If it's already our custom error type, just re-throw it
+        // If it's already our custom error type, re-throw it
         if (error instanceof RiotAPIError) {throw error;}
 
         // Otherwise, wrap it in our custom error

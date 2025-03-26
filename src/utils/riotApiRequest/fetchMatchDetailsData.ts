@@ -66,6 +66,7 @@ async function processParticipant(participant: Participant, server: string, game
         assists: participant.assists,
         kda: getKDA(participant.kills, participant.deaths, participant.assists),
         visionScore: participant.visionScore,
+        visionPerMinute: getMinionsPerMinute(gameDuration, participant.visionScore),
         items: extractItems(participant),  // Now returns full Item objects
         damageDealt: participant.totalDamageDealtToChampions,
         goldEarned: participant.goldEarned,

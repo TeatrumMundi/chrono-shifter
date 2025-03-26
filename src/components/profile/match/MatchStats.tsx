@@ -2,7 +2,7 @@
 
 import { ProcessedParticipant } from "@/types/interfaces";
 import { motion } from "framer-motion";
-import { Swords, Eye, Coins, Flame, BarChart3, Shield, Cross, ShieldPlus } from "lucide-react";
+import { Swords, Eye, Coins, Flame, BarChart3, Cross, ShieldPlus, RadioTower } from "lucide-react";
 import { useState, useEffect, JSX } from "react";
 
 type StatItem = {
@@ -13,14 +13,12 @@ type StatItem = {
     className?: string;
 } | null;
 
-export function MatchStats({
-                               participant,
-                               gameMode,
-                           }: {
+export function MatchStats({participant, gameMode,}: {
     participant: ProcessedParticipant;
     gameMode: string;
 }) {
     const isArena = gameMode === "Arena";
+    const isSupport = participant.teamPosition === "UTILITY";
     const [isOpen, setIsOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
     const [formattedStats, setFormattedStats] = useState<StatItem[]>([]);
@@ -43,8 +41,7 @@ export function MatchStats({
         if (kda >= 4) kdaColor = "text-green-500";
         else if (kda < 1) kdaColor = "text-red-500";
 
-        const formatNumber = (n: number) =>
-            new Intl.NumberFormat("en-US").format(n);
+        const formatNumber = (n: number) => new Intl.NumberFormat("en-US").format(n);
 
         const stats: StatItem[] = [
             {
@@ -66,40 +63,52 @@ export function MatchStats({
                 tooltip: "Gold earned in the match",
                 icon: <Coins className="w-3 h-3 text-muted-foreground shrink-0" />,
             },
-            {
-                label: "Healed",
-                value: formatNumber(participant.totalHealsOnTeammates),
-                tooltip: "Total heals on teammates",
-                icon: <Cross className="w-3 h-3 text-muted-foreground shrink-0" />,
-            },
-            {
-                label: "Shielded",
-                value: formatNumber(participant.totalDamageShieldedOnTeammates),
-                tooltip: "Total shields on teammates",
-                icon: <ShieldPlus className="w-3 h-3 text-muted-foreground shrink-0" />,
-            },
-            {
-                label: "Damage",
-                value: formatNumber(participant.damageDealt),
-                tooltip: "Total damage dealt",
-                icon: <Flame className="w-3 h-3 text-muted-foreground shrink-0" />,
-            },
         ];
 
-        if (!isArena) {
+        if (isArena) {
+            stats.push(
+                {
+                    label: "Healed",
+                    value: formatNumber(participant.totalHealsOnTeammates),
+                    tooltip: "Total heals on teammates",
+                    icon: <Cross className="w-3 h-3 text-muted-foreground shrink-0" />,
+                },
+                {
+                    label: "Shielded",
+                    value: formatNumber(participant.totalDamageShieldedOnTeammates),
+                    tooltip: "Total shields on teammates",
+                    icon: <ShieldPlus className="w-3 h-3 text-muted-foreground shrink-0" />,
+                },
+                {
+                    label: "Damage",
+                    value: formatNumber(participant.damageDealt),
+                    tooltip: "Total damage dealt",
+                    icon: <Flame className="w-3 h-3 text-muted-foreground shrink-0" />,
+                }
+            );
+        } else if (isSupport) {
+            stats.push(
+                {
+                    label: "Healed",
+                    value: formatNumber(participant.totalHealsOnTeammates),
+                    tooltip: "Total heals on teammates",
+                    icon: <Cross className="w-3 h-3 text-muted-foreground shrink-0" />,
+                },
+                {
+                    label: "Shielded",
+                    value: formatNumber(participant.totalDamageShieldedOnTeammates),
+                    tooltip: "Total shields on teammates",
+                    icon: <ShieldPlus className="w-3 h-3 text-muted-foreground shrink-0" />,
+                }
+            );
+        } else {
             const minionsPerMinute = parseFloat(participant.minionsPerMinute);
             stats.push(
                 {
-                    label: "Vision",
-                    value: participant.visionScore.toString(),
-                    tooltip: "Vision Score",
-                    icon: <Eye className="w-3 h-3 text-muted-foreground shrink-0" />,
-                },
-                {
-                    label: "Wards",
-                    value: participant.wardsPlaced.toString(),
-                    tooltip: "Wards Placed",
-                    icon: <Shield className="w-3 h-3 text-muted-foreground shrink-0" />, // Changed icon here
+                    label: "Damage",
+                    value: formatNumber(participant.damageDealt),
+                    tooltip: "Total damage dealt",
+                    icon: <Flame className="w-3 h-3 text-muted-foreground shrink-0" />,
                 },
                 {
                     label: "Minions",
@@ -111,8 +120,28 @@ export function MatchStats({
             );
         }
 
+        if (!isArena) {
+            const visionPerMinute = parseFloat(participant.visionPerMinute);
+            stats.push(
+                {
+                    label: "Vision",
+                    value: `${participant.visionScore.toString()}  (${participant.visionPerMinute})`,
+                    tooltip: "Vision Score",
+                    icon: <Eye className="w-3 h-3 text-muted-foreground shrink-0" />,
+                    className: visionPerMinute > 2 ? "text-green-500 font-semibold" : "",
+                },
+                {
+                    label: "Wards",
+                    value: participant.wardsPlaced.toString(),
+                    tooltip: "Wards Placed",
+                    icon: <RadioTower className="w-3 h-3 text-muted-foreground shrink-0" />,
+                }
+            );
+        }
+
         setFormattedStats(stats);
-    }, [participant, gameMode, isArena]);
+    }, [participant, gameMode, isArena, isSupport]);
+
 
     return (
         <div className="w-full">
