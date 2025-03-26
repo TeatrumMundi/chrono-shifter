@@ -24,6 +24,13 @@ interface MatchCardProps {
     server: string;
 }
 
+const getOrdinalPlacement = (placement: number) => {
+    const ordinals = ["th", "st", "nd", "rd"];
+    const v = placement % 100;
+    return placement + (ordinals[(v - 20) % 10] || ordinals[v] || ordinals[0]);
+};
+
+
 export function MatchCard({ participant, match, server }: MatchCardProps) {
     const [runeInfo, setRuneInfo] = useState({
         primaryRuneUrl: "",
@@ -59,9 +66,22 @@ export function MatchCard({ participant, match, server }: MatchCardProps) {
     }, [participant.runes]);
 
     const gameMode = queueIdToGameMode[match.queueId] || "Unknown";
-    const winText = participant.win ? "WIN" : "LOSS";
-    const winTextColor = participant.win ? "neon-green" : "neon-red";
-    const bgColor = participant.win ? "bg-green-900/90" : "bg-red-900/90";
+
+    const isArena = gameMode === "Arena";
+    const placement = participant.arenaData?.placement;
+
+    const winText = isArena && placement
+        ? getOrdinalPlacement(placement)
+        : participant.win ? "WIN" : "LOSS";
+
+    const winTextColor = isArena
+        ? placement && placement <= 4 ? "neon-green" : "neon-red"
+        : participant.win ? "neon-green" : "neon-red";
+
+    const bgColor = isArena
+        ? placement && placement <= 4 ? "bg-green-900/90" : "bg-red-900/90"
+        : participant.win ? "bg-green-900/90" : "bg-red-900/90";
+
 
     return (
         <div className="relative flex flex-col h-full w-full">
@@ -113,7 +133,12 @@ export function MatchCard({ participant, match, server }: MatchCardProps) {
                             <div className="flex flex-col sm:flex-col xl:flex-row justify-center items-center gap-1 w-full sm:min-w-[200px] sm:max-w-[300px]">
                                 {/* Champion Icon + Runes */}
                                 <div className="flex items-center justify-center gap-1">
-                                    <ChampionIcon championID={participant.championId} size={72} />
+                                    <div className="relative w-[72px] h-[72px]">
+                                        <ChampionIcon championID={participant.championId} size={72} />
+                                        <div className="absolute bottom-0 rounded-tr-sm rounded-bl-sm left-0 bg-black/50 text-white text-xs px-1">
+                                            {participant.champLevel}
+                                        </div>
+                                    </div>
                                     {runeInfo.hasRunes && (
                                         <div className="flex-shrink-0 w-[40px] min-w-[40px]">
                                             <RuneDisplay

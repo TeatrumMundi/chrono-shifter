@@ -8,65 +8,70 @@ interface BackgroundProps {
     championId?: number;
 }
 
-// In-memory cache for champion splash URLs
 const splashCache = new Map<number, string>();
 
-// Fallback: generate a random image URL from local assets
 function getRandomImage(maxNumber: number): string {
     const randomNumber = Math.floor(Math.random() * maxNumber) + 1;
     return `/main/${randomNumber}.jpg`;
 }
 
 export function Background({ championId }: BackgroundProps) {
-    const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | null>(null);
+    const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>(
+        () => championId ? splashCache.get(championId) || "" : getRandomImage(12)
+    );
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
         let isMounted = true;
 
-        const fetchImage = async () => {
+        (async () => {
             if (championId) {
-                // If a champion ID is provided, try to fetch its splash URL
                 if (splashCache.has(championId)) {
-                    const cached = splashCache.get(championId)!;
-                    if (isMounted) setBackgroundImageUrl(cached);
+                    if (isMounted) {
+                        setBackgroundImageUrl(splashCache.get(championId)!);
+                        setIsLoaded(true);
+                    }
                 } else {
                     try {
                         const url = await getChampionSplashUrl(championId);
-                        if (url !== null) {
+                        if (url && isMounted) {
                             splashCache.set(championId, url);
-                            if (isMounted) setBackgroundImageUrl(url);
+                            setBackgroundImageUrl(url);
+                            setIsLoaded(true);
                         }
                     } catch (err) {
                         console.error("Failed to fetch champion splash:", err);
+                        if (isMounted) {
+                            setBackgroundImageUrl(getRandomImage(12));
+                            setIsLoaded(true);
+                        }
                     }
                 }
             } else {
-                // No champion ID provided, so use a fallback random image
-                const fallbackUrl = getRandomImage(12);
-                if (isMounted) setBackgroundImageUrl(fallbackUrl);
+                if (isMounted) {
+                    setBackgroundImageUrl(getRandomImage(12));
+                    setIsLoaded(true);
+                }
             }
-        };
-
-        void fetchImage(); // Explicitly ignore the returned promise
+        })();
 
         return () => {
             isMounted = false;
         };
     }, [championId]);
 
-    // Don't render until we have a valid URL
-    if (!backgroundImageUrl) return null;
-
     return (
-        <div className="fixed inset-0 min-h-screen -z-10">
-            <Image
-                src={backgroundImageUrl}
-                alt="Background"
-                fill
-                priority
-                quality={100}
-                className="object-cover"
-            />
+        <div className="fixed inset-0 min-h-screen -z-10 bg-gray-900">
+            {backgroundImageUrl && (
+                <Image
+                    src={backgroundImageUrl}
+                    alt="Background"
+                    fill
+                    quality={75}
+                    className={`object-cover transition-opacity duration-500 ${isLoaded ? "opacity-100" : "opacity-0"}`}
+                    priority={!!championId && championId < 10}
+                />
+            )}
             <div className="absolute inset-0 bg-gradient-to-r from-violet-600/50 to-indigo-600/50"></div>
         </div>
     );

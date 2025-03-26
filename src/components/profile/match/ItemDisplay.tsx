@@ -35,13 +35,14 @@ export function ItemDisplay({ items }: { items: (Item | null)[] }) {
                                     onMouseEnter={() => setHoveredItem(item)}
                                     onMouseLeave={() => setHoveredItem(null)}
                                 >
-                                    <div className="rounded-md border border-gray-600">
+                                    <div className="rounded-sm">
                                         <Image
                                             src={getItemIcon(item.id)}
                                             alt={`Item ${item.name}`}
                                             width={32}
                                             height={32}
-                                            className="rounded-md cursor-pointer"
+                                            className="rounded-sm cursor-pointer w-[32px] h-[32px] min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] object-contain"
+                                            quality={50}
                                         />
                                     </div>
                                     {hoveredItem === item && (

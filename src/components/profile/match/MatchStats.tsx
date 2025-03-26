@@ -2,7 +2,7 @@
 
 import { ProcessedParticipant } from "@/types/interfaces";
 import { motion } from "framer-motion";
-import { Swords, Eye, Coins, Flame, BarChart3, Shield } from "lucide-react";
+import { Swords, Eye, Coins, Flame, BarChart3, Shield, Cross, ShieldPlus } from "lucide-react";
 import { useState, useEffect, JSX } from "react";
 
 type StatItem = {
@@ -61,16 +61,28 @@ export function MatchStats({
                 icon: <Swords className="w-3 h-3 text-muted-foreground shrink-0" />,
             },
             {
-                label: "Damage",
-                value: formatNumber(participant.damageDealt),
-                tooltip: "Total damage dealt",
-                icon: <Flame className="w-3 h-3 text-muted-foreground shrink-0" />,
-            },
-            {
                 label: "Gold",
                 value: formatNumber(participant.goldEarned),
                 tooltip: "Gold earned in the match",
                 icon: <Coins className="w-3 h-3 text-muted-foreground shrink-0" />,
+            },
+            {
+                label: "Healed",
+                value: formatNumber(participant.totalHealsOnTeammates),
+                tooltip: "Total heals on teammates",
+                icon: <Cross className="w-3 h-3 text-muted-foreground shrink-0" />,
+            },
+            {
+                label: "Shielded",
+                value: formatNumber(participant.totalDamageShieldedOnTeammates),
+                tooltip: "Total shields on teammates",
+                icon: <ShieldPlus className="w-3 h-3 text-muted-foreground shrink-0" />,
+            },
+            {
+                label: "Damage",
+                value: formatNumber(participant.damageDealt),
+                tooltip: "Total damage dealt",
+                icon: <Flame className="w-3 h-3 text-muted-foreground shrink-0" />,
             },
         ];
 
@@ -108,7 +120,7 @@ export function MatchStats({
                 <div className="mb-1 flex justify-center">
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="text-xs px-2 py-1 rounded-md border border-border bg-muted/40 hover:bg-muted transition-colors text-muted-foreground tracking-widest"
+                        className="text-xs px-2 py-1 rounded-sm border border-border bg-muted/40 hover:bg-muted transition-colors text-muted-foreground tracking-widest"
                     >
                         {isOpen ? "Hide stats" : "Show stats"}
                     </button>
@@ -129,7 +141,7 @@ export function MatchStats({
                             <div
                                 key={stat.label}
                                 title={stat.tooltip}
-                                className={`flex items-center justify-between px-2.5 py-1.5 text-[11px] border rounded-md bg-muted/40 dark:bg-zinc-800 transition-shadow hover:shadow-sm col-span-1`}
+                                className={`flex items-center justify-between px-2.5 py-1.5 text-[11px] border rounded-sm bg-muted/40 dark:bg-zinc-800 transition-shadow hover:shadow-sm col-span-1`}
                             >
                                 <div className="flex items-center gap-1 truncate text-muted-foreground">
                                     {stat.icon}

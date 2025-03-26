@@ -11,7 +11,7 @@ export function ChampionIcon({championID, size}: { championID: number; size: num
         return (
             <div
                 style={{ width: size, height: size }}
-                className="bg-gray-900 rounded-full border border-gray-600 flex items-center justify-center text-gray-400"
+                className="bg-gray-900 rounded-sm border border-gray-600 flex items-center justify-center text-gray-400"
             >
                 ?
             </div>
@@ -24,9 +24,9 @@ export function ChampionIcon({championID, size}: { championID: number; size: num
             alt={championID.toString()}
             width={size}
             height={size}
-            className="rounded-2xl border border-gray-600"
+            className="rounded-sm border border-gray-600"
             onError={() => setError(true)}
-            quality={70}
+            quality={50}
             priority={true}
         />
     );

@@ -15,6 +15,7 @@ export interface GamePerformance {
     championId: number;
     championName: string;
     teamPosition: string;
+    champLevel : number;
     kills: number;
     deaths: number;
     assists: number;
@@ -22,6 +23,8 @@ export interface GamePerformance {
     totalDamageDealtToChampions: number;
     goldEarned: number;
     wardsPlaced?: number;
+    totalHealsOnTeammates : number;
+    totalDamageShieldedOnTeammates : number;
     totalMinionsKilled: number;
     win: string;
     teamId: number;
@@ -70,6 +73,7 @@ export interface Item {
 export interface ArenaData {
     playerAugments: Augment[];
     playerSubteamId: number;
+    placement: number;
 }
 
 /**
@@ -89,6 +93,7 @@ export interface Participant extends PlayerIdentity, GamePerformance, ItemSet {
     playerAugment5?: number;
     playerAugment6?: number;
     playerSubteamId?: number;
+    placement? : number;
 }
 
 /**
@@ -98,6 +103,7 @@ export interface ProcessedParticipant extends PlayerIdentity {
     championId: number;
     championName: string;
     teamPosition: string;
+    champLevel : number;
     kills: number;
     deaths: number;
     assists: number;
@@ -107,6 +113,8 @@ export interface ProcessedParticipant extends PlayerIdentity {
     damageDealt: number;
     goldEarned: number;
     wardsPlaced: number;
+    totalHealsOnTeammates : number;
+    totalDamageShieldedOnTeammates : number;
     minionsKilled: number;
     minionsPerMinute: string;
     runes: Rune[];

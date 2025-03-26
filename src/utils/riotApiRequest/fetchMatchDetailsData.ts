@@ -60,6 +60,7 @@ async function processParticipant(participant: Participant, server: string, game
         championId: participant.championId,
         championName: participant.championName,
         teamPosition: participant.teamPosition,
+        champLevel : participant.champLevel,
         kills: participant.kills,
         deaths: participant.deaths,
         assists: participant.assists,
@@ -69,6 +70,8 @@ async function processParticipant(participant: Participant, server: string, game
         damageDealt: participant.totalDamageDealtToChampions,
         goldEarned: participant.goldEarned,
         wardsPlaced: participant.wardsPlaced ?? 0,
+        totalHealsOnTeammates : participant.totalHealsOnTeammates,
+        totalDamageShieldedOnTeammates : participant.totalDamageShieldedOnTeammates,
         minionsKilled: participant.totalMinionsKilled,
         minionsPerMinute: getMinionsPerMinute(gameDuration, participant.totalMinionsKilled),
         runes,
@@ -155,6 +158,7 @@ async function fetchArenaDataIfExists(participant: Participant): Promise<ArenaDa
 
     return {
         playerAugments: validAugments,
-        playerSubteamId: participant.playerSubteamId || 0
+        playerSubteamId: participant.playerSubteamId || 0,
+        placement: participant.placement || 0
     };
 }
