@@ -4,8 +4,6 @@ import { BannerProps } from "@/types/interfaces";
 export function Banner({ data }: BannerProps) {
     const summonerIconUrl = `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${data.profileIconId}.jpg`;
 
-    console.log(summonerIconUrl);
-
     const rankedSoloIconUrl = `/rankedIcons/${data.soloTier.toLowerCase()}.png`;
     const rankedFlexIconUrl = `/rankedIcons/${data.flexTier.toLowerCase()}.png`;
 
@@ -62,27 +60,6 @@ export function Banner({ data }: BannerProps) {
     );
 }
 
-function SummonerIcon({ url, level }: { url: string; level: string }) {
-    return (
-        <div className="relative flex-shrink-0">
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32">
-                <Image
-                    src={url}
-                    alt="Summoner Icon"
-                    fill
-                    className="rounded-lg border border-gray-500 object-cover"
-                    sizes="(max-width: 768px) 80px, (max-width: 1024px) 96px, 128px"
-                    priority
-                    quality={40}
-                />
-            </div>
-            <div className="absolute bottom-0 w-full bg-black/70 rounded-b-lg px-2 py-1 text-xs text-white text-center shadow-md tracking-widest font-sans">
-                {level}
-            </div>
-        </div>
-    );
-}
-
 function RankSection({ title, tier, rank, wins, losses, winRate, lp, iconUrl, getWinRateColor }: {
     title: string;
     tier: string;
@@ -115,6 +92,27 @@ function RankSection({ title, tier, rank, wins, losses, winRate, lp, iconUrl, ge
     );
 }
 
+function SummonerIcon({ url, level }: { url: string; level: string }) {
+    return (
+        <div className="relative flex-shrink-0">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32">
+                <Image
+                    src={url}
+                    alt="Summoner Icon"
+                    fill
+                    className="rounded-lg border border-gray-500 object-cover"
+                    sizes="(max-width: 768px) 80px, (max-width: 1024px) 96px, 128px"
+                    quality={40}
+                    loading="lazy"
+                />
+            </div>
+            <div className="absolute bottom-0 w-full bg-black/70 rounded-b-lg px-2 py-1 text-xs text-white text-center shadow-md tracking-widest font-sans">
+                {level}
+            </div>
+        </div>
+    );
+}
+
 function RankIcon({ url, title }: { url: string; title: string }) {
     return (
         <Image
@@ -124,6 +122,7 @@ function RankIcon({ url, title }: { url: string; title: string }) {
             height={110}
             className="hidden xl:block"
             quality={50}
+            loading="lazy"
         />
     );
 }
