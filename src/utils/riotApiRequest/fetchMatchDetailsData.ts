@@ -3,7 +3,7 @@ import { fetchFromRiotAPI } from "@/utils/riotApiRequest/fetchFromRiotAPI";
 import { getRuneById } from "@/utils/getRuneByID";
 import { fetchAugmentById } from "@/utils/getAugment";
 import { getKDA, getMinionsPerMinute, reversedServerMAP } from "@/utils/helper";
-import {getItemObject} from "@/utils/getLeagueOfLegendsAssets/getItemObject";
+import {getItemObject} from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getItemObject";
 
 /**
  * Fetches match details data for a given match from the Riot Games API.

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { getChampionSplashUrl } from "@/utils/getLeagueOfLegendsAssets/getChampionSplash";
+import { getChampionSplashUrl } from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getChampionSplash";
 
 interface BackgroundProps {
     championId?: number;

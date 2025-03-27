@@ -1,4 +1,4 @@
-﻿import items from "./dataJSON/items.json";
+﻿import items from "../dataJSON/items.json";
 import {Item} from "@/types/interfaces";
 
 // Function that returns an item by id

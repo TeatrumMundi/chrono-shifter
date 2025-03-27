@@ -185,3 +185,8 @@ export function formatRole(position?: string): string {
     };
     return roleMap[position?.toUpperCase() ?? ""] || position || "";
 }
+export function getOrdinalPlacement(placement: number): string {
+    const ordinals = ["th", "st", "nd", "rd"];
+    const v = placement % 100;
+    return placement + (ordinals[(v - 20) % 10] || ordinals[v] || ordinals[0]);
+}

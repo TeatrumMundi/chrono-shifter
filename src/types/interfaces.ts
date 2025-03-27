@@ -294,3 +294,9 @@ export type Augment = {
 export type AugmentData = {
     augments: Augment[];
 };
+
+export interface MatchCardProps {
+    participant: ProcessedParticipant;
+    match: MatchResponse;
+    server: string;
+}

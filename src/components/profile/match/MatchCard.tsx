@@ -1,10 +1,9 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import { MatchResponse, ProcessedParticipant } from "@/types/interfaces";
-import { getRuneImageUrl } from "@/utils/leagueAssets";
+import {MatchCardProps} from "@/types/interfaces";
 import {
-    formatRole,
+    formatRole, getOrdinalPlacement,
     queueIdToGameMode,
     secToHHMMSS,
     timeAgo,
@@ -17,20 +16,15 @@ import {
     ParticipantList,
 } from "@/components/profile/match";
 import { AugmentDisplay } from "@/components/profile/arena/AugmentDisplay";
+import {getRuneImageUrl} from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getRuneIcon";
 
-interface MatchCardProps {
-    participant: ProcessedParticipant;
-    match: MatchResponse;
-    server: string;
-}
+export function MatchCard({ participant, match, server }: MatchCardProps)
+{
+    const gameMode : string = queueIdToGameMode[match.queueId] || "Unknown";
+    const isArena : boolean = gameMode === "Arena";
+    const placement = participant.arenaData?.placement;
 
-const getOrdinalPlacement = (placement: number) => {
-    const ordinals = ["th", "st", "nd", "rd"];
-    const v = placement % 100;
-    return placement + (ordinals[(v - 20) % 10] || ordinals[v] || ordinals[0]);
-};
 
-export function MatchCard({ participant, match, server }: MatchCardProps) {
     const [runeInfo, setRuneInfo] = useState({
         primaryRuneUrl: "",
         runePathUrl: "",
@@ -63,11 +57,6 @@ export function MatchCard({ participant, match, server }: MatchCardProps) {
 
         void loadRuneInfo();
     }, [participant.runes]);
-
-    const gameMode = queueIdToGameMode[match.queueId] || "Unknown";
-
-    const isArena = gameMode === "Arena";
-    const placement = participant.arenaData?.placement;
 
     const winText = isArena && placement
         ? getOrdinalPlacement(placement)
@@ -140,10 +129,7 @@ export function MatchCard({ participant, match, server }: MatchCardProps) {
                                     </div>
                                     {runeInfo.hasRunes && (
                                         <div className="flex-shrink-0 w-[40px] min-w-[40px]">
-                                            <RuneDisplay
-                                                primaryRuneUrl={runeInfo.primaryRuneUrl}
-                                                runePathUrl={runeInfo.runePathUrl}
-                                            />
+                                            <RuneDisplay runes={participant.runes} />
                                         </div>
                                     )}
                                 </div>

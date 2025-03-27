@@ -2,7 +2,7 @@
 import { Banner, ErrorState } from "@/components/profile";
 import { Metadata } from "next";
 import { Background } from "@/components/common";
-import {getChampionSplashUrl} from "@/utils/getLeagueOfLegendsAssets/getChampionSplash";
+import {getChampionSplashUrl} from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getChampionSplash";
 import {MatchList} from "@/components/profile/match";
 import ProfileSkeleton from "@/components/profile/ProfileSkeleton";
 
