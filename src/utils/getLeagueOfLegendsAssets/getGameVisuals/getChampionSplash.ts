@@ -32,7 +32,6 @@ interface ChampionApiResponse {
  * Caches the result in-memory for faster repeat calls.
  */
 export async function getChampionSplashUrl(championId: number): Promise<string | null> {
-    // ✅ Return from cache if already fetched
     if (splashCache.has(championId)) {
         return splashCache.get(championId)!;
     }

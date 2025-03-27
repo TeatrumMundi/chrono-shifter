@@ -18,8 +18,9 @@ export function Banner({ data, splashUrl }: BannerProps) {
                 src={splashUrl ?? '/main/1.jpg'}
                 alt="Champion Splash"
                 fill
-                className="object-cover blur-[1.5px]"
+                className="object-cover blur-[4px]"
                 quality={10}
+                priority={true}
             />
             {/* Overlay content */}
             <div className="relative z-10 p-6 flex flex-col lg:flex-row items-center bg-gray-900/70 shadow-lg w-full gap-6">
