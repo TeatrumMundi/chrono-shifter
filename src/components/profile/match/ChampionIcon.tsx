@@ -21,6 +21,11 @@ export function ChampionIcon({ champion, size }: { champion: Champion; size: num
         );
     }
 
+    // Capitalize each role properly
+    const formattedRoles = champion.roles
+        .map(role => role.charAt(0).toUpperCase() + role.slice(1).toLowerCase())
+        .join(" • ");
+
     return (
         <div
             className="relative"
@@ -43,12 +48,11 @@ export function ChampionIcon({ champion, size }: { champion: Champion; size: num
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.5, y: -10 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute left-1/2 -translate-x-1/2 bottom-12 w-48 p-2 bg-gray-900 text-white rounded-md shadow-lg z-10 text-sm tracking-tight"
+                    style={{ bottom: size + 12 }} // Dynamically offset above the image
+                    className="absolute left-1/2 -translate-x-1/2 w-48 p-2 bg-gray-900 text-white rounded-md shadow-lg z-10 text-sm tracking-tight"
                 >
                     <div className="font-bold text-blue-400 text-center">{champion.name}</div>
-                    <div className="mt-1 text-xs text-gray-300 text-center">
-                        {champion.roles.join(" • ")}
-                    </div>
+                    <div className="mt-1 text-xs text-gray-300 text-center">{formattedRoles}</div>
                     <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-gray-900 rotate-45" />
                 </motion.div>
             )}
