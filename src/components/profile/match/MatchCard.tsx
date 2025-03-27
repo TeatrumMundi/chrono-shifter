@@ -1,9 +1,9 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
-import {MatchCardProps} from "@/types/interfaces";
+import { MatchCardProps } from "@/types/interfaces";
 import {
-    formatRole, getOrdinalPlacement,
+    formatRole,
+    getOrdinalPlacement,
     queueIdToGameMode,
     secToHHMMSS,
     timeAgo,
@@ -16,47 +16,11 @@ import {
     ParticipantList,
 } from "@/components/profile/match";
 import { AugmentDisplay } from "@/components/profile/arena/AugmentDisplay";
-import {getRuneImageUrl} from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getRuneIcon";
 
-export function MatchCard({ participant, match, server }: MatchCardProps)
-{
-    const gameMode : string = queueIdToGameMode[match.queueId] || "Unknown";
-    const isArena : boolean = gameMode === "Arena";
+export function MatchCard({ participant, match, server }: MatchCardProps) {
+    const gameMode: string = queueIdToGameMode[match.queueId] || "Unknown";
+    const isArena: boolean = gameMode === "Arena";
     const placement = participant.arenaData?.placement;
-
-
-    const [runeInfo, setRuneInfo] = useState({
-        primaryRuneUrl: "",
-        runePathUrl: "",
-        hasRunes: false,
-    });
-
-    useEffect(() => {
-        const loadRuneInfo = async () => {
-            if (!participant.runes?.length) {
-                setRuneInfo({ primaryRuneUrl: "", runePathUrl: "", hasRunes: false });
-                return;
-            }
-
-            const [firstRune] = participant.runes;
-            const lastRune = participant.runes.at(-1);
-
-            try {
-                const primaryUrl = firstRune?.icon ? await getRuneImageUrl(firstRune.icon) : "";
-                const pathUrl = lastRune?.runePath?.icon ? await getRuneImageUrl(lastRune.runePath.icon) : "";
-
-                setRuneInfo({
-                    primaryRuneUrl: primaryUrl,
-                    runePathUrl: pathUrl,
-                    hasRunes: true,
-                });
-            } catch (error) {
-                console.error("Error loading rune images:", error);
-            }
-        };
-
-        void loadRuneInfo();
-    }, [participant.runes]);
 
     const winText = isArena && placement
         ? getOrdinalPlacement(placement)
@@ -69,7 +33,6 @@ export function MatchCard({ participant, match, server }: MatchCardProps)
     const bgColor = isArena
         ? placement && placement <= 4 ? "bg-green-900/90" : "bg-red-900/90"
         : participant.win ? "bg-green-900/90" : "bg-red-900/90";
-
 
     return (
         <div className="relative flex flex-col h-full w-full">
@@ -122,12 +85,12 @@ export function MatchCard({ participant, match, server }: MatchCardProps)
                                 {/* Champion Icon + Runes */}
                                 <div className="flex items-center justify-center gap-1">
                                     <div className="relative w-[72px] h-[72px]">
-                                        <ChampionIcon championID={participant.championId} size={72} />
+                                        <ChampionIcon champion={participant.champion} size={72} />
                                         <div className="absolute bottom-0 rounded-tr-sm rounded-bl-sm left-0 bg-black/50 text-white text-xs px-1">
                                             {participant.champLevel}
                                         </div>
                                     </div>
-                                    {runeInfo.hasRunes && (
+                                    {participant.runes?.length > 0 && (
                                         <div className="flex-shrink-0 w-[40px] min-w-[40px]">
                                             <RuneDisplay runes={participant.runes} />
                                         </div>

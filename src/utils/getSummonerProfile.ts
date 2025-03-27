@@ -5,7 +5,6 @@
 
 import { calculateWinRatio, getRegion, getServer } from "@/utils/helper";
 import { ChampionMastery, FormatResponseReturn, MatchResponse, Ranked, RankedEntry } from "@/types/interfaces";
-import { fetchAugmentById } from "@/utils/getAugment";
 import {
     fetchMatchDetailsData,
     fetchAccountData,
@@ -16,6 +15,7 @@ import {
 } from "@/utils/riotApiRequest";
 import { AccountDetails } from "@/utils/riotApiRequest/fetchAccountData";
 import { SummonerDetails } from "./riotApiRequest/fetchSummonerData";
+import {getAugmentById} from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getAugmentObject";
 
 /**
  * Enum for standardizing queue types
@@ -86,7 +86,7 @@ export async function getSummonerProfile(
             fetchTopChampionMasteries(server, accountDetails.puuid),
             fetchMatchData(region, accountDetails.puuid, "", matchCount),
             // Cache warming happens in parallel and doesn't block other requests
-            fetchAugmentById(1).catch(error => {
+            getAugmentById(1).catch(error => {
                 console.warn("Cache warming failed, but continuing:", error);
                 return null;
             })

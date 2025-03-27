@@ -1,7 +1,20 @@
-﻿import items from "../dataJSON/items.json";
-import {Item} from "@/types/interfaces";
+﻿import { promises as fs } from "fs";
+import { Item } from "@/types/interfaces";
+import {getAssetPath} from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getAssetPath";
 
-// Function that returns an item by id
-export function getItemObject(itemId: number): Item | undefined {
-    return items.find((item: Item) => item.id === itemId);
+/**
+ * Loads and returns an Item object from local items.json by its ID.
+ */
+export async function getItemById(itemId: number): Promise<Item | undefined> {
+    try {
+        const filePath = getAssetPath("items.json")
+
+        const raw = await fs.readFile(filePath, { encoding: "utf-8" });
+        const parsed = JSON.parse(raw.replace(/^\uFEFF/, ""));
+
+        return parsed.find((item: Item) => item.id === itemId);
+    } catch (error) {
+        console.error(`Failed to load item ID ${itemId}:`, error);
+        return undefined;
+    }
 }

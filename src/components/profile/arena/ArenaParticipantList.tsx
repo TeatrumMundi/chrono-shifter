@@ -47,7 +47,7 @@ export function ArenaParticipantList({ participants, server }: {
                     >
                         {teams[teamId].map((player, playerIndex) => (
                             <div key={playerIndex} className="flex items-center gap-1 mr-2 flex-shrink-0">
-                                <ChampionIcon championID={player.championId} size={16} />
+                                <ChampionIcon champion={player.champion} size={16} />
                                 <Link
                                     href={`/${server}/${player.riotIdGameName}/${player.riotIdTagline}`}
                                     className="text-sm w-[80px] truncate text-white hover:text-blue-400 transition-colors"

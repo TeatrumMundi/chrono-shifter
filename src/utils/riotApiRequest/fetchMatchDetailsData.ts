@@ -1,9 +1,9 @@
 ﻿import { ArenaData, Augment, MatchData, MatchResponse, Participant, ProcessedParticipant, Rune, Item } from "@/types/interfaces";
 import { fetchFromRiotAPI } from "@/utils/riotApiRequest/fetchFromRiotAPI";
-import { getRuneById } from "@/utils/getRuneByID";
-import { fetchAugmentById } from "@/utils/getAugment";
 import { getKDA, getMinionsPerMinute, reversedServerMAP } from "@/utils/helper";
-import {getItemObject} from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getItemObject";
+import {getRuneById} from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getRuneObject";
+import {getAugmentById} from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getAugmentObject";
+import {getItemById} from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getItemObject";
 
 /**
  * Fetches match details data for a given match from the Riot Games API.
@@ -47,49 +47,51 @@ export async function fetchMatchDetailsData(region: string, server: string, matc
  * @param {number} gameDuration - The duration of the match in seconds.
  * @returns {Promise<ProcessedParticipant>} A promise that resolves to a processed participant object containing statistics.
  */
+import { getChampionById } from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getChampionObject"; // adjust path as needed
+
 async function processParticipant(participant: Participant, server: string, gameDuration: number): Promise<ProcessedParticipant> {
-    // Fetch runes and arena data for the participant
-    const runes : Rune[] = await fetchParticipantRunes(participant);
+    const runes: Rune[] = await fetchParticipantRunes(participant);
     const arenaData = await fetchArenaDataIfExists(participant);
+    const champion = await getChampionById(participant.championId);
+
+    if (!champion) {
+        throw new Error(`Champion with ID ${participant.championId} not found in champions.json`);
+    }
 
     return {
         riotIdGameName: participant.riotIdGameName,
         riotIdTagline: participant.riotIdTagline,
         server: reversedServerMAP[server].toUpperCase(),
         puuid: participant.puuid,
-        championId: participant.championId,
-        championName: participant.championName,
+        champion,
         teamPosition: participant.teamPosition,
-        champLevel : participant.champLevel,
+        champLevel: participant.champLevel,
         kills: participant.kills,
         deaths: participant.deaths,
         assists: participant.assists,
         kda: getKDA(participant.kills, participant.deaths, participant.assists),
         visionScore: participant.visionScore,
         visionPerMinute: getMinionsPerMinute(gameDuration, participant.visionScore),
-        items: extractItems(participant),  // Now returns full Item objects
+        items: await extractItems(participant),
         damageDealt: participant.totalDamageDealtToChampions,
         goldEarned: participant.goldEarned,
         wardsPlaced: participant.wardsPlaced ?? 0,
-        totalHealsOnTeammates : participant.totalHealsOnTeammates,
-        totalDamageShieldedOnTeammates : participant.totalDamageShieldedOnTeammates,
+        totalHealsOnTeammates: participant.totalHealsOnTeammates,
+        totalDamageShieldedOnTeammates: participant.totalDamageShieldedOnTeammates,
         minionsKilled: participant.totalMinionsKilled,
         minionsPerMinute: getMinionsPerMinute(gameDuration, participant.totalMinionsKilled),
         runes,
         win: participant.win,
         teamId: participant.teamId,
-        ...(arenaData && { arenaData })
+        ...(arenaData && { arenaData }),
     };
 }
 
 /**
- * Extracts items used by the participant in the match.
- *
- * @param {Participant} participant - The participant whose items are to be extracted.
- * @returns {Item[]} An array of item objects used by the participant.
+ * Extracts all item objects for a participant by fetching from local items.json.
  */
-function extractItems(participant: Participant): Item[] {
-    const itemIds : number[] = [
+export async function extractItems(participant: Participant): Promise<Item[]> {
+    const itemIds: number[] = [
         participant.item0,
         participant.item1,
         participant.item2,
@@ -98,16 +100,17 @@ function extractItems(participant: Participant): Item[] {
         participant.item5,
     ];
 
-    // Filter out any empty slots (assuming 0 means no item), and map each ID to its full item object.
-    return itemIds
+    const itemPromises = itemIds
         .filter(id => id && id > 0)
-        .map(id => {
-            const item = getItemObject(id);
+        .map(async (id) => {
+            const item = await getItemById(id);
             if (!item) {
                 throw new Error(`Item with ID ${id} not found in items.json`);
             }
             return item;
         });
+
+    return await Promise.all(itemPromises);
 }
 
 /**
@@ -153,7 +156,7 @@ async function fetchArenaDataIfExists(participant: Participant): Promise<ArenaDa
         participant.playerAugment6
     ].filter(augmentId => augmentId !== undefined && augmentId !== 0) as number[];
 
-    const augmentPromises = augmentIds.map(augmentId => fetchAugmentById(augmentId));
+    const augmentPromises = augmentIds.map(augmentId => getAugmentById(augmentId));
     const augmentObjects = await Promise.all(augmentPromises);
     const validAugments: Augment[] = augmentObjects.filter((augment): augment is Augment => augment !== undefined);
 

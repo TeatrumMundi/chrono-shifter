@@ -100,8 +100,7 @@ export interface Participant extends PlayerIdentity, GamePerformance, ItemSet {
  * Processed participant data with calculated statistics
  */
 export interface ProcessedParticipant extends PlayerIdentity {
-    championId: number;
-    championName: string;
+    champion : Champion;
     teamPosition: string;
     champLevel : number;
     kills: number;
@@ -179,35 +178,12 @@ export interface Ranked {
  */
 export interface Rune {
     id: number;
-    key: string;
-    icon: string;
     name: string;
+    tooltip: string;
     shortDesc: string;
     longDesc: string;
-    runePath: {
-        id: number;
-        key: string;
-        icon: string;
-        name: string;
-    };
-}
-
-/**
- * Represents a slot for runes in a rune path
- */
-export interface RuneSlot {
-    runes: Rune[];
-}
-
-/**
- * Represents a complete rune path with slots
- */
-export interface RunePath {
-    id: number;
-    key: string;
-    icon: string;
-    name: string;
-    slots: RuneSlot[];
+    iconPath: string;
+    runeTree?: string;
 }
 
 /**
@@ -291,12 +267,16 @@ export type Augment = {
     tooltip: string;
 };
 
-export type AugmentData = {
-    augments: Augment[];
-};
-
 export interface MatchCardProps {
     participant: ProcessedParticipant;
     match: MatchResponse;
     server: string;
+}
+
+export interface Champion {
+    id: number;
+    name: string;
+    alias: string;
+    squarePortraitPath: string;
+    roles: string[];
 }

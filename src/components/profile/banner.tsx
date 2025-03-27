@@ -102,8 +102,7 @@ function SummonerIcon({ url, level }: { url: string; level: string }) {
                     fill
                     className="rounded-lg border border-gray-500 object-cover"
                     sizes="(max-width: 768px) 80px, (max-width: 1024px) 96px, 128px"
-                    quality={40}
-                    loading="lazy"
+                    quality={20}
                 />
             </div>
             <div className="absolute bottom-0 w-full bg-black/70 rounded-b-lg px-2 py-1 text-xs text-white text-center shadow-md tracking-widest font-sans">
