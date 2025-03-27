@@ -252,6 +252,7 @@ export interface FormatResponseReturn {
  */
 export interface BannerProps {
     data: FormatResponseReturn;
+    splashUrl?: string | null;
 }
 
 export type Augment = {

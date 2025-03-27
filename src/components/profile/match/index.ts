@@ -1,4 +1,4 @@
-﻿export * from "./MatchList";
+﻿export * from "../MatchList";
 export * from "./MatchCard";
 export * from "./MatchStats";
 export * from "./ParticipantList";

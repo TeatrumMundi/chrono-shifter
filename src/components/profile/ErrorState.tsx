@@ -5,7 +5,7 @@ import { Background } from "@/components/common";
 export function ErrorState({ message }: { message: string }) {
     return (
         <div className="container mx-auto px-4 py-8 mt-8 md:mt-16 text-center">
-            <Background />
+            <Background splashUrl="/main/5.jpg" quality={75} />
             <div className="bg-red-900/70 rounded-lg p-4 md:p-8 shadow-lg mb-4 md:mb-8 max-w-2xl mx-auto">
                 <h2 className="text-xl md:text-2xl font-bold text-white mb-2 tracking-[.20em]">Error</h2>
                 <p className="text-red-100 tracking-[.10em] font-sans">{message}</p>

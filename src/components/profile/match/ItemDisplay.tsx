@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { getItemIcon } from "@/utils/leagueAssets";
+import { getItemIcon } from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getItemIcon";
 import { BoxPlaceHolder } from "@/components/common";
 import { Item } from "@/types/interfaces";
 import { motion } from "framer-motion";

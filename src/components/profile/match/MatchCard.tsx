@@ -40,12 +40,12 @@ export function MatchCard({ participant, match, server }: MatchCardProps) {
             <div
                 className={`absolute left-0 top-0 h-full w-[12px] ${
                     participant.win ? "bg-green-400" : "bg-red-400"
-                } rounded-l-xl`}
+                } rounded-l-sm`}
             />
 
             {/* Main Card */}
             <div
-                className={`p-5 rounded-xl shadow-lg font-sans ${bgColor} ml-[4px] flex-1 overflow-visible`}
+                className={`p-5 rounded-sm shadow-lg font-sans ${bgColor} ml-[4px] flex-1 overflow-visible`}
             >
                 <div className="flex flex-col sm:flex-row gap-4 w-full">
                     <div
