@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import { getChampionSplashUrl } from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getChampionSplash";
 import { MatchList } from "@/components/profile/match";
 import ProfileSkeleton from "@/components/profile/ProfileSkeleton";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 // Cache function for splash image (you can wire this up later)
 cache(async (championId: number) => {
@@ -19,6 +20,7 @@ export default function ProfilePage({ params, }: {
             <Suspense fallback={<ProfileSkeleton />}>
                 <ProfileContent params={params} />
             </Suspense>
+            <SpeedInsights/>
         </div>
     );
 }

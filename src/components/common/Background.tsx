@@ -17,7 +17,7 @@ export function Background({splashUrl, quality, className = "",}: BackgroundProp
                 fill
                 quality={quality}
                 className="object-cover transition-opacity duration-500 opacity-100"
-                priority
+                priority={true}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-violet-600/50 to-indigo-600/50" />
         </div>
