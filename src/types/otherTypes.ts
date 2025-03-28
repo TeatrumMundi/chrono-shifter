@@ -1,4 +1,4 @@
-﻿import {FormatResponseReturn, MatchResponse, ProcessedParticipant} from "@/types/interfaces";
+﻿import {FormatResponseReturn, MatchResponse, ProcessedParticipant} from "@/types/ProcessedInterfaces";
 
 /**
  * Props for the Banner component

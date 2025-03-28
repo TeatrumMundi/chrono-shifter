@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Rune } from "@/types/interfaces";
+import { Rune } from "@/types/ProcessedInterfaces";
 import { motion } from "framer-motion";
 import { cleanItemDescription } from "@/components/profile/match/ItemDisplay";
 import { getRuneIconUrl, getRuneTreeIconUrl } from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getRuneIcon";

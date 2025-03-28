@@ -1,5 +1,5 @@
 import { promises as fs } from "fs";
-import {Rune} from "@/types/interfaces";
+import {Rune} from "@/types/ProcessedInterfaces";
 import {getAssetPath} from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getAssetPath";
 
 export async function getRuneById(id: number): Promise<Rune | null> {

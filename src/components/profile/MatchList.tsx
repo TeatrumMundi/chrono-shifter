@@ -7,7 +7,7 @@ import {
     FormatResponseReturn,
     MatchResponse,
     ProcessedParticipant,
-} from "@/types/interfaces";
+} from "@/types/ProcessedInterfaces";
 import { MatchHistoryHeader } from "@/components/profile/MatchHistoryHeader";
 
 interface MatchListProps {

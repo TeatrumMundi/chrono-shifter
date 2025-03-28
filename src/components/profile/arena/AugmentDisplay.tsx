@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { BoxPlaceHolder } from "@/components/common";
-import { Augment } from "@/types/interfaces";
+import { Augment } from "@/types/ProcessedInterfaces";
 import { motion } from "framer-motion";
 import {getAugmentIconUrl} from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getAugmentIcon";
 

@@ -1,4 +1,4 @@
-﻿import { ProcessedParticipant } from "@/types/interfaces";
+﻿import { ProcessedParticipant } from "@/types/ProcessedInterfaces";
 import { ArenaParticipantList } from "@/components/profile/arena/ArenaParticipantList";
 import { ChampionIcon } from "@/components/profile/match/ChampionIcon";
 import Link from "next/link";

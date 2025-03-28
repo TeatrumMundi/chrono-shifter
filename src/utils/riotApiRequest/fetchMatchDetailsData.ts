@@ -1,4 +1,4 @@
-﻿import { ArenaData, Augment, MatchData, MatchResponse, Participant, ProcessedParticipant, Rune, Item } from "@/types/interfaces";
+﻿import { ArenaData, Augment, MatchResponse, ProcessedParticipant, Rune, Item } from "@/types/ProcessedInterfaces";
 import { fetchFromRiotAPI } from "@/utils/riotApiRequest/fetchFromRiotAPI";
 import { getKDA, getMinionsPerMinute, reversedServerMAP } from "@/utils/helper";
 import {getRuneById} from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getRuneObject";
@@ -19,7 +19,7 @@ export async function fetchMatchDetailsData(region: string, server: string, matc
     try {
         // Fetch match data from Riot API
         const response = await fetchFromRiotAPI(`https://${region}.api.riotgames.com/lol/match/v5/matches/${matchID}`);
-        const data: MatchData = await response.json();
+        const data: RawMatchData = await response.json();
 
         // Process participants in the match
         const participants = await Promise.all(
@@ -43,14 +43,15 @@ export async function fetchMatchDetailsData(region: string, server: string, matc
 /**
  * Processes individual participant data, extracting relevant statistics and information.
  *
- * @param {Participant} participant - The participant data to process.
+ * @param {RawParticipant} participant - The participant data to process.
  * @param {string} server - The server identifier for the participant (mapped via `reversedServerMAP`).
  * @param {number} gameDuration - The duration of the match in seconds.
  * @returns {Promise<ProcessedParticipant>} A promise that resolves to a processed participant object containing statistics.
  */
 import { getChampionById } from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getChampionObject";
+import {RawMatchData, RawParticipant} from "@/types/RawInterfaces";
 
-async function processParticipant(participant: Participant, server: string, gameDuration: number): Promise<ProcessedParticipant> {
+async function processParticipant(participant: RawParticipant, server: string, gameDuration: number): Promise<ProcessedParticipant> {
     const runes: Rune[] = await fetchParticipantRunes(participant);
     const arenaData = await fetchArenaDataIfExists(participant);
     const champion = await getChampionById(participant.championId);
@@ -91,7 +92,7 @@ async function processParticipant(participant: Participant, server: string, game
 /**
  * Extracts all item objects for a participant by fetching from local items.json.
  */
-export async function extractItems(participant: Participant): Promise<Item[]> {
+export async function extractItems(participant: RawParticipant): Promise<Item[]> {
     const itemIds: number[] = [
         participant.item0,
         participant.item1,
@@ -117,10 +118,10 @@ export async function extractItems(participant: Participant): Promise<Item[]> {
 /**
  * Fetches rune details for a participant based on the rune IDs.
  *
- * @param {Participant} participant - The participant whose rune details are to be fetched.
+ * @param {RawParticipant} participant - The participant whose rune details are to be fetched.
  * @returns {Promise<Rune[]>} A promise that resolves to an array of rune details.
  */
-async function fetchParticipantRunes(participant: Participant): Promise<Rune[]> {
+async function fetchParticipantRunes(participant: RawParticipant): Promise<Rune[]> {
     const runeIds = participant.perks?.styles.flatMap(style =>
         style.selections.map(selection => selection.perk)
     ) ?? [];
@@ -133,10 +134,10 @@ async function fetchParticipantRunes(participant: Participant): Promise<Rune[]> 
 /**
  * Fetches arena data for a participant if it exists, including augments and subteam ID.
  *
- * @param {Participant} participant - The participant whose arena data is to be fetched.
+ * @param {RawParticipant} participant - The participant whose arena data is to be fetched.
  * @returns {Promise<ArenaData | undefined>} A promise that resolves to the arena data if available, or `undefined` if not.
  */
-async function fetchArenaDataIfExists(participant: Participant): Promise<ArenaData | undefined> {
+async function fetchArenaDataIfExists(participant: RawParticipant): Promise<ArenaData | undefined> {
     const hasArenaData = [
         'playerAugment1',
         'playerAugment2',
@@ -144,7 +145,7 @@ async function fetchArenaDataIfExists(participant: Participant): Promise<ArenaDa
         'playerAugment4',
         'playerAugment5',
         'playerAugment6'
-    ].some(key => participant[key as keyof Participant] !== undefined && participant[key as keyof Participant] !== 0);
+    ].some(key => participant[key as keyof RawParticipant] !== undefined && participant[key as keyof RawParticipant] !== 0);
 
     if (!hasArenaData) return undefined;
 

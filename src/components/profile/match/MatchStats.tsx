@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { ProcessedParticipant } from "@/types/interfaces";
+import { ProcessedParticipant } from "@/types/ProcessedInterfaces";
 import { motion } from "framer-motion";
 import { Swords, Eye, Coins, Flame, BarChart3, Cross, ShieldPlus, RadioTower } from "lucide-react";
 import { useState, useEffect, JSX } from "react";

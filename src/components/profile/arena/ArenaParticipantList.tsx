@@ -1,6 +1,6 @@
 ﻿import React, { useMemo } from 'react';
 import Link from 'next/link';
-import {ProcessedParticipant} from "@/types/interfaces";
+import {ProcessedParticipant} from "@/types/ProcessedInterfaces";
 import {ChampionIcon} from "@/components/profile/match";
 
 const TEAM_COLORS: string[] = [

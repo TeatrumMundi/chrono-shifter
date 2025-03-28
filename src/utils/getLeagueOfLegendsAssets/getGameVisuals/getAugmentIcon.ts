@@ -1,4 +1,4 @@
-﻿import { Augment } from "@/types/interfaces";
+﻿import { Augment } from "@/types/ProcessedInterfaces";
 
 /**
  * Returns the full URL to the augment icon from Community Dragon.

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { getItemIcon } from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getItemIcon";
 import { BoxPlaceHolder } from "@/components/common";
-import { Item } from "@/types/interfaces";
+import { Item } from "@/types/ProcessedInterfaces";
 import { motion } from "framer-motion";
 
 // Helper function to clean and format the item description.

@@ -1,4 +1,4 @@
-﻿import { MatchResponse, ProcessedParticipant } from "@/types/interfaces";
+﻿import { MatchResponse, ProcessedParticipant } from "@/types/ProcessedInterfaces";
 
 export const queueIdToGameMode: { [key: number]: string } = {
     0: "Custom games",

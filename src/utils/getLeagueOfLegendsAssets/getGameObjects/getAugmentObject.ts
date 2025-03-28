@@ -1,5 +1,5 @@
 ﻿import {promises as fs} from "fs";
-import {Augment} from "@/types/interfaces";
+import {Augment} from "@/types/ProcessedInterfaces";
 import {getAssetPath} from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getAssetPath";
 
 /**

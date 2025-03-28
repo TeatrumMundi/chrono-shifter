@@ -1,5 +1,5 @@
 ﻿import { promises as fs } from "fs";
-import { Item } from "@/types/interfaces";
+import { Item } from "@/types/ProcessedInterfaces";
 import {getAssetPath} from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getAssetPath";
 
 /**

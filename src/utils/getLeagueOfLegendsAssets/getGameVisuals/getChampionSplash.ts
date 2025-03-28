@@ -1,7 +1,7 @@
 ﻿'use server';
 
 import { getChampionById } from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getChampionObject";
-import { Champion } from "@/types/interfaces";
+import { Champion } from "@/types/ProcessedInterfaces";
 
 const GAME_VERSION: string = process.env.NEXT_PUBLIC_GAME_VERSION || "15.6.1";
 

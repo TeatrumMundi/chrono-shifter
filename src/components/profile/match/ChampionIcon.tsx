@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Champion } from "@/types/interfaces";
+import { Champion } from "@/types/ProcessedInterfaces";
 import { getChampionIconUrl } from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getChampionIcon";
 import { motion } from "framer-motion";
 
