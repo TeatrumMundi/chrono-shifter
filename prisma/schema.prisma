@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model PlayerInfo {
+  id                String               @id @default(uuid())
+  puuid             String               @unique
+  gameName          String
+  tagLine           String
+  server            String
+  soloRankedId      String               @unique
+  flexRankedId      String               @unique
+  profileIconId     Int
+  summonerLevel     Int
+  matches           Match[]
+  flexRanked        RankedInfo           @relation("FlexRanked", fields: [flexRankedId], references: [id])
+  soloRanked        RankedInfo           @relation("SoloRanked", fields: [soloRankedId], references: [id])
+  championMasteries RawChampionMastery[]
+  rankedEntries     RawRankedEntry[]
+
+  @@unique([gameName, tagLine, server])
+}
+
+model RankedInfo {
+  id         String      @id
+  Tier       String
+  Rank       String
+  Wins       Int
+  Losses     Int
+  LP         Int
+  WR         Int
+  flexPlayer PlayerInfo? @relation("FlexRanked")
+  soloPlayer PlayerInfo? @relation("SoloRanked")
+}
+
+model Match {
+  id               String             @id @default(uuid())
+  matchId          String             @unique
+  gameMode         String
+  queueId          Int
+  gameDuration     Int
+  gameEndTimestamp BigInt
+  playerInfoId     String
+  playerInfo       PlayerInfo         @relation(fields: [playerInfoId], references: [id])
+  participants     MatchParticipant[]
+}
+
+model MatchParticipant {
+  id                             String   @id @default(uuid())
+  matchId                        String
+  puuid                          String
+  riotIdGameName                 String
+  riotIdTagline                  String
+  server                         String
+  teamPosition                   String
+  champLevel                     Int
+  kills                          Int
+  deaths                         Int
+  assists                        Int
+  kda                            String
+  visionScore                    Int
+  visionPerMinute                String
+  damageDealt                    Int
+  goldEarned                     Int
+  wardsPlaced                    Int
+  totalHealsOnTeammates          Int
+  totalDamageShieldedOnTeammates Int
+  minionsKilled                  Int
+  minionsPerMinute               String
+  win                            Boolean
+  teamId                         Int
+
+  // JSON blobs for complex subobjects
+  champion                       Json
+  runes                          Json
+  items                          Json
+  arenaData                      Json? // optional
+
+  match                          Match   @relation(fields: [matchId], references: [matchId])
+
+  @@index([matchId])
+}
+
+model RawChampionMastery {
+  id             String     @id @default(uuid())
+  championId     Int
+  championLevel  Int
+  championPoints Int
+  playerInfoId   String
+  playerInfo     PlayerInfo @relation(fields: [playerInfoId], references: [id])
+}
+
+model RawRankedEntry {
+  id           String     @id @default(uuid())
+  queueType    String
+  tier         String
+  rank         String
+  leaguePoints Int
+  wins         Int
+  losses       Int
+  playerInfoId String
+  playerInfo   PlayerInfo @relation(fields: [playerInfoId], references: [id])
+}

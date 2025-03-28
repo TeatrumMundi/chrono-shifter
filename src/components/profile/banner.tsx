@@ -15,7 +15,7 @@ export function Banner({ data }: BannerProps) {
     return (
         <div className="relative w-full overflow-hidden rounded-lg">
             <div className="relative z-10 p-6 flex flex-col lg:flex-row items-center bg-gray-900/60 w-full gap-6">
-                <SummonerIcon url={summonerIconUrl} level={data.playerInfo.summonerLevel} />
+                <SummonerIcon url={summonerIconUrl} level={data.playerInfo.summonerLevel.toString()} />
 
                 <div className="flex-1 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                     <div className="text-center lg:text-left">

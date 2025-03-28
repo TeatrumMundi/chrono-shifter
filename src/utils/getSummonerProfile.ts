@@ -15,6 +15,8 @@ import {
 import { getAugmentById } from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getAugmentObject";
 import { RawRankedEntry } from "@/types/RawInterfaces";
 import {FormatResponseReturn, MatchResponse, RankedInfo} from "@/types/ProcessedInterfaces";
+import { saveSummonerProfileToDB } from "@/utils/saveSummonerProfileToDB";
+import {getCachedProfileFromDB} from "@/utils/getSummonerProfileFromDB";
 
 enum QueueType {
     SOLO = "RANKED_SOLO_5x5",
@@ -51,6 +53,13 @@ export async function getSummonerProfile(
         const region = getRegion(serverFetched);
         const server = getServer(serverFetched);
 
+        // Step 0: Check if the profile is cached in the DB
+        const cached = await getCachedProfileFromDB(gameName, tagLine, server);
+        if (cached) {
+            console.log(`✅ Serving cached profile for ${gameName}#${tagLine} from DB`);
+            return cached;
+        }
+
         // Step 2: Fetch account data by Riot ID (gameName + tagLine)
         const accountDetails = await fetchAccountData(region, gameName, tagLine);
         if (!accountDetails?.puuid) {console.error("❌ Account details not found for:", gameName, tagLine);
@@ -78,12 +87,19 @@ export async function getSummonerProfile(
 
         // Step 5: Fetch full match details in parallel for each match ID
         const match = await Promise.all(
-            matchIds.map(id =>
-                fetchMatchDetailsData(region, server, id).catch(err => {
+            matchIds.map(async id => {
+                const raw = await fetchMatchDetailsData(region, server, id).catch(err => {
                     console.warn(`⚠️ Failed to fetch match ${id}:`, err);
                     return null;
-                })
-            )
+                });
+
+                if (!raw) return null;
+
+                return {
+                    ...raw,
+                    matchId: id
+                };
+            })
         ).then(results => results.filter(Boolean) as MatchResponse[]);
 
         // Step 6: Extract solo and flex ranked entries
@@ -95,15 +111,15 @@ export async function getSummonerProfile(
             rankedDataMap.entries?.find(entry => entry.queueType === QueueType.FLEX) || null
         );
 
-        // Step 7: Return compiled profile response
-        return {
+        // Step 7: Compile response object
+        const response = {
             playerInfo: {
                 puuid: accountDetails.puuid,
                 gameName: accountDetails.gameName,
                 tagLine: accountDetails.tagLine,
                 server,
-                profileIconId: summonerDetails.profileIconId,
-                summonerLevel: summonerDetails.summonerLevel,
+                profileIconId: Number(summonerDetails.profileIconId),
+                summonerLevel: Number(summonerDetails.summonerLevel),
             },
             soloRanked,
             flexRanked,
@@ -111,8 +127,17 @@ export async function getSummonerProfile(
             championMasteries: championMasteries || [],
             match: match || []
         };
+        // ✅ Indicate data came from Riot API
+        console.log(`🌐 Fetched live profile for ${gameName}#${tagLine} from Riot API`);
+
+        // Step 8: Save response to DB
+        await saveSummonerProfileToDB(response);
+
+
+        // Step 9: Return response
+        return response;
     } catch (error) {
-        // Step 8: Global error handling and wrapping
+        // Step 10: Global error handling and wrapping
         const msg = error instanceof Error ? error.message : "Unknown error";
         console.error(`🔥 Error fetching summoner profile (${gameName}#${tagLine} @ ${serverFetched}):`, error);
 

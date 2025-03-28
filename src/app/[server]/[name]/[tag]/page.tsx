@@ -8,8 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 
 
 // Main Page Component
-export default function ProfilePage({ params, }: { params: Promise<{ server: string; name: string; tag: string }>; })
-{
+export default function ProfilePage({ params, }: { params: Promise<{ server: string; name: string; tag: string }>; }) {
     return (
         <div className="relative w-full overflow-x-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen">
             <Suspense fallback={<ProfileSkeleton />}>
@@ -59,7 +58,7 @@ export async function generateMetadata({params,}: { params: Promise<{ server: st
     const { server, name, tag } = resolvedParams;
 
     return {
-        title: `ChronoShifter - ${name.toUpperCase()}#${tag.toUpperCase()}`,
+        title: `${name.toUpperCase()}#${tag.toUpperCase()} - ChronoShifter`,
         description: `View ${name.toUpperCase()}#${tag.toUpperCase()}'s League of Legends profile stats and match history on the ${server} server`,
     };
 }

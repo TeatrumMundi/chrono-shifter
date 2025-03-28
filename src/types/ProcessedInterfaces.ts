@@ -105,14 +105,13 @@ export interface RankedInfo {
     WR: number;
 }
 
-export interface PlayerInfo
-{
+export interface PlayerInfo {
     puuid: string;
     gameName: string;
     server: string;
     tagLine: string;
-    profileIconId: string;
-    summonerLevel: string;
+    profileIconId: number;
+    summonerLevel: number;
 }
 
 export interface FormatResponseReturn {
