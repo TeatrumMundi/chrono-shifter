@@ -79,7 +79,7 @@ export interface ProcessedParticipant {
     totalDamageShieldedOnTeammates: number;
     minionsKilled: number;
     minionsPerMinute: string;
-    win: string;
+    win: boolean;
     teamId: number;
     champion: Champion;
     arenaData?: ArenaData;
