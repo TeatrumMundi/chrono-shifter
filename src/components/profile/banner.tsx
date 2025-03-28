@@ -14,7 +14,7 @@ export function Banner({ data }: BannerProps) {
 
     return (
         <div className="relative w-full overflow-hidden rounded-lg">
-            <div className="relative z-10 p-6 flex flex-col lg:flex-row items-center bg-gray-900/60 shadow-lg w-full gap-6">
+            <div className="relative z-10 p-6 flex flex-col lg:flex-row items-center bg-gray-900/60 w-full gap-6">
                 <SummonerIcon url={summonerIconUrl} level={data.playerInfo.summonerLevel} />
 
                 <div className="flex-1 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -55,7 +55,7 @@ export function Banner({ data }: BannerProps) {
 function RankSection({title, ranked, iconUrl, getWinRateColor,}: { title: string; ranked: RankedInfo; iconUrl: string; getWinRateColor: (wr: number) => string; }) {
     return (
         <div className="flex items-center gap-4 text-white">
-            <div className="hidden xl:block border-l-2 border-white/20 h-24" />
+            <div className="border-l-2 border-white/20 h-24" />
             <div className="flex flex-col items-center text-center">
                 <span className="text-lg font-semibold tracking-widest">{title}</span>
                 <span className="text-2xl mt-1 tracking-widest">
@@ -89,6 +89,8 @@ function SummonerIcon({ url, level }: { url: string; level: string }) {
                     className="rounded-lg border border-gray-500 object-cover"
                     sizes="96px"
                     quality={50}
+                    loading="eager"
+                    priority
                 />
             </div>
             <div className="absolute bottom-0 w-full bg-black/70 rounded-b-lg px-2 py-1 text-xs text-white text-center shadow-md tracking-widest font-sans">
@@ -105,10 +107,10 @@ function RankIcon({ url, title }: { url: string; title: string }) {
             alt={`${title} Icon`}
             width={110}
             height={110}
-            className="hidden xl:block"
             quality={50}
-            loading="lazy"
+            loading="eager"
             sizes="110px"
+            priority
         />
     );
 }
