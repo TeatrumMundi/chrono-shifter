@@ -15,7 +15,7 @@ export interface GamePerformance {
     championId: number;
     championName: string;
     teamPosition: string;
-    champLevel : number;
+    champLevel: number;
     kills: number;
     deaths: number;
     assists: number;
@@ -23,8 +23,8 @@ export interface GamePerformance {
     totalDamageDealtToChampions: number;
     goldEarned: number;
     wardsPlaced?: number;
-    totalHealsOnTeammates : number;
-    totalDamageShieldedOnTeammates : number;
+    totalHealsOnTeammates: number;
+    totalDamageShieldedOnTeammates: number;
     totalMinionsKilled: number;
     win: string;
     teamId: number;
@@ -43,7 +43,7 @@ export interface ItemSet {
 }
 
 /**
- * Item object information
+ * Detailed item object information
  */
 export interface Item {
     id: number;
@@ -66,6 +66,22 @@ export interface Item {
     displayInItemSets: boolean;
     iconPath: string;
 }
+
+/**
+ * Represents an augment option
+ */
+export type Augment = {
+    apiName: string;
+    calculations: object;
+    dataValues: object;
+    desc: string;
+    iconLarge: string;
+    iconSmall: string;
+    id: number;
+    name: string;
+    rarity: number;
+    tooltip: string;
+};
 
 /**
  * Arena-specific data
@@ -93,16 +109,40 @@ export interface Participant extends PlayerIdentity, GamePerformance, ItemSet {
     playerAugment5?: number;
     playerAugment6?: number;
     playerSubteamId?: number;
-    placement? : number;
+    placement?: number;
+}
+
+/**
+ * Represents rune information
+ */
+export interface Rune {
+    id: number;
+    name: string;
+    tooltip: string;
+    shortDesc: string;
+    longDesc: string;
+    iconPath: string;
+    runeTree?: string;
+}
+
+/**
+ * Champion information
+ */
+export interface Champion {
+    id: number;
+    name: string;
+    alias: string;
+    squarePortraitPath: string;
+    roles: string[];
 }
 
 /**
  * Processed participant data with calculated statistics
  */
 export interface ProcessedParticipant extends PlayerIdentity {
-    champion : Champion;
+    champion: Champion;
     teamPosition: string;
-    champLevel : number;
+    champLevel: number;
     kills: number;
     deaths: number;
     assists: number;
@@ -112,8 +152,8 @@ export interface ProcessedParticipant extends PlayerIdentity {
     damageDealt: number;
     goldEarned: number;
     wardsPlaced: number;
-    totalHealsOnTeammates : number;
-    totalDamageShieldedOnTeammates : number;
+    totalHealsOnTeammates: number;
+    totalDamageShieldedOnTeammates: number;
     minionsKilled: number;
     minionsPerMinute: string;
     win: string;
@@ -128,6 +168,7 @@ export interface ProcessedParticipant extends PlayerIdentity {
  */
 export interface MatchData {
     info: {
+        matchId: string;
         gameMode: string;
         queueId: number;
         gameDuration: number;
@@ -140,6 +181,7 @@ export interface MatchData {
  * Processed match data for front-end use
  */
 export interface MatchResponse {
+    matchId: string;
     gameMode: string;
     queueId: number;
     gameDuration: number;
@@ -174,19 +216,6 @@ export interface Ranked {
 }
 
 /**
- * Represents rune information
- */
-export interface Rune {
-    id: number;
-    name: string;
-    tooltip: string;
-    shortDesc: string;
-    longDesc: string;
-    iconPath: string;
-    runeTree?: string;
-}
-
-/**
  * Champion mastery information
  */
 export interface ChampionMastery {
@@ -207,77 +236,26 @@ export interface ChampionMastery {
  * This interface combines account information, ranked stats, match history, and champion mastery data.
  */
 export interface FormatResponseReturn {
-    /** Unique player identifier used across Riot systems */
     puuid: string;
-    /** Player's in-game name */
     gameName: string;
-    /** Player's tag line (e.g., #EUW) */
-    tagLine: string;
-    /** ID of the profile icon used by the summoner */
-    profileIconId: string;
-    /** Current level of the summoner account */
-    summonerLevel: string;
-    /** Solo/Duo queue tier (e.g., GOLD, PLATINUM) */
-    soloTier: string;
-    /** Solo/Duo queue rank within tier (e.g., I, II, III, IV) */
-    soloRank: string;
-    /** Number of wins in Solo/Duo queue */
-    soloWins: number;
-    /** Number of losses in Solo/Duo queue */
-    soloLosses: number;
-    /** Current League Points in Solo/Duo queue */
-    soloLP: number;
-    /** Win ratio percentage in Solo/Duo queue */
-    soloWR: number;
-    /** Flex queue tier (e.g., GOLD, PLATINUM) */
-    flexTier: string;
-    /** Flex queue rank within tier (e.g., I, II, III, IV) */
-    flexRank: string;
-    /** Number of wins in Flex queue */
-    flexWins: number;
-    /** Number of losses in Flex queue */
-    flexLosses: number;
-    /** Current League Points in Flex queue */
-    flexLP: number;
-    /** Win ratio percentage in Flex queue */
-    flexWR: number;
-    /** Array of recent match data */
-    match: MatchResponse[];
-    /** Array of champion mastery data representing the summoner's top mastery champions */
-    championMasteries: ChampionMastery[];
-}
-
-/**
- * Props for the Banner component
- */
-export interface BannerProps {
-    data: FormatResponseReturn;
-    splashUrl?: string | null;
-}
-
-export type Augment = {
-    apiName: string;
-    calculations: object;
-    dataValues: object;
-    desc: string;
-    iconLarge: string;
-    iconSmall: string;
-    id: number;
-    name: string;
-    rarity: number;
-    tooltip: string;
-};
-
-export interface MatchCardProps {
-    participant: ProcessedParticipant;
-    match: MatchResponse;
     server: string;
+    tagLine: string;
+    profileIconId: string;
+    summonerLevel: string;
+    soloTier: string;
+    soloRank: string;
+    soloWins: number;
+    soloLosses: number;
+    soloLP: number;
+    soloWR: number;
+    flexTier: string;
+    flexRank: string;
+    flexWins: number;
+    flexLosses: number;
+    flexLP: number;
+    flexWR: number;
+    match: MatchResponse[];
+    championMasteries: ChampionMastery[];
+    entries: RankedEntry[];
 }
 
-export interface Champion {
-    id: number;
-    name: string;
-    alias: string;
-    squarePortraitPath: string;
-    roles: string[];
-}

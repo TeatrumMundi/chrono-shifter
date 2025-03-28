@@ -1,4 +1,4 @@
-﻿import { Suspense, cache } from "react";
+﻿import { Suspense } from "react";
 import { Banner, ErrorState } from "@/components/profile";
 import { Metadata } from "next";
 import { getChampionSplashUrl } from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getChampionSplash";
@@ -6,15 +6,10 @@ import { MatchList } from "@/components/profile/match";
 import ProfileSkeleton from "@/components/profile/ProfileSkeleton";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
-// Cache function for splash image (you can wire this up later)
-cache(async (championId: number) => {
-    return await getChampionSplashUrl(championId);
-});
 
 // Main Page Component
-export default function ProfilePage({ params, }: {
-    params: Promise<{ server: string; name: string; tag: string }>;
-}) {
+export default function ProfilePage({ params, }: { params: Promise<{ server: string; name: string; tag: string }>; })
+{
     return (
         <div className="relative w-full overflow-x-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen">
             <Suspense fallback={<ProfileSkeleton />}>
@@ -25,11 +20,7 @@ export default function ProfilePage({ params, }: {
     );
 }
 
-async function ProfileContent({
-                                  params,
-                              }: {
-    params: Promise<{ server: string; name: string; tag: string }>;
-}) {
+async function ProfileContent({params,}: { params: Promise<{ server: string; name: string; tag: string }>; }) {
     const { getSummonerProfile } = await import("@/utils/getSummonerProfile");
     const resolvedParams = await params;
     const { server, name, tag } = resolvedParams;
@@ -63,11 +54,7 @@ async function ProfileContent({
     }
 }
 
-export async function generateMetadata({
-                                           params,
-                                       }: {
-    params: Promise<{ server: string; name: string; tag: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({params,}: { params: Promise<{ server: string; name: string; tag: string }>; }): Promise<Metadata> {
     const resolvedParams = await params;
     const { server, name, tag } = resolvedParams;
 

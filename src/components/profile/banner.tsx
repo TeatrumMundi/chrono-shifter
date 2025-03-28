@@ -1,29 +1,20 @@
 ﻿"use client";
 
 import Image from "next/image";
-import { BannerProps } from "@/types/interfaces";
+import {BannerProps} from "@/types/otherTypes";
 
-export function Banner({ data, splashUrl }: BannerProps) {
+export function Banner({ data }: BannerProps) {
     const summonerIconUrl = `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${data.profileIconId}.jpg`;
-    const rankedSoloIconUrl = `/rankedIcons/${data.soloTier.toLowerCase()}.png`;
-    const rankedFlexIconUrl = `/rankedIcons/${data.flexTier.toLowerCase()}.png`;
+    const rankedSoloIconUrl = `/rankedIcons/${data.soloTier.toLowerCase()}.webp`;
+    const rankedFlexIconUrl = `/rankedIcons/${data.flexTier.toLowerCase()}.webp`;
 
     const getWinRateColor = (winRate: number) =>
         winRate >= 50 ? "text-green-400" : "text-red-500";
 
     return (
         <div className="relative w-full overflow-hidden rounded-lg">
-            {/* Background splash image */}
-            <Image
-                src={splashUrl ?? '/main/1.jpg'}
-                alt="Champion Splash"
-                fill
-                className="object-cover blur-[4px]"
-                quality={10}
-                priority={true}
-            />
-            {/* Overlay content */}
-            <div className="relative z-10 p-6 flex flex-col lg:flex-row items-center bg-gray-900/70 shadow-lg w-full gap-6">
+            {/* Overlay content (Rank, Summoner info, etc.) */}
+            <div className="relative z-10 p-6 flex flex-col lg:flex-row items-center bg-gray-900/60 shadow-lg w-full gap-6">
                 <SummonerIcon url={summonerIconUrl} level={data.summonerLevel} />
 
                 <div className="flex-1 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -98,19 +89,17 @@ function RankSection({
             <div className="flex flex-col items-center text-center">
                 <span className="text-lg font-semibold tracking-widest">{title}</span>
                 <span className="text-2xl mt-1 tracking-widest">
-                    {tier} {rank}
-                </span>
+          {tier} {rank}
+        </span>
                 <div className="flex gap-1 text-lg tracking-widest mt-1">
                     <span className="text-green-400">{wins}W</span>
                     <span>:</span>
                     <span className="text-red-500">{losses}L</span>
                     <span>
-                        (
-                        <span className={getWinRateColor(winRate)}>
-                            {winRate}%
-                        </span>
-                        )
-                    </span>
+            (
+            <span className={getWinRateColor(winRate)}>{winRate}%</span>
+            )
+          </span>
                 </div>
                 <span className="text-sm mt-1">{lp} LP</span>
             </div>
@@ -122,14 +111,14 @@ function RankSection({
 function SummonerIcon({ url, level }: { url: string; level: string }) {
     return (
         <div className="relative flex-shrink-0">
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32">
+            <div className="relative h-24 w-24">
                 <Image
                     src={url}
                     alt="Summoner Icon"
                     fill
                     className="rounded-lg border border-gray-500 object-cover"
-                    sizes="(max-width: 768px) 80px, (max-width: 1024px) 96px, 128px"
-                    quality={20}
+                    sizes="96px"
+                    quality={50}
                 />
             </div>
             <div className="absolute bottom-0 w-full bg-black/70 rounded-b-lg px-2 py-1 text-xs text-white text-center shadow-md tracking-widest font-sans">
@@ -149,6 +138,7 @@ function RankIcon({ url, title }: { url: string; title: string }) {
             className="hidden xl:block"
             quality={50}
             loading="lazy"
+            sizes="110px"
         />
     );
 }

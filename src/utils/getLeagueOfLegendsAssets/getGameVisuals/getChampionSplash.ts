@@ -79,7 +79,7 @@ export async function getChampionSplashUrl(championId: number): Promise<string |
         }
 
         const randomSkin = championData.skins[Math.floor(Math.random() * championData.skins.length)].num;
-        const splashUrl = `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${formattedName}_${randomSkin}.jpg`;
+        const splashUrl = `https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/${formattedName}_${randomSkin}.jpg`;
 
         // ✅ Cache result
         splashCache.set(championId, splashUrl);

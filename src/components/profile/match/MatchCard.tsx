@@ -1,6 +1,5 @@
 ﻿"use client";
 
-import { MatchCardProps } from "@/types/interfaces";
 import {
     formatRole,
     getOrdinalPlacement,
@@ -16,6 +15,7 @@ import {
     ParticipantList,
 } from "@/components/profile/match";
 import { AugmentDisplay } from "@/components/profile/arena/AugmentDisplay";
+import {MatchCardProps} from "@/types/otherTypes";
 
 export function MatchCard({ participant, match, server }: MatchCardProps) {
     const gameMode: string = queueIdToGameMode[match.queueId] || "Unknown";

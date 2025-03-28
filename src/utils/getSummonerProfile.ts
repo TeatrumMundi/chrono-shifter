@@ -110,7 +110,7 @@ export async function getSummonerProfile(
             ...rankedDataMap,
             match,
             championMasteries: championMasteries || []
-        });
+        }, server);
     } catch (error) {
         const errorMessage: string = error instanceof Error ? error.message : "Unknown error";
         console.error(`Error fetching summoner profile for ${gameName}#${tagLine} on ${serverFetched}:`, error);
@@ -139,9 +139,10 @@ function extractRankedEntry(entries: RankedEntry[] | undefined, queueType: Queue
  * Extracts solo and flex queue ranked data and calculates win ratios
  *
  * @param data - Combined raw data from various API calls
+ * @param server - Server for player
  * @returns Formatted and enhanced summoner profile data
  */
-function formatResponse(data: FormattedResponse): FormatResponseReturn {
+function formatResponse(data: FormattedResponse, server: string): FormatResponseReturn {
     // Extract queue specific data using helper function
     const soloEntry = extractRankedEntry(data.entries, QueueType.SOLO);
     const flexEntry = extractRankedEntry(data.entries, QueueType.FLEX);
@@ -149,6 +150,8 @@ function formatResponse(data: FormattedResponse): FormatResponseReturn {
     // Return formatted data with calculated fields and safe defaults
     return {
         ...data,
+        server,
+        entries: data.entries,
         // Solo queue data
         soloTier: soloEntry?.tier || "Unranked",
         soloRank: soloEntry?.rank || "",
