@@ -41,7 +41,7 @@ async function ProfileContent({params,}: { params: Promise<{ server: string; nam
                 <div className="grid grid-cols-12 gap-4 mt-16">
                     <div className="col-span-12 space-y-8">
                         <Banner data={profileData} splashUrl={splashUrl}/>
-                        <MatchList data={profileData} puuid={profileData.puuid} />
+                        <MatchList data={profileData} puuid={profileData.playerInfo.puuid} />
                     </div>
                 </div>
             </div>

@@ -5,7 +5,7 @@ import { BannerProps } from "@/types/otherTypes";
 import {RankedInfo} from "@/types/ProcessedInterfaces";
 
 export function Banner({ data }: BannerProps) {
-    const summonerIconUrl = `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${data.profileIconId}.jpg`;
+    const summonerIconUrl = `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${data.playerInfo.profileIconId}.jpg`;
     const rankedSoloIconUrl = `/rankedIcons/${data.soloRanked.Tier.toLowerCase()}.webp`;
     const rankedFlexIconUrl = `/rankedIcons/${data.flexRanked.Tier.toLowerCase()}.webp`;
 
@@ -15,16 +15,16 @@ export function Banner({ data }: BannerProps) {
     return (
         <div className="relative w-full overflow-hidden rounded-lg">
             <div className="relative z-10 p-6 flex flex-col lg:flex-row items-center bg-gray-900/60 shadow-lg w-full gap-6">
-                <SummonerIcon url={summonerIconUrl} level={data.summonerLevel} />
+                <SummonerIcon url={summonerIconUrl} level={data.playerInfo.summonerLevel} />
 
                 <div className="flex-1 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                     <div className="text-center lg:text-left">
                         <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-widest leading-tight">
-                            {data.gameName}
+                            {data.playerInfo.gameName}
                         </h2>
                         <div className="flex flex-col sm:flex-row items-center gap-4 mt-2 justify-center lg:justify-start">
                             <h3 className="text-lg md:text-xl text-white/90 tracking-widest">
-                                #{data.tagLine}
+                                #{data.playerInfo.tagLine}
                             </h3>
                             <button className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm md:text-base transition-all duration-300 hover:scale-105 active:scale-95 shadow tracking-[.25em]">
                                 Update

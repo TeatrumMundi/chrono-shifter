@@ -105,13 +105,18 @@ export interface RankedInfo {
     WR: number;
 }
 
-export interface FormatResponseReturn {
+export interface PlayerInfo
+{
     puuid: string;
     gameName: string;
     server: string;
     tagLine: string;
     profileIconId: string;
     summonerLevel: string;
+}
+
+export interface FormatResponseReturn {
+    playerInfo: PlayerInfo;
     soloRanked: RankedInfo;
     flexRanked: RankedInfo;
     match: MatchResponse[];

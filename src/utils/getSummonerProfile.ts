@@ -97,19 +97,17 @@ export async function getSummonerProfile(
 
         // Step 7: Return compiled profile response
         return {
-            ...accountDetails,
-            ...summonerDetails,
-            ...rankedDataMap,
-            server,
-            entries: rankedDataMap.entries,
-
-            // Step 7.1: Solo Queue stats
+            playerInfo: {
+                puuid: accountDetails.puuid,
+                gameName: accountDetails.gameName,
+                tagLine: accountDetails.tagLine,
+                server,
+                profileIconId: summonerDetails.profileIconId,
+                summonerLevel: summonerDetails.summonerLevel,
+            },
             soloRanked,
-
-            // Step 7.2: Flex Queue stats
             flexRanked,
-
-            // Step 7.3: Extras
+            entries: rankedDataMap.entries,
             championMasteries: championMasteries || [],
             match: match || []
         };
