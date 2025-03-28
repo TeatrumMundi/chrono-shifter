@@ -28,6 +28,7 @@ export async function fetchMatchDetailsData(region: string, server: string, matc
 
         // Return structured match details
         return {
+            matchId: data.info.matchId,
             gameMode: data.info.gameMode,
             queueId: data.info.queueId,
             gameDuration: data.info.gameDuration,
@@ -47,7 +48,7 @@ export async function fetchMatchDetailsData(region: string, server: string, matc
  * @param {number} gameDuration - The duration of the match in seconds.
  * @returns {Promise<ProcessedParticipant>} A promise that resolves to a processed participant object containing statistics.
  */
-import { getChampionById } from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getChampionObject"; // adjust path as needed
+import { getChampionById } from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getChampionObject";
 
 async function processParticipant(participant: Participant, server: string, gameDuration: number): Promise<ProcessedParticipant> {
     const runes: Rune[] = await fetchParticipantRunes(participant);
