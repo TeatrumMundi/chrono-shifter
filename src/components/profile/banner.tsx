@@ -1,19 +1,19 @@
 ﻿"use client";
 
 import Image from "next/image";
-import {BannerProps} from "@/types/otherTypes";
+import { BannerProps } from "@/types/otherTypes";
+import {RankedInfo} from "@/types/ProcessedInterfaces";
 
 export function Banner({ data }: BannerProps) {
     const summonerIconUrl = `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${data.profileIconId}.jpg`;
-    const rankedSoloIconUrl = `/rankedIcons/${data.soloTier.toLowerCase()}.webp`;
-    const rankedFlexIconUrl = `/rankedIcons/${data.flexTier.toLowerCase()}.webp`;
+    const rankedSoloIconUrl = `/rankedIcons/${data.soloRanked.Tier.toLowerCase()}.webp`;
+    const rankedFlexIconUrl = `/rankedIcons/${data.flexRanked.Tier.toLowerCase()}.webp`;
 
     const getWinRateColor = (winRate: number) =>
         winRate >= 50 ? "text-green-400" : "text-red-500";
 
     return (
         <div className="relative w-full overflow-hidden rounded-lg">
-            {/* Overlay content (Rank, Summoner info, etc.) */}
             <div className="relative z-10 p-6 flex flex-col lg:flex-row items-center bg-gray-900/60 shadow-lg w-full gap-6">
                 <SummonerIcon url={summonerIconUrl} level={data.summonerLevel} />
 
@@ -35,23 +35,13 @@ export function Banner({ data }: BannerProps) {
                     <div className="flex flex-col md:flex-row gap-6 items-center tracking-widest">
                         <RankSection
                             title="Solo Queue"
-                            tier={data.soloTier}
-                            rank={data.soloRank}
-                            wins={data.soloWins}
-                            losses={data.soloLosses}
-                            winRate={data.soloWR}
-                            lp={data.soloLP}
+                            ranked={data.soloRanked}
                             iconUrl={rankedSoloIconUrl}
                             getWinRateColor={getWinRateColor}
                         />
                         <RankSection
                             title="Flex Queue"
-                            tier={data.flexTier}
-                            rank={data.flexRank}
-                            wins={data.flexWins}
-                            losses={data.flexLosses}
-                            winRate={data.flexWR}
-                            lp={data.flexLP}
+                            ranked={data.flexRanked}
                             iconUrl={rankedFlexIconUrl}
                             getWinRateColor={getWinRateColor}
                         />
@@ -62,46 +52,26 @@ export function Banner({ data }: BannerProps) {
     );
 }
 
-function RankSection({
-                         title,
-                         tier,
-                         rank,
-                         wins,
-                         losses,
-                         winRate,
-                         lp,
-                         iconUrl,
-                         getWinRateColor,
-                     }: {
-    title: string;
-    tier: string;
-    rank: string;
-    wins: number;
-    losses: number;
-    winRate: number;
-    lp: number;
-    iconUrl: string;
-    getWinRateColor: (wr: number) => string;
-}) {
+function RankSection({title, ranked, iconUrl, getWinRateColor,}: { title: string; ranked: RankedInfo; iconUrl: string; getWinRateColor: (wr: number) => string; }) {
     return (
         <div className="flex items-center gap-4 text-white">
             <div className="hidden xl:block border-l-2 border-white/20 h-24" />
             <div className="flex flex-col items-center text-center">
                 <span className="text-lg font-semibold tracking-widest">{title}</span>
                 <span className="text-2xl mt-1 tracking-widest">
-          {tier} {rank}
-        </span>
+                    {ranked.Tier} {ranked.Rank}
+                </span>
                 <div className="flex gap-1 text-lg tracking-widest mt-1">
-                    <span className="text-green-400">{wins}W</span>
+                    <span className="text-green-400">{ranked.Wins}W</span>
                     <span>:</span>
-                    <span className="text-red-500">{losses}L</span>
+                    <span className="text-red-500">{ranked.Losses}L</span>
                     <span>
-            (
-            <span className={getWinRateColor(winRate)}>{winRate}%</span>
-            )
-          </span>
+                        (
+                        <span className={getWinRateColor(ranked.WR)}>{ranked.WR}%</span>
+                        )
+                    </span>
                 </div>
-                <span className="text-sm mt-1">{lp} LP</span>
+                <span className="text-sm mt-1">{ranked.LP} LP</span>
             </div>
             <RankIcon url={iconUrl} title={title} />
         </div>

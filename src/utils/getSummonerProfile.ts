@@ -14,7 +14,7 @@ import {
 } from "@/utils/riotApiRequest";
 import { getAugmentById } from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getAugmentObject";
 import { RawRankedEntry } from "@/types/RawInterfaces";
-import {FormatResponseReturn, MatchResponse} from "@/types/ProcessedInterfaces";
+import {FormatResponseReturn, MatchResponse, RankedInfo} from "@/types/ProcessedInterfaces";
 
 enum QueueType {
     SOLO = "RANKED_SOLO_5x5",
@@ -27,6 +27,18 @@ class RiotAPIError extends Error {
         this.name = "RiotAPIError";
     }
 }
+
+function formatRankedStats(entry: RawRankedEntry | null): RankedInfo {
+    return {
+        Tier: entry?.tier || "Unranked",
+        Rank: entry?.rank || "",
+        Wins: entry?.wins || 0,
+        Losses: entry?.losses || 0,
+        LP: entry?.leaguePoints || 0,
+        WR: calculateWinRatio(entry?.wins || 0, entry?.losses || 0),
+    };
+}
+
 
 export async function getSummonerProfile(
     serverFetched: string,
@@ -75,11 +87,13 @@ export async function getSummonerProfile(
         ).then(results => results.filter(Boolean) as MatchResponse[]);
 
         // Step 6: Extract solo and flex ranked entries
-        const extract = (entries: RawRankedEntry[] | undefined, queueType: QueueType) =>
-            entries?.find(entry => entry.queueType === queueType) || null;
+        const soloRanked = formatRankedStats(
+            rankedDataMap.entries?.find(entry => entry.queueType === QueueType.SOLO) || null
+        );
 
-        const solo = extract(rankedDataMap.entries, QueueType.SOLO);
-        const flex = extract(rankedDataMap.entries, QueueType.FLEX);
+        const flexRanked = formatRankedStats(
+            rankedDataMap.entries?.find(entry => entry.queueType === QueueType.FLEX) || null
+        );
 
         // Step 7: Return compiled profile response
         return {
@@ -90,20 +104,10 @@ export async function getSummonerProfile(
             entries: rankedDataMap.entries,
 
             // Step 7.1: Solo Queue stats
-            soloTier: solo?.tier || "Unranked",
-            soloRank: solo?.rank || "",
-            soloWins: solo?.wins || 0,
-            soloLosses: solo?.losses || 0,
-            soloLP: solo?.leaguePoints || 0,
-            soloWR: calculateWinRatio(solo?.wins || 0, solo?.losses || 0),
+            soloRanked,
 
             // Step 7.2: Flex Queue stats
-            flexTier: flex?.tier || "Unranked",
-            flexRank: flex?.rank || "",
-            flexWins: flex?.wins || 0,
-            flexLosses: flex?.losses || 0,
-            flexLP: flex?.leaguePoints || 0,
-            flexWR: calculateWinRatio(flex?.wins || 0, flex?.losses || 0),
+            flexRanked,
 
             // Step 7.3: Extras
             championMasteries: championMasteries || [],

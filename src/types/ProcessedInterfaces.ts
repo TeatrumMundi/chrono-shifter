@@ -96,6 +96,15 @@ export interface MatchResponse {
     participants: ProcessedParticipant[];
 }
 
+export interface RankedInfo {
+    Tier: string;
+    Rank: string;
+    Wins: number;
+    Losses: number;
+    LP: number;
+    WR: number;
+}
+
 export interface FormatResponseReturn {
     puuid: string;
     gameName: string;
@@ -103,18 +112,8 @@ export interface FormatResponseReturn {
     tagLine: string;
     profileIconId: string;
     summonerLevel: string;
-    soloTier: string;
-    soloRank: string;
-    soloWins: number;
-    soloLosses: number;
-    soloLP: number;
-    soloWR: number;
-    flexTier: string;
-    flexRank: string;
-    flexWins: number;
-    flexLosses: number;
-    flexLP: number;
-    flexWR: number;
+    soloRanked: RankedInfo;
+    flexRanked: RankedInfo;
     match: MatchResponse[];
     championMasteries: RawChampionMastery[];
     entries: RawRankedEntry[];
