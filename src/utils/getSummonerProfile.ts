@@ -46,7 +46,8 @@ export async function getSummonerProfile(
     serverFetched: string,
     gameName: string,
     tagLine: string,
-    matchCount = 5
+    matchCount = 5,
+    force = false
 ): Promise<FormatResponseReturn | null> {
     try {
         // Step 1: Resolve region/server from shorthand
@@ -54,22 +55,25 @@ export async function getSummonerProfile(
         const server = getServer(serverFetched);
 
         // Step 0: Check if the profile is cached in the DB
-        const cached = await getCachedProfileFromDB(gameName, tagLine, server);
-        if (cached) {
-            console.log(`✅ Serving cached profile for ${gameName}#${tagLine} from DB\n`);
-            return cached;
+        if (!force) {
+            const cached = await getCachedProfileFromDB(gameName, tagLine, server);
+            if (cached) {
+                console.log(`✅ Serving cached profile for ${gameName}#${tagLine} from DB\n`);
+                return cached;
+            }
         }
 
         // Step 2: Fetch account data by Riot ID (gameName + tagLine)
         const accountDetails = await fetchAccountData(region, gameName, tagLine);
-        if (!accountDetails?.puuid) {console.error("❌ Account details not found for:", gameName, tagLine);
+        if (!accountDetails?.puuid)
+            {console.error(`❌ Account details not found for: Nickname#TAG:${gameName}#${tagLine} Server:${server} Region:${region} ServerFetched:${serverFetched}`);
             return null;
         }
 
         // Step 3: Fetch summoner data using PUUID
         const summonerDetails = await fetchSummonerData(server, accountDetails.puuid);
         if (!summonerDetails?.id) {
-            console.error("❌ Summoner details not found for PUUID:", accountDetails.puuid);
+            console.error("❌ Summoner details not found for PUUID:", accountDetails.puuid + "\n");
             return null;
         }
 
@@ -80,7 +84,7 @@ export async function getSummonerProfile(
             fetchMatchData(region, accountDetails.puuid, "", matchCount),
             // Step 4.1 (non-blocking): Cache warm-up (fail-safe)
             getAugmentById(1).catch(error => {
-                console.warn("⚠️ Cache warming failed (non-blocking):", error);
+                console.warn("⚠️ Cache warming failed (non-blocking):", error + "\n");
                 return null;
             })
         ]);
@@ -89,7 +93,7 @@ export async function getSummonerProfile(
         const match = await Promise.all(
             matchIds.map(async id => {
                 const raw = await fetchMatchDetailsData(region, server, id).catch(err => {
-                    console.warn(`⚠️ Failed to fetch match ${id}:`, err);
+                    console.warn(`⚠️ Failed to fetch match ${id}:`, err + "\n");
                     return null;
                 });
 
@@ -128,7 +132,7 @@ export async function getSummonerProfile(
             match: match || []
         };
         // ✅ Indicate data came from Riot API
-        console.log(`🌐 Fetched live profile for ${gameName}#${tagLine} from Riot API`);
+        console.log(`🌐 Fetched live profile for ${gameName}#${tagLine} from Riot API\n`);
 
         // Step 8: Save response to DB
         await saveSummonerProfileToDB(response);
@@ -139,7 +143,7 @@ export async function getSummonerProfile(
     } catch (error) {
         // Step 10: Global error handling and wrapping
         const msg = error instanceof Error ? error.message : "Unknown error";
-        console.error(`🔥 Error fetching summoner profile (${gameName}#${tagLine} @ ${serverFetched}):`, error);
+        console.error(`🔥 Error fetching summoner profile (${gameName}#${tagLine} @ ${serverFetched}):`, error + "\n");
 
         if (error instanceof RiotAPIError) throw error;
         throw new RiotAPIError(`Failed to get summoner profile: ${msg}`, error instanceof Error ? error : undefined);

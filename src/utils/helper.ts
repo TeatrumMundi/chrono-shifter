@@ -108,11 +108,11 @@ export function calculateWinRatio(wins: number, losses: number): number {
 } // Calculate winRatio based on wins and losses
 export function getRegion(server: string): string {
     server = server.toLowerCase();
-    return regionMAP[server] || "UNKNOWN";
+    return regionMAP[server] || server;
 } //Returns region suitable for API
 export function getServer(server: string): string {
-    server = server.toLowerCase();
-    return serverMAP[server] || "UNKNOWN";
+    const normalized = server.toLowerCase();
+    return serverMAP[normalized] || server.toUpperCase(); // fallback na np. "EUN1"
 } //Returns server suitable for API
 export function secToHHMMSS(seconds: number): string {
     const hours = Math.floor(seconds / 3600);

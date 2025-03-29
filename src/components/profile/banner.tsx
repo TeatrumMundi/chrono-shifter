@@ -2,9 +2,17 @@
 
 import Image from "next/image";
 import { BannerProps } from "@/types/otherTypes";
-import {RankedInfo} from "@/types/ProcessedInterfaces";
+import { RankedInfo } from "@/types/ProcessedInterfaces";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { RotateCcw } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function Banner({ data }: BannerProps) {
+    const [isPending, startTransition] = useTransition();
+    const [updated, setUpdated] = useState(false);
+    const router = useRouter();
+
     const summonerIconUrl = `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${data.playerInfo.profileIconId}.jpg`;
     const rankedSoloIconUrl = `/rankedIcons/${data.soloRanked.Tier.toLowerCase()}.webp`;
     const rankedFlexIconUrl = `/rankedIcons/${data.flexRanked.Tier.toLowerCase()}.webp`;
@@ -12,8 +20,45 @@ export function Banner({ data }: BannerProps) {
     const getWinRateColor = (winRate: number) =>
         winRate >= 50 ? "text-green-400" : "text-red-500";
 
+    const handleUpdateClick = async () => {
+        startTransition(async () => {
+            const name = data.playerInfo?.gameName ?? "";
+            const tag = data.playerInfo?.tagLine?.toLowerCase() ?? "";
+            const server = data.playerInfo?.server ?? "";
+
+            if (!name || !tag || !server) {
+                console.warn("❌ Missing or invalid data", { name, tag, server });
+                return;
+            }
+
+            try {
+                const res = await fetch("/api/force-update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, tag, server }),
+                });
+
+                if (!res.ok)
+                {
+                    console.log(`❌ Update failed with status ${res.status}`);
+                    return;
+                }
+
+                setUpdated(true);
+                router.refresh();
+            } catch (error) {
+                console.error("Update error:", error);
+            }
+        });
+    };
+
     return (
-        <div className="relative w-full overflow-hidden rounded-lg">
+        <motion.div
+            className="relative w-full overflow-hidden rounded-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+        >
             <div className="relative z-10 p-6 flex flex-col lg:flex-row items-center bg-gray-900/60 w-full gap-6">
                 <SummonerIcon url={summonerIconUrl} level={data.playerInfo.summonerLevel.toString()} />
 
@@ -26,8 +71,15 @@ export function Banner({ data }: BannerProps) {
                             <h3 className="text-lg md:text-xl text-white/90 tracking-widest">
                                 #{data.playerInfo.tagLine}
                             </h3>
-                            <button className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm md:text-base transition-all duration-300 hover:scale-105 active:scale-95 shadow tracking-[.25em]">
-                                Update
+                            <button
+                                onClick={handleUpdateClick}
+                                className={`flex items-center gap-2 px-5 py-2 text-white font-semibold rounded-lg text-sm md:text-base transition-all duration-300 shadow tracking-[.25em] ${
+                                    isPending ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 hover:scale-105 active:scale-95"
+                                }`}
+                                disabled={isPending}
+                            >
+                                <RotateCcw className={`w-4 h-4 ${isPending ? "animate-spin" : ""}`} />
+                                {updated ? "Updated" : isPending ? "Updating..." : "Update"}
                             </button>
                         </div>
                     </div>
@@ -48,7 +100,7 @@ export function Banner({ data }: BannerProps) {
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
 
