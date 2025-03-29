@@ -24,9 +24,14 @@ export async function GET(req: NextRequest) {
             where: {
                 server,
                 OR: [
-                    { gameName: { contains: query, mode: "insensitive" } },
-                    { tagLine: { contains: query, mode: "insensitive" } }
+                    // Use startsWith for better performance with indexes
+                    { gameName: { startsWith: query, mode: "insensitive" } },
+                    { tagLine: { startsWith: query, mode: "insensitive" } }
                 ]
+            },
+            orderBy: {
+                // Show higher level players first
+                summonerLevel: "desc"
             },
             take: 10,
             select: {

@@ -1,9 +1,10 @@
 ﻿"use client";
 
-import React, { useState, useEffect, useActionState } from "react";
+import React, { useState, useEffect, useActionState, useMemo } from "react";
 import { handleSearch } from "@/components/search/handleSearch";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import debounce from "lodash.debounce";
 
 const initialState = {
     error: null as string | null,
@@ -14,6 +15,7 @@ type RegionSelectorProps = {
     isDropdownOpen: boolean;
 };
 
+
 type Suggestion = {
     gameName: string;
     tagLine: string;
@@ -21,15 +23,33 @@ type Suggestion = {
     summonerLevel: number;
 };
 
-function RegionSelector({ onChange, isDropdownOpen }: RegionSelectorProps) {
+const cache = new Map<string, Suggestion[]>();
+
+function saveRecentSearch(profile: Suggestion) {
+    const key = "recent_searches";
+    const existing = JSON.parse(localStorage.getItem(key) || "[]");
+    const updated = [profile, ...existing.filter((p: Suggestion) => `${p.gameName}#${p.tagLine}` !== `${profile.gameName}#${profile.tagLine}`)];
+    localStorage.setItem(key, JSON.stringify(updated.slice(0, 3)));
+}
+
+function getRecentSearches(): Suggestion[] {
+    if (typeof window === "undefined") return [];
+    try {
+        return JSON.parse(localStorage.getItem("recent_searches") || "[]");
+    } catch {
+        return [];
+    }
+}
+
+function RegionSelector({ onChange, isDropdownOpen}: RegionSelectorProps) {
     return (
         <select
             name="server"
             defaultValue="EUNE"
-            className={`pl-2 pr-6 py-2 text-xs xs:pl-3 xs:pr-8 xs:py-3 xs:text-sm sm:text-base md:text-lg lg:text-xl 
-        bg-white/20 backdrop-blur-sm border border-white/30 focus:outline-none focus:border-white/50 
-        text-white appearance-none tracking-[0.2em] transition-all duration-200 
-        rounded-tl-lg ${isDropdownOpen ? "rounded-bl-none" : "rounded-bl-lg"}`}
+            className={`h-full pl-2 pr-6 py-2 text-xs xs:pl-3 xs:pr-8 xs:py-3 xs:text-sm sm:text-base md:text-lg lg:text-xl 
+bg-white/20 backdrop-blur-sm border border-white/30 focus:outline-none focus:border-white/50 
+text-white appearance-none tracking-[0.2em] transition-all duration-200 
+rounded-tl-lg ${isDropdownOpen ? "rounded-bl-none" : "rounded-bl-lg"}`}
             autoComplete="off"
             onChange={(e) => onChange(e.target.value)}
         >
@@ -53,74 +73,96 @@ function RegionSelector({ onChange, isDropdownOpen }: RegionSelectorProps) {
     );
 }
 
+
 export default function SearchForm() {
     const [state, formAction, isPending] = useActionState(handleSearch, initialState);
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const [recentSearches, setRecentSearches] = useState<Suggestion[]>([]);
     const [query, setQuery] = useState<string>("");
     const [region, setRegion] = useState("eune");
     const [inputFocused, setInputFocused] = useState(false);
 
-    const isDropdownOpen = suggestions.length > 0 && inputFocused;
+    const shouldShowDropdown = inputFocused && (suggestions.length > 0 || recentSearches.length > 0);
+
+    const fetchSuggestions = useMemo(() =>
+        debounce(async (query: string, region: string) => {
+            const cacheKey = `${region}_${query}`;
+            if (cache.has(cacheKey)) {
+                setSuggestions(cache.get(cacheKey)!);
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/autocomplete?query=${encodeURIComponent(query)}&region=${region}`);
+                const data: Suggestion[] = await res.json();
+                cache.set(cacheKey, data);
+                setSuggestions(data);
+            } catch (err) {
+                console.error("❌ Failed to fetch suggestions:", err);
+            }
+        }, 500), []);
 
     useEffect(() => {
-        const delayDebounce = setTimeout(async () => {
-            if (query.length > 1) {
-                try {
-                    const res = await fetch(`/api/autocomplete?query=${encodeURIComponent(query)}&region=${region}`);
-                    const data: Suggestion[] = await res.json();
-                    setSuggestions(data);
-                } catch (err) {
-                    console.error("❌ Failed to fetch suggestions:", err);
-                }
-            } else {
-                setSuggestions([]);
-            }
-        }, 300);
+        if (query.length > 1) {
+            void fetchSuggestions(query, region);
+        } else {
+            setSuggestions([]);
+        }
 
-        return () => clearTimeout(delayDebounce);
-    }, [query, region]);
+        return () => {
+            fetchSuggestions.cancel();
+        };
+    }, [query, region, fetchSuggestions]);
 
     return (
-        <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl px-4">
+        <div className="absolute top-6/10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl px-4">
             <form action={formAction} className="relative flex items-center">
                 <div className="flex w-full relative shadow-md transition-shadow duration-200">
-                    <RegionSelector onChange={setRegion} isDropdownOpen={isDropdownOpen} />
+                    <div className={`rounded-tl-lg ${shouldShowDropdown ? "rounded-bl-none" : "rounded-bl-lg"}`}>
+                        <RegionSelector onChange={setRegion} isDropdownOpen={shouldShowDropdown} />
+                    </div>
 
                     <input
                         type="text"
                         name="nickTag"
                         placeholder="NICKNAME#TAG"
                         className={`flex-1 px-3 py-2 text-sm xs:text-base sm:text-lg md:text-xl 
-              bg-white/20 backdrop-blur-sm border-t border-b border-r border-white/30 
-              ${isDropdownOpen ? "rounded-tr-lg rounded-br-none" : "rounded-r-lg"} 
-              focus:outline-none focus:border-white/50 text-white placeholder-white/70 tracking-widest transition-all duration-200`}
+                        bg-white/20 backdrop-blur-sm border-t border-b border-r border-white/30 
+                        ${shouldShowDropdown ? "rounded-tr-lg rounded-br-none" : "rounded-r-lg"} 
+                        focus:outline-none focus:border-white/50 text-white placeholder-white/70 tracking-widest transition-all duration-200`}
                         autoComplete="off"
                         spellCheck="false"
                         maxLength={22}
                         required
                         onChange={(e) => setQuery(e.target.value)}
-                        onFocus={() => setInputFocused(true)}
+                        onFocus={() => {
+                            setInputFocused(true);
+                            if (query.length <= 1) {
+                                setRecentSearches(getRecentSearches());
+                            }
+                        }}
                         onBlur={() => setTimeout(() => setInputFocused(false), 100)}
                         value={query}
                     />
 
                     <AnimatePresence>
-                        {isDropdownOpen && (
+                        {shouldShowDropdown && (
                             <motion.ul
                                 initial={{ opacity: 0, y: -5 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -5 }}
                                 transition={{ duration: 0.2 }}
-                                className="absolute top-full left-0 right-0 bg-white/10 backdrop-blur-sm border border-white/30
-                rounded-b-lg text-white text-sm md:text-base max-h-60 overflow-y-auto shadow-lg w-full"
+                                className={`absolute top-full left-0 right-0 bg-white/10 backdrop-blur-sm border border-white/30
+                                rounded-b-lg text-white text-sm md:text-base max-h-60 overflow-y-auto shadow-lg w-full`}
                             >
                                 {suggestions.map((s, i) => (
                                     <li
-                                        key={i}
+                                        key={`suggestion-${i}`}
                                         className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-white/20 transition-all tracking-widest"
                                         onMouseDown={() => {
                                             setQuery(`${s.gameName}#${s.tagLine}`);
                                             setSuggestions([]);
+                                            saveRecentSearch(s);
                                         }}
                                     >
                                         <Image
@@ -136,6 +178,42 @@ export default function SearchForm() {
                                         <span className="text-xs text-white/60">lvl {s.summonerLevel}</span>
                                     </li>
                                 ))}
+
+                                {(() => {
+                                    const filteredRecent = recentSearches.filter(
+                                        r => !suggestions.some(s => s.gameName === r.gameName && s.tagLine === r.tagLine)
+                                    );
+                                    if (filteredRecent.length === 0) return null;
+
+                                    return (
+                                        <>
+                                            <li className="px-4 py-1 text-xs uppercase tracking-wider text-white/50">Recently searched</li>
+                                            {filteredRecent.map((s, i) => (
+                                                <li
+                                                    key={`recent-${i}`}
+                                                    className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-white/20 transition-all tracking-widest"
+                                                    onMouseDown={() => {
+                                                        setQuery(`${s.gameName}#${s.tagLine}`);
+                                                        setSuggestions([]);
+                                                        saveRecentSearch(s);
+                                                    }}
+                                                >
+                                                    <Image
+                                                        src={`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${s.profileIconId}.jpg`}
+                                                        alt={`${s.gameName} icon`}
+                                                        width={24}
+                                                        height={24}
+                                                        className="rounded-md"
+                                                        quality={40}
+                                                        loading="eager"
+                                                    />
+                                                    <span className="flex-1">{s.gameName}#{s.tagLine}</span>
+                                                    <span className="text-xs text-white/60">lvl {s.summonerLevel}</span>
+                                                </li>
+                                            ))}
+                                        </>
+                                    );
+                                })()}
                             </motion.ul>
                         )}
                     </AnimatePresence>
