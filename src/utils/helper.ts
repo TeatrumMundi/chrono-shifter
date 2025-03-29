@@ -89,7 +89,7 @@ const regionMAP: Record<string, string> = {
     kr: "ASIA", jp: "ASIA", vn: "ASIA", me: "ASIA",
     oce: "SEA", sea: "SEA", tw: "SEA",
 };
-const serverMAP: Record<string, string> = {
+export const serverMAP: Record<string, string> = {
     eune: "EUN1", euw: "EUW1",
     jp: "JP1", kr: "KR",
     lan: "LA1", las: "LA2", me: "ME1",
