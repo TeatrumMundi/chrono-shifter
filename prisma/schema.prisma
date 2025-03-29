@@ -8,18 +8,19 @@ datasource db {
 }
 
 model PlayerInfo {
-  id                String               @id @default(uuid())
-  puuid             String               @unique
-  gameName          String
-  tagLine           String
-  server            String
-  soloRankedId      String               @unique
-  flexRankedId      String               @unique
-  profileIconId     Int
-  summonerLevel     Int
-  matches           Match[]
-  flexRanked        RankedInfo           @relation("FlexRanked", fields: [flexRankedId], references: [id])
-  soloRanked        RankedInfo           @relation("SoloRanked", fields: [soloRankedId], references: [id])
+  id            String @id @default(uuid())
+  puuid         String @unique
+  gameName      String
+  tagLine       String
+  server        String
+  soloRankedId  String @unique
+  flexRankedId  String @unique
+  profileIconId Int
+  summonerLevel Int
+
+  flexRanked RankedInfo @relation("FlexRanked", fields: [flexRankedId], references: [id])
+  soloRanked RankedInfo @relation("SoloRanked", fields: [soloRankedId], references: [id])
+
   championMasteries RawChampionMastery[]
   rankedEntries     RawRankedEntry[]
 
@@ -39,19 +40,18 @@ model RankedInfo {
 }
 
 model Match {
-  id               String             @id @default(uuid())
-  matchId          String             @unique
+  id               String @id @default(uuid())
+  matchId          String @unique
   gameMode         String
   queueId          Int
   gameDuration     Int
   gameEndTimestamp BigInt
-  playerInfoId     String
-  playerInfo       PlayerInfo         @relation(fields: [playerInfoId], references: [id])
-  participants     MatchParticipant[]
+
+  participants MatchParticipant[]
 }
 
 model MatchParticipant {
-  id                             String   @id @default(uuid())
+  id                             String  @id @default(uuid())
   matchId                        String
   puuid                          String
   riotIdGameName                 String
@@ -75,15 +75,15 @@ model MatchParticipant {
   win                            Boolean
   teamId                         Int
 
-  // JSON blobs for complex subobjects
-  champion                       Json
-  runes                          Json
-  items                          Json
-  arenaData                      Json? // optional
+  // JSON blobs
+  champion  Json
+  runes     Json
+  items     Json
+  arenaData Json?
 
-  match                          Match   @relation(fields: [matchId], references: [matchId])
+  match      Match      @relation(fields: [matchId], references: [matchId])
 
-  @@index([matchId])
+  @@unique([matchId, puuid])
 }
 
 model RawChampionMastery {

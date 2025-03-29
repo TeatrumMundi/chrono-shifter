@@ -1,7 +1,6 @@
 ﻿import { Suspense } from "react";
 import { Banner, ErrorState } from "@/components/profile";
 import { Metadata } from "next";
-import { getChampionSplashUrl } from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getChampionSplash";
 import { MatchList } from "@/components/profile/match";
 import ProfileSkeleton from "@/components/profile/ProfileSkeleton";
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -33,13 +32,11 @@ async function ProfileContent({params,}: { params: Promise<{ server: string; nam
             );
         }
 
-        const splashUrl = await getChampionSplashUrl(profileData.championMasteries[0].championId);
-
         return (
             <div className="container mx-auto px-4 relative z-10 ">
                 <div className="grid grid-cols-12 gap-4 mt-16">
                     <div className="col-span-12 space-y-8">
-                        <Banner data={profileData} splashUrl={splashUrl}/>
+                        <Banner data={profileData}/>
                         <MatchList data={profileData} puuid={profileData.playerInfo.puuid} />
                     </div>
                 </div>

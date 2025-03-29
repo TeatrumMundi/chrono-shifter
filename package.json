@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "npm run test && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run"
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
@@ -20,7 +21,8 @@
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "vitest": "^3.0.9"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

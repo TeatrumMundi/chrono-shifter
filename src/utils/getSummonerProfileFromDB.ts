@@ -15,7 +15,7 @@ export async function getCachedProfileFromDB(
     server: string
 ): Promise<FormatResponseReturn | null> {
     try {
-        console.log("🔍 Checking DB cache for:", { gameName, tagLine, server });
+        console.log("🔍 Checking DB cache for:", JSON.stringify({ gameName, tagLine, server }) + "\n");
 
         const normalizedTagLine = tagLine.toUpperCase();
 
@@ -28,17 +28,29 @@ export async function getCachedProfileFromDB(
             include: {
                 soloRanked: true,
                 flexRanked: true,
-                matches: {
-                    include: {
-                        participants: true
-                    }
-                },
                 championMasteries: true,
                 rankedEntries: true
             }
         });
 
         if (!cached) return null;
+
+        // Pobierz mecze na podstawie PUUID gracza
+        const matches = await prisma.match.findMany({
+            where: {
+                participants: {
+                    some: {
+                        puuid: cached.puuid
+                    }
+                }
+            },
+            include: {
+                participants: true
+            },
+            orderBy: {
+                gameEndTimestamp: 'desc'
+            }
+        });
 
         return {
             playerInfo: {
@@ -51,7 +63,7 @@ export async function getCachedProfileFromDB(
             },
             soloRanked: cached.soloRanked,
             flexRanked: cached.flexRanked,
-            match: cached.matches.map((match) => ({
+            match: matches.map((match) => ({
                 matchId: match.matchId,
                 gameMode: match.gameMode,
                 queueId: match.queueId,

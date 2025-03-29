@@ -56,7 +56,7 @@ export async function getSummonerProfile(
         // Step 0: Check if the profile is cached in the DB
         const cached = await getCachedProfileFromDB(gameName, tagLine, server);
         if (cached) {
-            console.log(`✅ Serving cached profile for ${gameName}#${tagLine} from DB`);
+            console.log(`✅ Serving cached profile for ${gameName}#${tagLine} from DB\n`);
             return cached;
         }
 

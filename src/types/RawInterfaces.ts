@@ -20,7 +20,7 @@ export interface RawGamePerformance {
     totalHealsOnTeammates: number;
     totalDamageShieldedOnTeammates: number;
     totalMinionsKilled: number;
-    win: string;
+    win: boolean;
     teamId: number;
 }
 

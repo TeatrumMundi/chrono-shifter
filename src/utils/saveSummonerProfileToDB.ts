@@ -64,7 +64,6 @@ export async function saveSummonerProfileToDB(profile: FormatResponseReturn) {
         },
     });
 
-    // Step 3: Get player ID
     const playerId = (await prisma.playerInfo.findUnique({
         where: { puuid: playerInfo.puuid },
         select: { id: true },
@@ -72,14 +71,20 @@ export async function saveSummonerProfileToDB(profile: FormatResponseReturn) {
 
     if (!playerId) throw new Error("❌ Failed to locate player ID after upsert.");
 
-    // Step 4: Cleanup old related data
+    // Step 3: Cleanup old related data
     await Promise.all([
-        prisma.match.deleteMany({ where: { playerInfoId: playerId } }),
+        prisma.matchParticipant.deleteMany({
+            where: {
+                matchId: {
+                    in: match.map(m => m.matchId),
+                },
+            },
+        }),
         prisma.rawChampionMastery.deleteMany({ where: { playerInfoId: playerId } }),
         prisma.rawRankedEntry.deleteMany({ where: { playerInfoId: playerId } }),
     ]);
 
-    // Step 5: Deduplicate and insert matches
+    // Step 4: Insert matches
     const uniqueMatches = _.uniqBy(match, (m) => m.matchId);
     await prisma.match.createMany({
         data: uniqueMatches.map((m: MatchResponse) => ({
@@ -88,12 +93,11 @@ export async function saveSummonerProfileToDB(profile: FormatResponseReturn) {
             queueId: m.queueId,
             gameDuration: m.gameDuration,
             gameEndTimestamp: BigInt(m.gameEndTimestamp),
-            playerInfoId: playerId,
         })),
         skipDuplicates: true,
     });
 
-    // Step 6: Insert detailed participants
+    // Step 5: Insert participants (no foreign key to PlayerInfo)
     await prisma.matchParticipant.createMany({
         data: uniqueMatches.flatMap((m) =>
             m.participants.map((p) => ({
@@ -119,8 +123,6 @@ export async function saveSummonerProfileToDB(profile: FormatResponseReturn) {
                 minionsPerMinute: p.minionsPerMinute,
                 win: p.win,
                 teamId: p.teamId,
-
-                // ✅ Convert rich types to JSON-safe objects
                 champion: JSON.parse(JSON.stringify(p.champion)),
                 runes: JSON.parse(JSON.stringify(p.runes)),
                 items: JSON.parse(JSON.stringify(p.items)),
@@ -130,8 +132,7 @@ export async function saveSummonerProfileToDB(profile: FormatResponseReturn) {
         skipDuplicates: true
     });
 
-
-    // Step 7: Champion masteries
+    // Step 6: Champion masteries
     await prisma.rawChampionMastery.createMany({
         data: championMasteries.map((m) => ({
             championId: m.championId,
@@ -141,7 +142,7 @@ export async function saveSummonerProfileToDB(profile: FormatResponseReturn) {
         })),
     });
 
-    // Step 8: Ranked entries
+    // Step 7: Ranked entries
     await prisma.rawRankedEntry.createMany({
         data: entries.map((e) => ({
             queueType: e.queueType,
