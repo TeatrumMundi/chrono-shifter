@@ -22,7 +22,7 @@ export default async function ProfilePage({ params }: { params: RouteParams }) {
                 <div className="grid grid-cols-12 gap-4 mt-16">
                     <div className="col-span-12 space-y-8">
                         <Banner data={profileData} />
-                        <MatchList data={profileData} puuid={profileData.playerInfo.puuid} />
+                        <MatchList puuid={profileData.playerInfo.puuid} server={profileData.playerInfo.server} />
                     </div>
                 </div>
             </div>

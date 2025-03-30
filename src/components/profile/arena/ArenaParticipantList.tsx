@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import {ProcessedParticipant} from "@/types/ProcessedInterfaces";
 import {ChampionIcon} from "@/components/profile/match";
+import {reversedServerMAP} from "@/utils/helper";
 
 const TEAM_COLORS: string[] = [
     'bg-yellow-800/60',
@@ -49,7 +50,7 @@ export function ArenaParticipantList({ participants, server }: {
                             <div key={playerIndex} className="flex items-center gap-1 mr-2 flex-shrink-0">
                                 <ChampionIcon champion={player.champion} size={16} />
                                 <Link
-                                    href={`/${server}/${player.riotIdGameName}/${player.riotIdTagline}`}
+                                    href={`/${reversedServerMAP[server.toUpperCase()]}/${player.riotIdGameName}/${player.riotIdTagline}`}
                                     className="text-sm w-[80px] truncate text-white hover:text-blue-400 transition-colors"
                                     title={player.riotIdGameName}
                                 >

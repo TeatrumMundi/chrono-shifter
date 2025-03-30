@@ -3,6 +3,7 @@ import { ArenaParticipantList } from "@/components/profile/arena/ArenaParticipan
 import { ChampionIcon } from "@/components/profile/match/ChampionIcon";
 import Link from "next/link";
 import React, { useMemo } from "react";
+import {reversedServerMAP} from "@/utils/helper";
 
 /**
  * Renders a participant list based on the current game mode.
@@ -67,7 +68,7 @@ function StandardParticipantList({participants, server,}: { participants: Proces
                             {leftPlayer && (
                                     <>
                                         <Link
-                                            href={`/${server}/${leftPlayer.riotIdGameName}/${leftPlayer.riotIdTagline}`}
+                                            href={`/${reversedServerMAP[server.toUpperCase()]}/${leftPlayer.riotIdGameName}/${leftPlayer.riotIdTagline}`}
                                             className="text-xs text-white hover:text-blue-400 transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
                                             title={`${leftPlayer.riotIdGameName}#${leftPlayer.riotIdTagline}`}
                                             aria-label={`View profile for ${leftPlayer.riotIdGameName}`}
