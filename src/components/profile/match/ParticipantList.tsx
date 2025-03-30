@@ -7,11 +7,7 @@ import React, { useMemo } from "react";
 /**
  * Renders a participant list based on the current game mode.
  */
-export function ParticipantList({
-                                    participants,
-                                    gameMode,
-                                    server,
-                                }: {
+export function ParticipantList({participants, gameMode, server,}: {
     participants: ProcessedParticipant[];
     gameMode: string;
     server: string;
@@ -38,13 +34,7 @@ export function ParticipantList({
  * - Left column: one team
  * - Right column: opposing team
  */
-function StandardParticipantList({
-                                     participants,
-                                     server,
-                                 }: {
-    participants: ProcessedParticipant[];
-    server: string;
-}) {
+function StandardParticipantList({participants, server,}: { participants: ProcessedParticipant[]; server: string; }) {
     const teams = useMemo(() => {
         const team100: ProcessedParticipant[] = [];
         const team200: ProcessedParticipant[] = [];

@@ -15,7 +15,6 @@ type RegionSelectorProps = {
     isDropdownOpen: boolean;
 };
 
-
 type Suggestion = {
     gameName: string;
     tagLine: string;
@@ -47,9 +46,9 @@ function RegionSelector({ onChange, isDropdownOpen}: RegionSelectorProps) {
             name="server"
             defaultValue="EUNE"
             className={`h-full pl-2 pr-6 py-2 text-xs xs:pl-3 xs:pr-8 xs:py-3 xs:text-sm sm:text-base md:text-lg lg:text-xl 
-bg-white/20 backdrop-blur-sm border border-white/30 focus:outline-none focus:border-white/50 
-text-white appearance-none tracking-[0.2em] transition-all duration-200 
-rounded-tl-lg ${isDropdownOpen ? "rounded-bl-none" : "rounded-bl-lg"}`}
+            bg-white/20 backdrop-blur-sm border border-white/30 focus:outline-none focus:border-white/50 
+            text-white appearance-none tracking-[0.2em] transition-all duration-200 
+                rounded-tl-lg ${isDropdownOpen ? "rounded-bl-none" : "rounded-bl-lg"}`}
             autoComplete="off"
             onChange={(e) => onChange(e.target.value)}
         >
@@ -103,7 +102,7 @@ export default function SearchForm() {
         }, 500), []);
 
     useEffect(() => {
-        if (query.length > 1) {
+        if (query.length > 0) {
             void fetchSuggestions(query, region);
         } else {
             setSuggestions([]);
@@ -223,7 +222,7 @@ export default function SearchForm() {
                     type="submit"
                     disabled={isPending}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30
-              rounded p-1.5 aspect-square transition duration-200 ease-in-out hover:scale-105 disabled:opacity-50"
+                    rounded p-1.5 aspect-square transition duration-200 ease-in-out hover:scale-105 disabled:opacity-50"
                     aria-label="Search"
                 >
                     <svg

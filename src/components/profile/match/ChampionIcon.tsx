@@ -40,6 +40,7 @@ export function ChampionIcon({ champion, size }: { champion: Champion; size: num
                 className="rounded-sm border border-gray-600"
                 onError={() => setError(true)}
                 quality={30}
+                loading="eager"
             />
 
             {hovered && (

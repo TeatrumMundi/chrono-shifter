@@ -1,8 +1,6 @@
-﻿import { PrismaClient } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { serverMAP } from "@/utils/helper";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -33,7 +31,7 @@ export async function GET(req: NextRequest) {
                 // Show higher level players first
                 summonerLevel: "desc"
             },
-            take: 10,
+            take: 5,
             select: {
                 gameName: true,
                 tagLine: true,

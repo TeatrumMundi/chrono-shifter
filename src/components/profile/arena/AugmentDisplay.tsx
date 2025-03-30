@@ -5,7 +5,7 @@ import Image from "next/image";
 import { BoxPlaceHolder } from "@/components/common";
 import { Augment } from "@/types/ProcessedInterfaces";
 import { motion } from "framer-motion";
-import {getAugmentIconUrl} from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getAugmentIcon";
+import { getAugmentIconUrl } from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getAugmentIcon";
 
 const rarityColors = ["text-slate-400", "text-yellow-400", "text-fuchsia-500"];
 const rarityBgColors = ["bg-slate-500", "bg-yellow-700", "bg-fuchsia-800"];
@@ -43,17 +43,19 @@ export function AugmentDisplay({ augments }: { augments: Augment[] }) {
                                 onMouseLeave={() => setHoveredAugment(null)}
                             >
                                 {/* Icon */}
-                                <div className={`rounded-md ${rarityBgColors[augment.rarity]}`}>
+                                <div className={`rounded-sm ${rarityBgColors[augment.rarity]}`}>
                                     <Image
                                         src={
                                             erroredIcons[augment.id]
-                                                ? "/images/augment-placeholder.png" // local fallback icon
+                                                ? "/augments/augment-placeholder.png"
                                                 : getAugmentIconUrl(augment, "small")
                                         }
                                         alt={augment.name}
                                         width={32}
                                         height={32}
-                                        onError={() => setErroredIcons((prev) => ({ ...prev, [augment.id]: true }))}
+                                        onError={() =>
+                                            setErroredIcons((prev) => ({ ...prev, [augment.id]: true }))
+                                        }
                                         className="rounded-sm cursor-pointer w-[32px] h-[32px] min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] object-contain"
                                         quality={50}
                                     />
@@ -66,7 +68,7 @@ export function AugmentDisplay({ augments }: { augments: Augment[] }) {
                                         animate={{ opacity: 1, scale: 1, y: 0 }}
                                         exit={{ opacity: 0, scale: 0.5, y: -10 }}
                                         transition={{ duration: 0.2, ease: [0.175, 0.885, 0.32, 1.275] }}
-                                        className="absolute left-1/2 -translate-x-1/2 bottom-12 w-60 p-2 bg-gray-900 text-white rounded-lg shadow-lg z-10 text-sm tracking-normal"
+                                        className="absolute left-1/2 -translate-x-1/2 bottom-12 w-60 p-2 bg-gray-900 text-white rounded-sm shadow-lg z-10 text-sm tracking-normal"
                                     >
                                         <div className="flex justify-between items-center mb-1">
                                             <span className="font-bold text-blue-500">{augment.name}</span>

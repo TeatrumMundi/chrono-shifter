@@ -1,8 +1,6 @@
-﻿import { PrismaClient } from "@prisma/client";
-import { FormatResponseReturn, MatchResponse } from "@/types/ProcessedInterfaces";
+﻿import { FormatResponseReturn, MatchResponse } from "@/types/ProcessedInterfaces";
 import _ from "lodash";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export async function saveSummonerProfileToDB(profile: FormatResponseReturn) {
     const { playerInfo, soloRanked, flexRanked, match, championMasteries, entries } = profile;
