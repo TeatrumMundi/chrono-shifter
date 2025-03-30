@@ -51,8 +51,12 @@ export interface RawParticipant extends RawPlayerIdentity, RawGamePerformance, R
 }
 
 export interface RawMatchData {
-    info: {
+    metadata: {
         matchId: string;
+        dataVersion: string;
+        participants: string[];
+    };
+    info: {
         gameMode: string;
         queueId: number;
         gameDuration: number;

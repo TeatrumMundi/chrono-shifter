@@ -16,7 +16,7 @@ export async function getCachedProfileFromDB(
         const normalizedTagLine = decodeURIComponent(tagLine).toUpperCase();
         const normalizedGameName = decodeURIComponent(gameName);
 
-        console.log("🔍 Checking DB cache for:", JSON.stringify({ normalizedGameName, normalizedTagLine, server }) + "\n");
+        console.log("\n🔍 Checking DB cache for:", JSON.stringify({ normalizedGameName, normalizedTagLine, server }) + "\n");
 
         const cached = await prisma.playerInfo.findFirst({
             where: {

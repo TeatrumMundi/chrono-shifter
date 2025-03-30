@@ -12,11 +12,9 @@ type RouteParams = Promise<{ server: string; name: string; tag: string }>;
 export default async function ProfilePage({ params }: { params: RouteParams }) {
     const { server, name, tag } = await params;
 
-    const profileData = await getSummonerProfile(server, name, tag);
+    const profileData = await getSummonerProfile(server, name, tag, 5);
 
-    if (!profileData) {
-        notFound();
-    }
+    if (!profileData) {notFound();}
 
     return (
         <div className="relative w-full overflow-x-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-gray-900 min-h-screen">
@@ -33,11 +31,7 @@ export default async function ProfilePage({ params }: { params: RouteParams }) {
     );
 }
 
-export async function generateMetadata({
-                                           params,
-                                       }: {
-    params: RouteParams;
-}): Promise<Metadata> {
+export async function generateMetadata({params,}: { params: RouteParams; }): Promise<Metadata> {
     const { server, name, tag } = await params;
 
     return {

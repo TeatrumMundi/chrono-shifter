@@ -28,7 +28,7 @@ export async function fetchMatchDetailsData(region: string, server: string, matc
 
         // Return structured match details
         return {
-            matchId: data.info.matchId,
+            matchId: data.metadata.matchId,
             gameMode: data.info.gameMode,
             queueId: data.info.queueId,
             gameDuration: data.info.gameDuration,

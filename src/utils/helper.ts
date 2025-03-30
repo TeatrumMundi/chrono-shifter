@@ -129,39 +129,42 @@ export function secToHHMMSS(seconds: number): string {
     }
     return `${pad(remainingSeconds)}`;
 } // Returns the formatted string in hh:mm:ss format.
-export function timeAgo(timestamp: number): string {
-    const now = Date.now();
-    const difference = now - timestamp;
+export function timeAgo(timestamp: number | bigint): string {
+    const now = BigInt(Date.now());
+    const ts = BigInt(timestamp);
+    const difference = now - ts;
 
+    // Czas w milisekundach, ale jako bigint
     const intervals = {
-        year: 31536000000,
-        month: 2592000000,
-        day: 86400000,
-        hour: 3600000,
-        minute: 60000,
-        second: 1000,
+        year: 31536000000n,
+        month: 2592000000n,
+        day: 86400000n,
+        hour: 3600000n,
+        minute: 60000n,
+        second: 1000n,
     };
 
     if (difference < intervals.minute) {
-        const seconds = Math.floor(difference / intervals.second);
-        return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
+        const seconds = difference / intervals.second;
+        return `${seconds} second${seconds !== 1n ? 's' : ''} ago`;
     } else if (difference < intervals.hour) {
-        const minutes = Math.floor(difference / intervals.minute);
-        return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+        const minutes = difference / intervals.minute;
+        return `${minutes} minute${minutes !== 1n ? 's' : ''} ago`;
     } else if (difference < intervals.day) {
-        const hours = Math.floor(difference / intervals.hour);
-        return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+        const hours = difference / intervals.hour;
+        return `${hours} hour${hours !== 1n ? 's' : ''} ago`;
     } else if (difference < intervals.month) {
-        const days = Math.floor(difference / intervals.day);
-        return `${days} day${days !== 1 ? 's' : ''} ago`;
+        const days = difference / intervals.day;
+        return `${days} day${days !== 1n ? 's' : ''} ago`;
     } else if (difference < intervals.year) {
-        const months = Math.floor(difference / intervals.month);
-        return `${months} month${months !== 1 ? 's' : ''} ago`;
+        const months = difference / intervals.month;
+        return `${months} month${months !== 1n ? 's' : ''} ago`;
     } else {
-        const years = Math.floor(difference / intervals.year);
-        return `${years} year${years !== 1 ? 's' : ''} ago`;
+        const years = difference / intervals.year;
+        return `${years} year${years !== 1n ? 's' : ''} ago`;
     }
 }
+
 export function getParticipantByPuuid(matchData: MatchResponse, puuid: string): ProcessedParticipant | null {
     return matchData.participants.find(participant => participant.puuid === puuid) ?? null;
 }

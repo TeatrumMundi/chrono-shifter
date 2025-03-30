@@ -14,9 +14,20 @@ import {
 } from "@/utils/riotApiRequest";
 import { getAugmentById } from "@/utils/getLeagueOfLegendsAssets/getGameObjects/getAugmentObject";
 import { RawRankedEntry } from "@/types/RawInterfaces";
-import {FormatResponseReturn, MatchResponse, RankedInfo} from "@/types/ProcessedInterfaces";
+import { FormatResponseReturn, MatchResponse, RankedInfo } from "@/types/ProcessedInterfaces";
 import { saveSummonerProfileToDB } from "@/utils/saveSummonerProfileToDB";
-import {getCachedProfileFromDB} from "@/utils/getSummonerProfileFromDB";
+import { getCachedProfileFromDB } from "@/utils/getSummonerProfileFromDB";
+import {isMatchInDB} from "@/utils/DataBase/isMatchInDB";
+import {getMatchFromDB} from "@/utils/DataBase/getMatchFromDB";
+
+// Measure execution time of async function
+async function measureTime<T>(label: string, fn: () => Promise<T>): Promise<T> {
+    const start = performance.now();
+    const result = await fn();
+    const end = performance.now();
+    console.log(`⏱️ ${label} took ${(end - start).toFixed(2)}ms`);
+    return result;
+}
 
 enum QueueType {
     SOLO = "RANKED_SOLO_5x5",
@@ -41,7 +52,6 @@ function formatRankedStats(entry: RawRankedEntry | null): RankedInfo {
     };
 }
 
-
 export async function getSummonerProfile(
     serverFetched: string,
     gameName: string,
@@ -50,11 +60,9 @@ export async function getSummonerProfile(
     force = false
 ): Promise<FormatResponseReturn | null> {
     try {
-        // Step 1: Resolve region/server from shorthand
         const region = getRegion(serverFetched);
         const server = getServer(serverFetched);
 
-        // Step 0: Check if the profile is cached in the DB
         if (!force) {
             const cached = await getCachedProfileFromDB(gameName, tagLine, server);
             if (cached) {
@@ -63,50 +71,51 @@ export async function getSummonerProfile(
             }
         }
 
-        // Step 2: Fetch account data by Riot ID (gameName + tagLine)
-        const accountDetails = await fetchAccountData(region, gameName, tagLine);
-        if (!accountDetails?.puuid)
-            {console.error(`❌ Account details not found for: Nickname#TAG:${gameName}#${tagLine} Server:${server} Region:${region} ServerFetched:${serverFetched}`);
+        const accountDetails = await measureTime("fetchAccountData", () =>
+            fetchAccountData(region, gameName, tagLine)
+        );
+
+        if (!accountDetails?.puuid) {
+            console.error(`❌ Account details not found for: Nickname#TAG:${gameName}#${tagLine} Server:${server} Region:${region} ServerFetched:${serverFetched}`);
             return null;
         }
 
-        // Step 3: Fetch summoner data using PUUID
-        const summonerDetails = await fetchSummonerData(server, accountDetails.puuid);
+        const summonerDetails = await measureTime("fetchSummonerData", () =>
+            fetchSummonerData(server, accountDetails.puuid)
+        );
+
         if (!summonerDetails?.id) {
             console.error("❌ Summoner details not found for PUUID:", accountDetails.puuid + "\n");
             return null;
         }
 
-        // Step 4: Fetch ranked info, top champion masteries, match history in parallel
         const [rankedDataMap, championMasteries, matchIds] = await Promise.all([
-            fetchLeagueData(server, summonerDetails.id),
-            fetchTopChampionMasteries(server, accountDetails.puuid),
-            fetchMatchData(region, accountDetails.puuid, "", matchCount),
-            // Step 4.1 (non-blocking): Cache warm-up (fail-safe)
+            measureTime("fetchLeagueData", () => fetchLeagueData(server, summonerDetails.id)),
+            measureTime("fetchTopChampionMasteries", () => fetchTopChampionMasteries(server, accountDetails.puuid)),
+            measureTime("fetchMatchData", () => fetchMatchData(region, accountDetails.puuid, "", matchCount)),
             getAugmentById(1).catch(error => {
                 console.warn("⚠️ Cache warming failed (non-blocking):", error + "\n");
                 return null;
             })
         ]);
 
-        // Step 5: Fetch full match details in parallel for each match ID
         const match = await Promise.all(
             matchIds.map(async id => {
-                const raw = await fetchMatchDetailsData(region, server, id).catch(err => {
-                    console.warn(`⚠️ Failed to fetch match ${id}:`, err + "\n");
-                    return null;
-                });
+                const exists = await isMatchInDB(id);
+                if (exists) {
+                    console.log(`📦 Loading match ${id} from DB`);
+                    return getMatchFromDB(id);
+                }
 
-                if (!raw) return null;
-
-                return {
-                    ...raw,
-                    matchId: id
-                };
+                return measureTime(`fetchMatchDetailsData(${id})`, () =>
+                    fetchMatchDetailsData(region, server, id).catch(err => {
+                        console.warn(`⚠️ Failed to fetch match ${id}:`, err + "\n");
+                        return null;
+                    })
+                );
             })
         ).then(results => results.filter(Boolean) as MatchResponse[]);
 
-        // Step 6: Extract solo and flex ranked entries
         const soloRanked = formatRankedStats(
             rankedDataMap.entries?.find(entry => entry.queueType === QueueType.SOLO) || null
         );
@@ -115,7 +124,6 @@ export async function getSummonerProfile(
             rankedDataMap.entries?.find(entry => entry.queueType === QueueType.FLEX) || null
         );
 
-        // Step 7: Compile response object
         const response = {
             playerInfo: {
                 puuid: accountDetails.puuid,
@@ -131,17 +139,13 @@ export async function getSummonerProfile(
             championMasteries: championMasteries || [],
             match: match || []
         };
-        // ✅ Indicate data came from Riot API
+
         console.log(`🌐 Fetched live profile for ${gameName}#${tagLine} from Riot API\n`);
 
-        // Step 8: Save response to DB
         await saveSummonerProfileToDB(response);
 
-
-        // Step 9: Return response
         return response;
     } catch (error) {
-        // Step 10: Global error handling and wrapping
         const msg = error instanceof Error ? error.message : "Unknown error";
         console.error(`🔥 Error fetching summoner profile (${gameName}#${tagLine} @ ${serverFetched}):`, error + "\n");
 

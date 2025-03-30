@@ -74,7 +74,7 @@ export async function saveSummonerProfileToDB(profile: FormatResponseReturn) {
         prisma.matchParticipant.deleteMany({
             where: {
                 matchId: {
-                    in: match.map(m => m.matchId),
+                    in: match.map(m => m?.matchId).filter((id): id is string => typeof id === "string"),
                 },
             },
         }),
