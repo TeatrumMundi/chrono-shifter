@@ -20,16 +20,16 @@ describe("MatchParticipant sanity check", () => {
         });
 
         const max = Math.max(...allMatches.map(m => m._count.matchId));
-        console.log(`✅ Maksymalna liczba uczestników w jednym meczu: ${max}`);
+        console.log(`✅ Max players in one game: ${max}`);
 
         const excessive = allMatches.filter(m => m._count.matchId > MAX_ALLOWED);
 
         if (excessive.length > 0) {
-            console.warn("⚠️ Mecze z nadmiarem uczestników znalezione:");
+            console.warn("⚠️ Games with excessive number of players:");
             excessive.forEach((m) => {
                 console.warn(`- ${m.matchId} → ${m._count.matchId} uczestników`);
             });
-            console.warn(`🚨 Maksymalna liczba uczestników w jednym meczu: ${max}`);
+            console.warn(`🚨 Max players in one match is equal to: ${max}`);
         }
 
         expect(excessive.length).toBe(0);
