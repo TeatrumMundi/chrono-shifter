@@ -20,7 +20,12 @@ export default function UpdateButton({
     const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();
 
-    const handleUpdateClick = () => {
+    const handleUpdateClick = async () => {
+        try {
+            await new Audio("/sounds/click.mp3").play();
+        } catch (e) {
+            console.warn("🔇 Failed to play click sound:", e);
+        }
         startTransition(async () => {
             try {
                 const res = await fetch("/api/force-update", {
@@ -36,6 +41,11 @@ export default function UpdateButton({
                 }
 
                 setIsSuccess(true);
+                try {
+                    await new Audio("/sounds/success.mp3").play();
+                } catch (e) {
+                    console.warn("🔇 Failed to play success sound:", e);
+                }
                 toast.success("Profile updated!");
                 onDone?.();
                 router.refresh();
@@ -49,29 +59,32 @@ export default function UpdateButton({
     };
 
     return (
-        <button
-            onClick={handleUpdateClick}
-            className={`group relative flex items-center gap-2 px-5 py-2 rounded-sm text-sm font-semibold text-white tracking-widest transition-all duration-300 min-w-[130px] justify-center
-        ${
-                isPending
-                    ? "bg-gray-600 cursor-not-allowed"
-                    : "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 hover:scale-105 active:scale-95 shadow-lg"
-            }`}
-            disabled={isPending}
-            aria-live="polite"
-        >
-            {isSuccess ? (
-                <Check className="w-4 h-4 text-green-400" />
-            ) : (
-                <RotateCcw className={`w-4 h-4 ${isPending ? "animate-spin" : "group-hover:rotate-[-20deg] transition-transform"}`} />
-            )}
-            <span className="w-[90px] text-center">
-        {isSuccess
-            ? "Updated"
-            : isPending
-                ? "Updating..."
-                : "Update"}
-      </span>
-        </button>
+        <div className="relative group">
+            <button
+                onClick={handleUpdateClick}
+                className={`group relative flex items-center gap-2 px-5 py-2 rounded-sm text-sm font-semibold text-white tracking-widest transition-all duration-300 min-w-[130px] justify-center
+          ${
+                    isPending
+                        ? "bg-gray-600 cursor-not-allowed"
+                        : "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 hover:scale-105 active:scale-95 shadow-lg"
+                }`}
+                disabled={isPending}
+                aria-live="polite"
+            >
+                {isSuccess ? (
+                    <Check className="w-4 h-4 text-green-400" />
+                ) : (
+                    <RotateCcw className={`w-4 h-4 ${isPending ? "animate-spin" : "group-hover:rotate-[-20deg] transition-transform"}`} />
+                )}
+                <span className="w-[90px] text-center transition-opacity duration-300 ease-in-out">
+          {isSuccess
+              ? "Updated"
+              : isPending
+                  ? "Updating..."
+                  : "Update"}
+        </span>
+            </button>
+
+        </div>
     );
 }
