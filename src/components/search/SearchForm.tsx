@@ -72,8 +72,12 @@ function RegionSelector({ onChange, isDropdownOpen}: RegionSelectorProps) {
     );
 }
 
+type SearchFormProps = {
+    position?: "centered" | "static";
+    className?: string;
+};
 
-export default function SearchForm() {
+export default function SearchForm({ position = "centered", className }: SearchFormProps) {
     const [state, formAction, isPending] = useActionState(handleSearch, initialState);
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [recentSearches, setRecentSearches] = useState<Suggestion[]>([]);
@@ -114,7 +118,9 @@ export default function SearchForm() {
     }, [query, region, fetchSuggestions]);
 
     return (
-        <div className="absolute top-6/10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl px-4">
+        <div className={`w-full max-w-3xl px-4 ${position === "centered"
+            ? "absolute top-6/10 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            : `mx-auto ${className ?? "mb-4"}`}`}>
             <form action={formAction} className="relative flex items-center">
                 <div className="flex w-full relative shadow-md transition-shadow duration-200">
                     <div className={`rounded-tl-lg ${shouldShowDropdown ? "rounded-bl-none" : "rounded-bl-lg"}`}>
@@ -237,13 +243,13 @@ export default function SearchForm() {
                 </button>
             </form>
 
-            <div className="mt-2 min-h-[2.5rem]">
-                {state.error && (
+            {state.error && (
+                <div className="mt-2">
                     <div className="p-2 bg-red-900/80 backdrop-blur-sm rounded text-white text-sm text-center tracking-widest">
                         {state.error}
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

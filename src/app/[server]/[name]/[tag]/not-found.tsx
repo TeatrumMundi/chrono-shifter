@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { SearchForm } from "@/components/search";
+import SearchForm from "@/components/search/SearchForm";
 
 export default function NotFound() {
     return (

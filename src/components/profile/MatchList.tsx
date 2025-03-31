@@ -12,8 +12,8 @@ interface MatchListProps {
 }
 
 // Config
-const INITIAL_BATCH = 1;
-const MATCHES_PER_PAGE = 5;
+const INITIAL_BATCH = 3;
+const MATCHES_PER_PAGE = 3;
 
 export function MatchList({ puuid, server }: MatchListProps) {
     const [matches, setMatches] = useState<MatchResponse[]>([]);
