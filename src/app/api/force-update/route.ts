@@ -8,7 +8,7 @@ export async function POST(req: Request) {
 
         const region = reversedServerMAP[server];
 
-        const updated = await getSummonerProfile(region, gameName, tagLine, 25, true);
+        const updated = await getSummonerProfile(region, gameName, tagLine, 25, true, true);
 
         if (!updated) {
             return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });

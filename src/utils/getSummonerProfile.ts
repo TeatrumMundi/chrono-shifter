@@ -14,6 +14,7 @@ import { saveSummonerProfileToDB } from "@/utils/saveSummonerProfileToDB";
 import { getCachedProfileFromDB } from "@/utils/getSummonerProfileFromDB";
 import { isMatchInDB } from "@/utils/DataBase/isMatchInDB";
 import { getMatchFromDB } from "@/utils/DataBase/getMatchFromDB";
+import {normalizeServerName} from "@/utils/normalizeServerName";
 
 async function measureTime<T>(label: string, fn: () => Promise<T>): Promise<T> {
     const start = performance.now();
@@ -56,33 +57,41 @@ export async function getSummonerProfile(
 ): Promise<FormatResponseReturn | null> {
     try {
         console.clear();
+
         console.log("\x1b[35m");
         console.log("╔════════════════════════════════════════════════════════════╗");
         console.log("║                 🔄 Loading player profile...               ║");
         console.log("╚════════════════════════════════════════════════════════════╝");
         console.log("\x1b[0m");
 
-        const region = getRegion(serverFetched);
-        const server = getServer(serverFetched);
+        const normalized = normalizeServerName(serverFetched);
+        const region = getRegion(normalized);
+        const server = getServer(normalized);
 
         console.log(`🆔 Nickname:        \x1b[36m${gameName.toUpperCase()}#${tagLine.toUpperCase()}\x1b[0m`);
         console.log(`🖥️  Server:          \x1b[33m${server.toUpperCase()}\x1b[0m`);
         console.log(`📡 Fetched Server:  \x1b[33m${serverFetched.toUpperCase()}\x1b[0m`);
         console.log(`🌐 Region:          \x1b[33m${region.toUpperCase()}\x1b[0m\n`);
 
-        if (!force) {
-            const cached = await getCachedProfileFromDB(gameName, tagLine, server);
-            if (cached) {
-                console.log("\x1b[36m");
-                console.log("┌────────────────────────────────────────────────────────┐");
-                console.log("│ 📦 CACHE HIT: PROFILE LOADED FROM DATABASE             │");
-                console.log("└────────────────────────────────────────────────────────┘");
-                console.log(`🧑 Player:  ${gameName.toUpperCase()}#${tagLine.toUpperCase()}`);
-                console.log("💾 Source: Internal DB cache");
-                console.log("\x1b[0m\n");
-                return { ...cached, match: [] };
-            }
+        let shouldFetch = force;
+        const cached = await getCachedProfileFromDB(gameName, tagLine, server);
+
+        if (cached && !force) {
+            console.log("\x1b[36m");
+            console.log("┌────────────────────────────────────────────────────────┐");
+            console.log("│ 📦 CACHE HIT: PROFILE LOADED FROM DATABASE             │");
+            console.log("└────────────────────────────────────────────────────────┘");
+            console.log(`🧑 Player:  ${gameName.toUpperCase()}#${tagLine.toUpperCase()}`);
+            console.log("💾 Source: Internal DB cache");
+            console.log("\x1b[0m\n");
+            return { ...cached, match: [] };
         }
+
+        if (!cached) {
+            shouldFetch = true;
+        }
+
+        if (!shouldFetch) return null;
 
         const accountDetails = await measureTime("fetchAccountData", () =>
             fetchAccountData(region, gameName, tagLine)
@@ -111,9 +120,10 @@ export async function getSummonerProfile(
             })
         ]);
 
+        const shouldIncludeMatches = includeMatches && shouldFetch;
         let match: MatchResponse[] = [];
 
-        if (includeMatches) {
+        if (shouldIncludeMatches) {
             const matchIds = await measureTime("fetchMatchData", () =>
                 fetchMatchData(region, accountDetails.puuid, "", matchCount)
             );
