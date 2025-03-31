@@ -1,9 +1,4 @@
-﻿/**
- * Fetches and formats a complete League of Legends summoner profile from Riot API
- * Includes account details, ranked info, match history, and champion masteries
- */
-
-import { calculateWinRatio, getRegion, getServer } from "@/utils/helper";
+﻿import { calculateWinRatio, getRegion, getServer } from "@/utils/helper";
 import {
     fetchAccountData,
     fetchSummonerData,
@@ -17,10 +12,9 @@ import { RawRankedEntry } from "@/types/RawInterfaces";
 import { FormatResponseReturn, MatchResponse, RankedInfo } from "@/types/ProcessedInterfaces";
 import { saveSummonerProfileToDB } from "@/utils/saveSummonerProfileToDB";
 import { getCachedProfileFromDB } from "@/utils/getSummonerProfileFromDB";
-import {isMatchInDB} from "@/utils/DataBase/isMatchInDB";
-import {getMatchFromDB} from "@/utils/DataBase/getMatchFromDB";
+import { isMatchInDB } from "@/utils/DataBase/isMatchInDB";
+import { getMatchFromDB } from "@/utils/DataBase/getMatchFromDB";
 
-// Measure execution time of async function
 async function measureTime<T>(label: string, fn: () => Promise<T>): Promise<T> {
     const start = performance.now();
     const result = await fn();
@@ -57,17 +51,36 @@ export async function getSummonerProfile(
     gameName: string,
     tagLine: string,
     matchCount = 5,
-    force = false
+    force = false,
+    includeMatches = false
 ): Promise<FormatResponseReturn | null> {
     try {
+        console.clear();
+        console.log("\x1b[35m");
+        console.log("╔════════════════════════════════════════════════════════════╗");
+        console.log("║                 🔄 Loading player profile...               ║");
+        console.log("╚════════════════════════════════════════════════════════════╝");
+        console.log("\x1b[0m");
+
         const region = getRegion(serverFetched);
         const server = getServer(serverFetched);
+
+        console.log(`🆔 Nickname:        \x1b[36m${gameName.toUpperCase()}#${tagLine.toUpperCase()}\x1b[0m`);
+        console.log(`🖥️  Server:          \x1b[33m${server.toUpperCase()}\x1b[0m`);
+        console.log(`📡 Fetched Server:  \x1b[33m${serverFetched.toUpperCase()}\x1b[0m`);
+        console.log(`🌐 Region:          \x1b[33m${region.toUpperCase()}\x1b[0m\n`);
 
         if (!force) {
             const cached = await getCachedProfileFromDB(gameName, tagLine, server);
             if (cached) {
-                console.log(`✅ Serving cached profile for ${gameName}#${tagLine} from DB\n`);
-                return cached;
+                console.log("\x1b[36m");
+                console.log("┌────────────────────────────────────────────────────────┐");
+                console.log("│ 📦 CACHE HIT: PROFILE LOADED FROM DATABASE             │");
+                console.log("└────────────────────────────────────────────────────────┘");
+                console.log(`🧑 Player:  ${gameName.toUpperCase()}#${tagLine.toUpperCase()}`);
+                console.log("💾 Source: Internal DB cache");
+                console.log("\x1b[0m\n");
+                return { ...cached, match: [] };
             }
         }
 
@@ -89,32 +102,39 @@ export async function getSummonerProfile(
             return null;
         }
 
-        const [rankedDataMap, championMasteries, matchIds] = await Promise.all([
+        const [rankedDataMap, championMasteries] = await Promise.all([
             measureTime("fetchLeagueData", () => fetchLeagueData(server, summonerDetails.id)),
             measureTime("fetchTopChampionMasteries", () => fetchTopChampionMasteries(server, accountDetails.puuid)),
-            measureTime("fetchMatchData", () => fetchMatchData(region, accountDetails.puuid, "", matchCount)),
             getAugmentById(1).catch(error => {
                 console.warn("⚠️ Cache warming failed (non-blocking):", error + "\n");
                 return null;
             })
         ]);
 
-        const match = await Promise.all(
-            matchIds.map(async id => {
-                const exists = await isMatchInDB(id);
-                if (exists) {
-                    console.log(`📦 Loading match ${id} from DB`);
-                    return getMatchFromDB(id);
-                }
+        let match: MatchResponse[] = [];
 
-                return measureTime(`fetchMatchDetailsData(${id})`, () =>
-                    fetchMatchDetailsData(region, server, id).catch(err => {
-                        console.warn(`⚠️ Failed to fetch match ${id}:`, err + "\n");
-                        return null;
-                    })
-                );
-            })
-        ).then(results => results.filter(Boolean) as MatchResponse[]);
+        if (includeMatches) {
+            const matchIds = await measureTime("fetchMatchData", () =>
+                fetchMatchData(region, accountDetails.puuid, "", matchCount)
+            );
+
+            match = await Promise.all(
+                matchIds.map(async id => {
+                    const exists = await isMatchInDB(id);
+                    if (exists) {
+                        console.log(`📦 Loading match ${id} from DB`);
+                        return getMatchFromDB(id);
+                    }
+
+                    return measureTime(`fetchMatchDetailsData(${id})`, () =>
+                        fetchMatchDetailsData(region, server, id).catch(err => {
+                            console.warn(`⚠️ Failed to fetch match ${id}:`, err + "\n");
+                            return null;
+                        })
+                    );
+                })
+            ).then(results => results.filter(Boolean) as MatchResponse[]);
+        }
 
         const soloRanked = formatRankedStats(
             rankedDataMap.entries?.find(entry => entry.queueType === QueueType.SOLO) || null
@@ -124,7 +144,7 @@ export async function getSummonerProfile(
             rankedDataMap.entries?.find(entry => entry.queueType === QueueType.FLEX) || null
         );
 
-        const response = {
+        const response: FormatResponseReturn = {
             playerInfo: {
                 puuid: accountDetails.puuid,
                 gameName: accountDetails.gameName,
@@ -137,10 +157,16 @@ export async function getSummonerProfile(
             flexRanked,
             entries: rankedDataMap.entries,
             championMasteries: championMasteries || [],
-            match: match || []
+            match
         };
 
-        console.log(`🌐 Fetched live profile for ${gameName}#${tagLine} from Riot API\n`);
+        console.log("\x1b[32m");
+        console.log("┌────────────────────────────────────────────────────────┐");
+        console.log("│ ✅ SUCCESS: FETCHED LIVE PROFILE FROM RIOT API         │");
+        console.log("└────────────────────────────────────────────────────────┘");
+        console.log(`🧑 Player:  ${gameName.toUpperCase()}#${tagLine.toUpperCase()}`);
+        console.log("🌐 Source: Riot Games API");
+        console.log("\x1b[0m\n");
 
         await saveSummonerProfileToDB(response);
 
