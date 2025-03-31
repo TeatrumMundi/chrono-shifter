@@ -4,7 +4,7 @@
  * Props for the Banner component
  */
 export interface BannerProps {
-    data: FormatResponseReturn;
+    fetchedPlayer: FormatResponseReturn;
     splashUrl?: string | null;
 }
 

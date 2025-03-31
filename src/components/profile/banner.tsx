@@ -3,54 +3,16 @@
 import Image from "next/image";
 import { BannerProps } from "@/types/otherTypes";
 import { RankedInfo } from "@/types/ProcessedInterfaces";
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { RotateCcw } from "lucide-react";
 import { motion } from "framer-motion";
+import UpdateButton from "@/components/profile/UpdateButton";
 
-export function Banner({ data }: BannerProps) {
-    const [isPending, startTransition] = useTransition();
-    const [updated, setUpdated] = useState(false);
-    const router = useRouter();
-
-    const summonerIconUrl = `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${data.playerInfo.profileIconId}.jpg`;
-    const rankedSoloIconUrl = `/rankedIcons/${data.soloRanked.Tier.toLowerCase()}.webp`;
-    const rankedFlexIconUrl = `/rankedIcons/${data.flexRanked.Tier.toLowerCase()}.webp`;
+export function Banner({ fetchedPlayer }: BannerProps) {
+    const summonerIconUrl = `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${fetchedPlayer.playerInfo.profileIconId}.jpg`;
+    const rankedSoloIconUrl = `/rankedIcons/${fetchedPlayer.soloRanked.Tier.toLowerCase()}.webp`;
+    const rankedFlexIconUrl = `/rankedIcons/${fetchedPlayer.flexRanked.Tier.toLowerCase()}.webp`;
 
     const getWinRateColor = (winRate: number) =>
         winRate >= 50 ? "text-green-400" : "text-red-500";
-
-    const handleUpdateClick = async () => {
-        startTransition(async () => {
-            const name = data.playerInfo?.gameName ?? "";
-            const tag = data.playerInfo?.tagLine?.toLowerCase() ?? "";
-            const server = data.playerInfo?.server ?? "";
-
-            if (!name || !tag || !server) {
-                console.warn("❌ Missing or invalid data", { name, tag, server });
-                return;
-            }
-
-            try {
-                const res = await fetch("/api/force-update", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, tag, server }),
-                });
-
-                if (!res.ok)
-                {
-                    console.log(`❌ Update failed with status ${res.status}`);
-                    return;
-                }
-
-                setUpdated(true);
-                router.refresh();
-            } catch (error) {
-                console.error("Update error:", error);
-            }
-        });
-    };
 
     return (
         <motion.div
@@ -60,40 +22,35 @@ export function Banner({ data }: BannerProps) {
             transition={{ duration: 0.4 }}
         >
             <div className="relative z-10 p-6 flex flex-col lg:flex-row items-center bg-gray-900/60 w-full gap-6">
-                <SummonerIcon url={summonerIconUrl} level={data.playerInfo.summonerLevel.toString()} />
+                <SummonerIcon url={summonerIconUrl} level={fetchedPlayer.playerInfo.summonerLevel.toString()} />
 
                 <div className="flex-1 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                     <div className="text-center lg:text-left">
                         <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-widest leading-tight">
-                            {data.playerInfo.gameName}
+                            {fetchedPlayer.playerInfo.gameName}
                         </h2>
                         <div className="flex flex-col sm:flex-row items-center gap-4 mt-2 justify-center lg:justify-start">
                             <h3 className="text-lg md:text-xl text-white/90 tracking-widest">
-                                #{data.playerInfo.tagLine}
+                                #{fetchedPlayer.playerInfo.tagLine}
                             </h3>
-                            <button
-                                onClick={handleUpdateClick}
-                                className={`flex items-center gap-2 px-5 py-2 text-white font-semibold rounded-lg text-sm md:text-base transition-all duration-300 shadow tracking-[.25em] ${
-                                    isPending ? "bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 hover:scale-105 active:scale-95"
-                                }`}
-                                disabled={isPending}
-                            >
-                                <RotateCcw className={`w-4 h-4 ${isPending ? "animate-spin" : ""}`} />
-                                {updated ? "Updated" : isPending ? "Updating..." : "Update"}
-                            </button>
+                            <UpdateButton
+                                name={fetchedPlayer.playerInfo.gameName}
+                                tag={fetchedPlayer.playerInfo.tagLine.toLowerCase()}
+                                server={fetchedPlayer.playerInfo.server}
+                            />
                         </div>
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-6 items-center tracking-widest">
                         <RankSection
                             title="Solo Queue"
-                            ranked={data.soloRanked}
+                            ranked={fetchedPlayer.soloRanked}
                             iconUrl={rankedSoloIconUrl}
                             getWinRateColor={getWinRateColor}
                         />
                         <RankSection
                             title="Flex Queue"
-                            ranked={data.flexRanked}
+                            ranked={fetchedPlayer.flexRanked}
                             iconUrl={rankedFlexIconUrl}
                             getWinRateColor={getWinRateColor}
                         />
@@ -104,7 +61,7 @@ export function Banner({ data }: BannerProps) {
     );
 }
 
-function RankSection({title, ranked, iconUrl, getWinRateColor,}: { title: string; ranked: RankedInfo; iconUrl: string; getWinRateColor: (wr: number) => string; }) {
+function RankSection({ title, ranked, iconUrl, getWinRateColor }: { title: string; ranked: RankedInfo; iconUrl: string; getWinRateColor: (wr: number) => string; }) {
     return (
         <div className="flex items-center gap-4 text-white">
             <div className="border-l-2 border-white/20 h-24" />

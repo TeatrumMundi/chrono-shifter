@@ -40,7 +40,7 @@ export default async function ProfilePage({ params }: { params: RouteParams }) {
             <div className="container mx-auto px-4 relative z-10">
                 <div className="grid grid-cols-12 gap-4 mt-4">
                     <div className="col-span-12 space-y-8">
-                        <Banner data={profileData} />
+                        <Banner fetchedPlayer={profileData} />
                         <MatchList
                             puuid={profileData.playerInfo.puuid}
                             server={profileData.playerInfo.server}
