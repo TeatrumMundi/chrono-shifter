@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import React, { useState, useEffect, useActionState, useMemo } from "react";
-import { handleSearch } from "@/components/search/handleSearch";
+import { handleSearch } from "@/components/common/search/handleSearch";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import debounce from "lodash.debounce";

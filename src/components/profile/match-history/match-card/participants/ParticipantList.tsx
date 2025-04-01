@@ -31,7 +31,7 @@ export function ParticipantList({participants, gameMode, server,}: {
 }
 
 /**
- * Classic 5v5 layout:
+ * Classic 5v5 mainPage:
  * - Left column: one team
  * - Right column: opposing team
  */

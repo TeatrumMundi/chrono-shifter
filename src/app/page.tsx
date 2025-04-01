@@ -1,6 +1,8 @@
-import { Header, Footer } from '@/components/layout';
-import { Background } from "@/components/common";
-import SearchForm from "@/components/search/SearchForm";
+import { Header, Footer } from '@/components/mainPage';
+import {Background} from "@/components/common";
+import SearchForm from "@/components/common/search/SearchForm";
+
+
 
 const backgroundMap: Record<number, string> = {
     1: "/main/1.jpg", // Monday

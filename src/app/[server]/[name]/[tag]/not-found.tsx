@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import SearchForm from "@/components/search/SearchForm";
+import SearchForm from "@/components/common/search/SearchForm";
 
 export default function NotFound() {
     return (
         <div className="relative w-full h-screen overflow-hidden">
-            {/* Tło */}
+
             <div className="absolute inset-0 -z-10 opacity-20">
                 <Image
                     src="/main/5.jpg"
@@ -19,7 +19,7 @@ export default function NotFound() {
                 />
             </div>
 
-            <div className="absolute top-10 left-1/2 transform -translate-x-1/2 text-center w-full max-w-2xl px-4">
+            <div className="absolute top-10 left-1/2 transform -translate-x-1/2 text-center w-full max-w-2xl px-4 space-y-4">
                 <div className="bg-red-900/70 rounded-lg p-4 md:p-6 shadow-lg">
                     <h2 className="text-xl md:text-2xl font-bold text-white tracking-[.20em] mb-2">
                         Summoner Not Found
@@ -27,6 +27,19 @@ export default function NotFound() {
                     <p className="text-red-100 tracking-[.10em] font-sans">
                         We couldn&apos;t find the summoner you&apos;re looking for.
                     </p>
+                </div>
+
+                <div className="flex justify-center">
+                    <div className=" rounded-xl shadow-md p-2">
+                        <Image
+                            src="/responseCodes/notfound_404.png"
+                            alt="Ahri 404"
+                            width={300}
+                            height={300}
+                            className="rounded-lg"
+                            priority
+                        />
+                    </div>
                 </div>
             </div>
 
