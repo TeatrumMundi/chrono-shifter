@@ -5,17 +5,7 @@ import { useRouter } from "next/navigation";
 import { RotateCcw, Check } from "lucide-react";
 import { toast } from "sonner";
 
-export default function UpdateButton({
-                                         name,
-                                         tag,
-                                         server,
-                                         onDone,
-                                     }: {
-    name: string;
-    tag: string;
-    server: string;
-    onDone?: () => void;
-}) {
+export default function UpdateButton({name, tag, server, onDone,}: { name: string; tag: string; server: string; onDone?: () => void; }) {
     const [isPending, startTransition] = useTransition();
     const [isSuccess, setIsSuccess] = useState(false);
     const router = useRouter();

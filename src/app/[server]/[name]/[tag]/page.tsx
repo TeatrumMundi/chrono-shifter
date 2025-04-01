@@ -3,7 +3,6 @@
 export const dynamic = "force-dynamic";
 
 import { Banner } from "@/components/profile";
-import { MatchList } from "@/components/profile/match";
 import { getSummonerProfile } from "@/utils/getSummonerProfile";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Metadata } from "next";
@@ -41,10 +40,6 @@ export default async function ProfilePage({ params }: { params: RouteParams }) {
                 <div className="grid grid-cols-12 gap-4 mt-4">
                     <div className="col-span-12 space-y-8">
                         <Banner fetchedPlayer={profileData} />
-                        <MatchList
-                            puuid={profileData.playerInfo.puuid}
-                            server={profileData.playerInfo.server}
-                        />
                     </div>
                 </div>
             </div>
@@ -54,11 +49,7 @@ export default async function ProfilePage({ params }: { params: RouteParams }) {
     );
 }
 
-export async function generateMetadata({
-                                           params,
-                                       }: {
-    params: RouteParams;
-}): Promise<Metadata> {
+export async function generateMetadata({params,}: { params: RouteParams; }): Promise<Metadata> {
     const { server, name, tag } = await params;
 
     return {
