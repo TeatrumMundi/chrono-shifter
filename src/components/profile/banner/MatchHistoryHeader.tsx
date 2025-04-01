@@ -3,10 +3,7 @@
 import { useEffect, useState } from "react";
 import { queueIdToGameMode } from "@/utils/helper";
 
-export function MatchHistoryHeader({
-                                       onQueueChangeAction,
-                                       onSearchAction,
-                                   }: {
+export function MatchHistoryHeader({onQueueChangeAction, onSearchAction,}: {
     onQueueChangeAction: (queue: string) => void;
     onSearchAction: (value: string) => void;
 }) {
@@ -35,7 +32,7 @@ export function MatchHistoryHeader({
     useEffect(() => {
         const delay = setTimeout(() => {
             onSearchAction(searchTerm);
-        }, 300); // wait 300ms after typing
+        }, 300);
 
         return () => clearTimeout(delay);
     }, [searchTerm, onSearchAction]);
@@ -50,7 +47,7 @@ export function MatchHistoryHeader({
         <div className="relative w-full flex flex-col md:flex-row md:items-center justify-between gap-4 px-4 py-4 bg-gray-900 rounded-sm shadow-md text-white font-sans border border-gray-700/40">
             <div className="absolute left-0 top-0 h-full w-[12px] bg-blue-950 rounded-l-sm" />
 
-            <h2 className="text-xl font-bold text-blue-300 pl-4 whitespace-nowrap">Match History:</h2>
+            <h2 className="text-xl font-bold text-blue-300 pl-4 whitespace-nowrap">Matches:</h2>
 
             <div className="flex flex-col sm:flex-row items-center gap-3 flex-1 justify-end">
                 {/* Queue Select */}

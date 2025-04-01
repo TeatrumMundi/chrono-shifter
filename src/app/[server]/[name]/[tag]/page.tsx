@@ -21,15 +21,12 @@ export default async function ProfilePage({ params }: { params: RouteParams }) {
 
     return (
         <div className="relative w-full bg-gradient-to-br from-purple-900 via-indigo-900 to-gray-900 min-h-screen">
-            {/* Navbar Container: Sticky, Z-index, Background, Full Width */}
             <div className="sticky top-0 z-50 bg-gradient-to-b from-purple-900 via-indigo-900 to-transparent shadow-md w-full">
-                {/* Inner Content Container: Flex, Vertical Center, Space Between, Horizontal Padding */}
                 <div className="w-full flex flex-col md:flex-row items-center justify-between gap-2 py-3 px-4">
-                    <div className="text-white font-bold text-xl tracking-widest whitespace-nowrap"> {/* Removed pl-4 */}
+                    <div className="text-white font-bold text-xl tracking-widest whitespace-nowrap">
                         ChronoShifter
                     </div>
-                    {/* Right Side: Search Form Wrapper (simplified) */}
-                    <div> {/* Removed pr-4, max-w-md, w-full */}
+                    <div>
                         <SearchForm position="static" className="mb-0" />
                     </div>
                 </div>
