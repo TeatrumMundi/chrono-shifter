@@ -1,12 +1,15 @@
 ﻿"use client";
 
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { BannerProps } from "@/types/otherTypes";
 import { RankedInfo } from "@/types/ProcessedInterfaces";
-import { motion, AnimatePresence } from "framer-motion";
-import UpdateButton from "@/components/profile/banner/UpdateButton";
-import { MatchList } from "@/components/profile/match";
+
+
+
 import { useState } from "react";
+import UpdateButton from "@/components/profile/UpdateButton";
+import {MatchHistory} from "@/components/profile/match-history/MatchHistory";
 
 export function Banner({ fetchedPlayer }: BannerProps) {
     const [refreshKey, setRefreshKey] = useState(0);
@@ -86,7 +89,7 @@ export function Banner({ fetchedPlayer }: BannerProps) {
                         </motion.div>
                     )}
                 </AnimatePresence>
-                <MatchList
+                <MatchHistory
                     key={refreshKey}
                     puuid={fetchedPlayer.playerInfo.puuid}
                     server={fetchedPlayer.playerInfo.server}

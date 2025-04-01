@@ -35,24 +35,6 @@ body {
   }
 }
 
-.animate-progress {
-  animation: progress 1.3s infinite ease-in-out;
-}
-
-.neon-green {
-  color: #FFF; /* Neon green */
-  text-shadow:
-          0 0 2px #39FF14,
-          0 0 4px #39FF14;
-}
-
-.neon-red {
-  color: #FFF; /* Neon red */
-  text-shadow:
-          0 0 2px #FF0000,
-          0 0 4px #FF0000;
-}
-
 /* Modern dark scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

@@ -49,8 +49,11 @@ export default async function ProfilePage({ params }: { params: RouteParams }) {
 export async function generateMetadata({params,}: { params: RouteParams; }): Promise<Metadata> {
     const { server, name, tag } = await params;
 
+    const decodedName = decodeURIComponent(name);
+    const decodedTag = decodeURIComponent(tag);
+
     return {
-        title: `${name.toUpperCase()}#${tag.toUpperCase()} - ChronoShifter`,
-        description: `View ${name.toUpperCase()}#${tag.toUpperCase()}'s League of Legends profile stats and match history on the ${server} server`,
+        title: `${decodedName}#${decodedTag} - ChronoShifter`,
+        description: `View ${decodedName.toUpperCase()}#${decodedTag.toUpperCase()}'s League of Legends profile stats and match history on the ${server} server`,
     };
 }

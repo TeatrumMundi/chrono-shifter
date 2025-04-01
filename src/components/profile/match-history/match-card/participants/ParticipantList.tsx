@@ -1,6 +1,6 @@
 ﻿import { ProcessedParticipant } from "@/types/ProcessedInterfaces";
-import { ArenaParticipantList } from "@/components/profile/arena/ArenaParticipantList";
-import { ChampionIcon } from "@/components/profile/match/ChampionIcon";
+import { ArenaParticipantList } from "@/components/profile/match-history/match-card/participants/ArenaParticipantList";
+import { ChampionIcon } from "@/components/profile/match-history/match-card/ChampionIcon";
 import Link from "next/link";
 import React, { useMemo } from "react";
 import {reversedServerMAP} from "@/utils/helper";

@@ -1,8 +1,8 @@
 ﻿import React, { useMemo } from 'react';
 import Link from 'next/link';
 import {ProcessedParticipant} from "@/types/ProcessedInterfaces";
-import {ChampionIcon} from "@/components/profile/match";
 import {reversedServerMAP} from "@/utils/helper";
+import {ChampionIcon} from "@/components/profile/match-history/match-card/ChampionIcon";
 
 const TEAM_COLORS: string[] = [
     'bg-yellow-800/60',

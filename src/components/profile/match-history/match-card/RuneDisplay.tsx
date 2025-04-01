@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Rune } from "@/types/ProcessedInterfaces";
 import { motion } from "framer-motion";
-import { cleanItemDescription } from "@/components/profile/match/ItemDisplay";
+import { cleanItemDescription } from "@/components/profile/match-history/match-card/ItemDisplay";
 import { getRuneIconUrl, getRuneTreeIconUrl } from "@/utils/getLeagueOfLegendsAssets/getGameVisuals/getRuneIcon";
 
 export function RuneDisplay({ runes }: { runes: Rune[] }) {

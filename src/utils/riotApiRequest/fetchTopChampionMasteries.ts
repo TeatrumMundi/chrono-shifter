@@ -7,7 +7,7 @@ import {RawChampionMastery} from "@/types/RawInterfaces";
  * @param {string} server - The server where the player's account is located (e.g., "na1", "euw1").
  * @param {string} puuid - The unique Player Universally Unique Identifier (PUUID) of the player.
  * @param {number} [count=10] - The number of top champion masteries to fetch (defaults to 10).
- * @returns {Promise<RawChampionMastery[]>} A promise that resolves to an array of ChampionMastery objects, each representing a champion mastery.
+ * @returns {Promise<RawChampionMastery[]>} A promise that resolves to an array of ChampionMastery objects, each representing champion mastery.
  *
  * @throws {Error} Throws an error if the request to the Riot API fails or if the response cannot be processed.
  */

@@ -1,20 +1,19 @@
 ﻿"use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { MatchCard } from "./match/MatchCard";
+import {MatchCard, MatchHistoryHeader, MatchStatsBar} from "@/components/profile";
 import { getParticipantByPuuid, queueIdToGameMode } from "@/utils/helper";
 import { MatchResponse, ProcessedParticipant } from "@/types/ProcessedInterfaces";
-import { MatchHistoryHeader } from "@/components/profile/banner/MatchHistoryHeader";
 
 interface MatchListProps {
     puuid: string;
     server: string;
 }
 
-const INITIAL_BATCH = 3;
+const INITIAL_BATCH = 20;
 const MATCHES_PER_PAGE = 3;
 
-export function MatchList({ puuid, server }: MatchListProps) {
+export function MatchHistory({ puuid, server }: MatchListProps) {
     const [matches, setMatches] = useState<MatchResponse[]>([]);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
@@ -108,6 +107,8 @@ export function MatchList({ puuid, server }: MatchListProps) {
                 onQueueChangeAction={(queue) => setQueueFilter(queue)}
                 onSearchAction={(value) => setSearchFilter(value)}
             />
+
+            <MatchStatsBar matches={filtered.slice(0, 20)} />
 
             {loading && matches.length === 0 && (
                 <div className="text-center text-gray-400 py-6 text-sm tracking-widest animate-pulse">

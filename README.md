@@ -43,10 +43,11 @@ Before setting up the project, ensure you have the following installed:
 
 3. **Set Up Environment Variables**:
 
-   Create a `.env.local` file in the root directory based on the provided `.env-template`. Ensure all necessary configurations, such as your Riot Games API key and MongoDB connection string, are correctly set.
+   Create a `.env.local` file in the root directory based on the provided `.env-template`.
+   Ensure all necessary configurations, such as your Riot Games API key and MongoDB connection string are correctly set.
 
 
-4. **Launch the Server**:
+1. **Launch the Server**:
 
    ```bash
    npm start
@@ -74,7 +75,7 @@ The backend provides the following endpoints:
     - `DELETE /annotations/:id`: Delete an annotation by ID.
 
 - **League of Legends Data**:
-    - `GET /lol/match/v4/matchlists/by-account/:encryptedAccountId`: Retrieve match list by account ID.
+    - `GET /lol/match/v4/matchlists/by-account/:encryptedAccountId`: Retrieve a match list by account ID.
     - `GET /lol/match/v4/matches/:matchId`: Get match details by match ID.
     - `GET /lol/champion-mastery/v4/champion-masteries/by-summoner/:encryptedSummonerId`: Fetch champion masteries by summoner ID.
     - `GET /lol/league-exp/v4/entries/:queue/:tier/:division`: Access league entries by queue, tier, and division.
@@ -111,6 +112,6 @@ This project is licensed under the MIT License. See the `LICENSE` file for more 
 
 ## Acknowledgments
 
-This project utilizes the Riot Games API but is not endorsed or certified by Riot Games.
+This project uses the Riot Games API but is not endorsed or certified by Riot Games.
 
 *Note: Ensure you comply with Riot Games' [API policies and terms of use](https://developer.riotgames.com/policies) when using this backend service.*

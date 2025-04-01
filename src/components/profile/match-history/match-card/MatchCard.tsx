@@ -7,15 +7,9 @@ import {
     secToHHMMSS,
     timeAgo,
 } from "@/utils/helper";
-import {
-    ChampionIcon,
-    ItemDisplay,
-    RuneDisplay,
-    MatchStats,
-    ParticipantList,
-} from "@/components/profile/match";
-import { AugmentDisplay } from "@/components/profile/arena/AugmentDisplay";
+import { AugmentDisplay } from "@/components/profile/match-history/match-card/AugmentDisplay";
 import {MatchCardProps} from "@/types/otherTypes";
+import {ChampionIcon, ItemDisplay, MatchStats, ParticipantList, RuneDisplay} from "@/components/profile";
 
 export function MatchCard({ participant, match, server }: MatchCardProps) {
     const gameMode: string = queueIdToGameMode[match.queueId] || "Unknown";

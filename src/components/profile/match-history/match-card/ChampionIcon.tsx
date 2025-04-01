@@ -28,7 +28,7 @@ export function ChampionIcon({ champion, size }: { champion: Champion; size: num
 
     return (
         <div
-            className="relative"
+            className="relative z-[999]"
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
