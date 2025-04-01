@@ -28,7 +28,7 @@ export function ChampionIcon({ champion, size }: { champion: Champion; size: num
 
     return (
         <div
-            className="relative z-[999]"
+            className="relative"
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
@@ -50,7 +50,7 @@ export function ChampionIcon({ champion, size }: { champion: Champion; size: num
                     exit={{ opacity: 0, scale: 0.5, y: -10 }}
                     transition={{ duration: 0.2 }}
                     style={{ bottom: size + 12 }} // Dynamically offset above the image
-                    className="absolute left-1/2 -translate-x-1/2 w-48 p-2 bg-gray-900 text-white rounded-md shadow-lg z-10 text-sm tracking-tight"
+                    className="absolute left-1/2 -translate-x-1/2 w-48 p-2 bg-gray-900 text-white rounded-md shadow-lg z-[999] text-sm tracking-tight"
                 >
                     <div className="font-bold text-blue-400 text-center">{champion.name}</div>
                     <div className="mt-1 text-xs text-gray-300 text-center">{formattedRoles}</div>

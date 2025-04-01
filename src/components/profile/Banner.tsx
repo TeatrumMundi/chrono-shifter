@@ -53,6 +53,11 @@ export function Banner({ fetchedPlayer }: BannerProps) {
                                     tag={fetchedPlayer.playerInfo.tagLine.toLowerCase()}
                                     server={fetchedPlayer.playerInfo.server}
                                     onDone={handleRefresh}
+                                    lastUpdatedAt={
+                                        fetchedPlayer.playerInfo.lastUpdatedAt
+                                            ? new Date(fetchedPlayer.playerInfo.lastUpdatedAt).toISOString()
+                                            : undefined
+                                    }
                                 />
                             </div>
                         </div>

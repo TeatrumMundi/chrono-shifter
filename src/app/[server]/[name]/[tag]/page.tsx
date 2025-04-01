@@ -13,7 +13,7 @@ type RouteParams = Promise<{ server: string; name: string; tag: string }>;
 export default async function ProfilePage({ params }: { params: RouteParams }) {
     const { server, name, tag } = await params;
 
-    const profileData = await getSummonerProfile(server, name, tag, 5);
+    const profileData = await getSummonerProfile(server, name, tag, 5, false, true);
 
     if (!profileData) {
         notFound();

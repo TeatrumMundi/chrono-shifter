@@ -2,7 +2,7 @@
 import _ from "lodash";
 import { prisma } from "@/lib/prisma";
 
-export async function saveSummonerProfileToDB(profile: FormatResponseReturn) {
+export async function saveSummonerProfileToDB(profile: FormatResponseReturn, explicitUpdate = false) {
     const { playerInfo, soloRanked, flexRanked, match, championMasteries, entries } = profile;
 
     // Step 1: Upsert RankedInfo records
@@ -53,12 +53,14 @@ export async function saveSummonerProfileToDB(profile: FormatResponseReturn) {
             summonerLevel: playerInfo.summonerLevel,
             soloRankedId: solo.id,
             flexRankedId: flex.id,
+            ...(explicitUpdate && { lastUpdatedAt: new Date() }), // Only when update pressed
         },
         create: {
             ...playerInfo,
             tagLine: playerInfo.tagLine.toUpperCase(),
             soloRankedId: solo.id,
             flexRankedId: flex.id,
+            ...(explicitUpdate && { lastUpdatedAt: new Date() }), // Only when update pressed
         },
     });
 

@@ -112,6 +112,7 @@ export interface PlayerInfo {
     tagLine: string;
     profileIconId: number;
     summonerLevel: number;
+    lastUpdatedAt?: Date | string;
 }
 
 export interface FormatResponseReturn {

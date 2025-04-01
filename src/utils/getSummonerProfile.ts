@@ -83,7 +83,8 @@ export async function getSummonerProfile(
     tagLine: string,
     matchCount = 5,
     force = false,
-    includeMatches = false
+    includeMatches = false,
+    explicitUpdate = false
 ): Promise<FormatResponseReturn | null> {
     try {
         const normalized = normalizeServerName(serverFetched);
@@ -99,7 +100,14 @@ export async function getSummonerProfile(
             console.log("│ 📦 CACHE HIT: PROFILE LOADED FROM DATABASE             │");
             console.log("└────────────────────────────────────────────────────────┘");
             console.log("\x1b[0m\n");
-            return { ...cached, match: [] };
+            return {
+                ...cached,
+                match: [],
+                playerInfo: {
+                    ...cached.playerInfo,
+                    lastUpdatedAt: cached.playerInfo.lastUpdatedAt,
+                },
+            };
         }
 
         const accountDetails = await measureTime("fetchAccountData", () =>
@@ -125,7 +133,7 @@ export async function getSummonerProfile(
             rankedDataMap.entries?.find(e => e.queueType === "RANKED_FLEX_SR") || null
         );
 
-        const match = (includeMatches && force) ? await fetchMatches(region, server, accountDetails.puuid, matchCount) : [];
+        const match = includeMatches && (force || !cached) ? await fetchMatches(region, server, accountDetails.puuid, matchCount) : [];
 
         const response: FormatResponseReturn = {
             playerInfo: {
@@ -134,7 +142,8 @@ export async function getSummonerProfile(
                 tagLine: accountDetails.tagLine,
                 server,
                 profileIconId: Number(summonerDetails.profileIconId),
-                summonerLevel: Number(summonerDetails.summonerLevel)
+                summonerLevel: Number(summonerDetails.summonerLevel),
+                lastUpdatedAt: new Date(),
             },
             soloRanked,
             flexRanked,
@@ -149,7 +158,7 @@ export async function getSummonerProfile(
         console.log("└────────────────────────────────────────────────────────┘");
         console.log("\x1b[0m\n");
 
-        await saveSummonerProfileToDB(response);
+        await saveSummonerProfileToDB(response, explicitUpdate);
         return response;
     } catch (error) {
         console.error("🔥 Error fetching profile:", error);

@@ -38,7 +38,8 @@ export async function getCachedProfileFromDB(gameName: string, tagLine: string, 
                 tagLine: cached.tagLine,
                 profileIconId: cached.profileIconId,
                 summonerLevel: cached.summonerLevel,
-                server: cached.server
+                server: cached.server,
+                lastUpdatedAt: cached.lastUpdatedAt
             },
             soloRanked: cached.soloRanked,
             flexRanked: cached.flexRanked,

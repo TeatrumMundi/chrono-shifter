@@ -8,19 +8,19 @@ datasource db {
 }
 
 model PlayerInfo {
-  id            String @id @default(uuid())
-  puuid         String @unique
-  gameName      String
-  tagLine       String
-  server        String
-  soloRankedId  String @unique
-  flexRankedId  String @unique
-  profileIconId Int
-  summonerLevel Int
+  id                String               @id @default(uuid())
+  puuid             String               @unique
+  gameName          String
+  tagLine           String
+  server            String
+  soloRankedId      String               @unique
+  flexRankedId      String               @unique
+  profileIconId     Int
+  summonerLevel     Int
+  lastUpdatedAt DateTime?
 
-  flexRanked RankedInfo @relation("FlexRanked", fields: [flexRankedId], references: [id])
-  soloRanked RankedInfo @relation("SoloRanked", fields: [soloRankedId], references: [id])
-
+  flexRanked        RankedInfo           @relation("FlexRanked", fields: [flexRankedId], references: [id])
+  soloRanked        RankedInfo           @relation("SoloRanked", fields: [soloRankedId], references: [id])
   championMasteries RawChampionMastery[]
   rankedEntries     RawRankedEntry[]
 
@@ -40,14 +40,13 @@ model RankedInfo {
 }
 
 model Match {
-  id               String @id @default(uuid())
-  matchId          String @unique
+  id               String             @id @default(uuid())
+  matchId          String             @unique
   gameMode         String
   queueId          Int
   gameDuration     Int
   gameEndTimestamp BigInt
-
-  participants MatchParticipant[]
+  participants     MatchParticipant[]
 }
 
 model MatchParticipant {
@@ -74,14 +73,11 @@ model MatchParticipant {
   minionsPerMinute               String
   win                            Boolean
   teamId                         Int
-
-  // JSON blobs
-  champion  Json
-  runes     Json
-  items     Json
-  arenaData Json?
-
-  match      Match      @relation(fields: [matchId], references: [matchId])
+  champion                       Json
+  runes                          Json
+  items                          Json
+  arenaData                      Json?
+  match                          Match   @relation(fields: [matchId], references: [matchId])
 
   @@unique([matchId, puuid])
 }

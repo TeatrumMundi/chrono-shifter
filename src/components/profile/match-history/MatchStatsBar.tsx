@@ -64,8 +64,8 @@ export function MatchStatsBar({ matches }: MatchStatsBarProps) {
     };
 
     return (
-        <div className="relative z-50">
-            <div className="flex items-center gap-4 bg-gray-800/80 px-4 py-2 rounded-lg text-white overflow-x-auto font-sans overflow-visible">
+        <div className="relative">
+            <div className="flex items-center gap-4 bg-gray-800/80 px-4 py-2 rounded-lg text-white font-sans">
                 <div className="flex flex-col items-center text-center text-sm font-semibold">
                     <span>{overallWR}% WR</span>
                     <span className="text-xs text-gray-400">Last {totalGames} games</span>
@@ -82,7 +82,7 @@ export function MatchStatsBar({ matches }: MatchStatsBarProps) {
                     const winrate = Math.round((stats.wins / stats.games) * 100);
 
                     return (
-                        <div key={champName} className="flex items-center gap-2 text-sm font-semibold bg-gray-900 rounded-sm px-2 py-1 relative z-[1]">
+                        <div key={champName} className="flex items-center gap-2 text-sm font-semibold bg-gray-900 rounded-sm px-2 py-1">
                             <div className="shrink-0">
                                 <ChampionIcon champion={stats.champion} size={40} />
                             </div>
