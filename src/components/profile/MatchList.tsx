@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { MatchCard } from "./match/MatchCard";
 import { getParticipantByPuuid, queueIdToGameMode } from "@/utils/helper";
 import { MatchResponse, ProcessedParticipant } from "@/types/ProcessedInterfaces";
-import { MatchHistoryHeader } from "@/components/profile/MatchHistoryHeader";
+import { MatchHistoryHeader } from "@/components/profile/banner/MatchHistoryHeader";
 
 interface MatchListProps {
     puuid: string;

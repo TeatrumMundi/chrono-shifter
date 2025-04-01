@@ -4,7 +4,7 @@ import Image from "next/image";
 import { BannerProps } from "@/types/otherTypes";
 import { RankedInfo } from "@/types/ProcessedInterfaces";
 import { motion } from "framer-motion";
-import UpdateButton from "@/components/profile/UpdateButton";
+import UpdateButton from "@/components/profile/banner/UpdateButton";
 
 export function Banner({ fetchedPlayer }: BannerProps) {
     const summonerIconUrl = `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${fetchedPlayer.playerInfo.profileIconId}.jpg`;
