@@ -31,7 +31,7 @@ export function Banner({ fetchedPlayer }: BannerProps) {
     return (
         <>
             <motion.div
-                className="relative w-full overflow-hidden rounded-lg"
+                className="relative w-full rounded-lg"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
