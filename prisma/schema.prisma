@@ -102,3 +102,16 @@ model RawRankedEntry {
   playerInfoId String
   playerInfo   PlayerInfo @relation(fields: [playerInfoId], references: [id])
 }
+
+model PatchNote {
+  id          String   @id @default(cuid())
+  language    String
+  version     String
+  title       String
+  publishDate DateTime
+  data        Json
+  sourceUrl   String
+  createdAt   DateTime @default(now())
+
+  @@unique([language, version])
+}
