@@ -2,23 +2,21 @@
 import type { NextRequest } from 'next/server';
 import * as cheerio from 'cheerio';
 import { PrismaClient, Prisma } from '@prisma/client';
+import {transformSectionContent} from "@/utils/patch/PatchNotesFormatter";
 
 const prisma = new PrismaClient();
 
-interface ChampionChange {
-    title: string;
+interface SectionContent {
     subtitle: string;
-    items: string[];
+    changes: {
+        name: string;
+        changes: string[];
+    }[];
 }
 
-interface Champion extends Record<string, unknown> {
-    name: string;
-    changes: ChampionChange[];
-}
-
-interface Section extends Record<string, unknown> {
+interface Section {
     title: string;
-    content: string[] | Champion[];
+    content: SectionContent[];
 }
 
 interface Params {
@@ -54,95 +52,66 @@ export async function GET(
         }
 
         const html = await res.text();
+        console.log('✅ HTML fetched successfully');
         const $ = cheerio.load(html);
 
         const title = $('h1[data-testid="title"]').text().trim() || `Patch ${version}`;
-        const publishDate = $('time[datetime]').attr('datetime') || new Date().toISOString();
+        const tagline = $('div[data-testid="tagline"]').find('span, em, strong, a').addBack().contents()
+            .filter((_, el) => el.type === 'text')
+            .map((_, el) => $(el).text().trim())
+            .get()
+            .filter(text => text.length > 0)
+            .join(' ');
+        const publishDate = $('time[datetime]').attr('datetime') ?? new Date().toISOString();
 
         const sections: Section[] = [];
 
-        $('#patch-notes-container').children('h2, div, header').each((_, element) => {
-            const tag = $(element).prop('tagName');
+        $('section[data-testid="RichTextPatchNotesBlade"] h2, section[data-testid="RichTextPatchNotesBlade"] div, section[data-testid="RichTextPatchNotesBlade"] header').each((_, element) => {
+            const tag = $(element).prop('tagName') as string;
 
-            if (tag === 'H2' || tag === 'HEADER') {
+            if (tag === 'H2') {
                 sections.push({
                     title: $(element).text().trim(),
                     content: [],
                 });
-            }
-
-            if (tag === 'DIV' && sections.length > 0) {
+            } else if (sections.length > 0) {
                 const currentSection = sections[sections.length - 1];
-                const contentText = $(element).text().trim().replace(/\s+/g, ' ');
 
-                if (currentSection.title.toLowerCase().includes('champions')) {
-                    $(element).find('.patch-change-block').each((_, patchBlock) => {
-                        const $block = $(patchBlock);
-                        const name = $block.find('.change-title').text().trim();
-                        const structuredChanges: ChampionChange[] = [];
+                const text = $(element).text().trim();
+                if (!text) return;
 
-                        const blockTitle = $block.find('blockquote.blockquote.context').first().text().trim();
-
-                        $block.find('.change-detail-title.ability-title').each((_, h4El) => {
-                            const $h4 = $(h4El);
-                            const subtitle = $h4.text().trim();
-                            const items: string[] = [];
-
-                            // Szukamy UL bezpośrednio po H4
-                            let $ul = $h4.next();
-                            while ($ul.length && $ul.prop('tagName') !== 'UL') {
-                                $ul = $ul.next();
-                            }
-
-                            if ($ul.length) {
-                                $ul.find('li').each((_, li) => {
-                                    const itemText = $(li).text().trim().replace(/\s+/g, ' ');
-                                    if (itemText) items.push(itemText);
-                                });
-                            }
-
-                            structuredChanges.push({
-                                title: blockTitle,
-                                subtitle,
-                                items,
-                            });
-                        });
-
-                        if (name && structuredChanges.length > 0) {
-                            (currentSection.content as Champion[]).push({ name, changes: structuredChanges });
-                        }
-                    });
-                } else if (
-                    currentSection.title.toLowerCase().includes('aram') ||
-                    currentSection.title.toLowerCase().includes('arena')
-                ) {
-                    $(element).find('p, ul li, h4').each((_, specificElement) => {
-                        const specificChange = $(specificElement).text().trim().replace(/\s+/g, ' ');
-                        if (specificChange) (currentSection.content as string[]).push(specificChange);
-                    });
-                } else if (contentText) {
-                    (currentSection.content as string[]).push(contentText);
+                // Do zagnieżdżonego przetwarzania później, zbierzemy surowe teksty
+                if (!Array.isArray(currentSection.content)) {
+                    currentSection.content = [];
                 }
+
+                (currentSection.content as unknown as string[]).push(text);
             }
         });
 
-        // Structured final response data explicitly typed for Prisma
+        // Przekształć sekcje przy użyciu funkcji transformującej
+        const transformedSections: Section[] = sections.map(section => ({
+            title: section.title,
+            content: transformSectionContent(section.content as unknown as string[]),
+        }));
+
         const data: Prisma.InputJsonValue = JSON.parse(JSON.stringify({
             title,
+            tagline,
             publishDate,
-            sections,
+            sections: transformedSections,
             sourceUrl: url,
         }));
 
-        await prisma.patchNote.create({
-            data: {
-                language,
-                version,
-                title,
-                publishDate: new Date(publishDate),
-                sourceUrl: url,
-                data,
-            },
+         await prisma.patchNote.create({
+           data: {
+             language,
+             version,
+             title,
+             publishDate: new Date(publishDate),
+             sourceUrl: url,
+             data,
+           },
         });
 
         return NextResponse.json(data);
